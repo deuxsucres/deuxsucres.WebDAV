@@ -12,16 +12,25 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        
-        <ComboBox SelectedIndex="0">
-            <ComboBoxItem>Serveur Yanos</ComboBoxItem>
-        </ComboBox>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            
+            <ComboBox SelectedIndex="0">
+                <ComboBoxItem>Serveur Yanos</ComboBoxItem>
+            </ComboBox>
+
+            <TextBox x:Name="tbPath" Grid.Column="1" Text="/" />
+        </Grid>
 
         <Grid Grid.Row="1">
             <Button Click="btnTest_Click">Test</Button>
         </Grid>
 
-        <TextBox x:Name="tbLog" Grid.Row="2" AcceptsReturn="True">
+        <TextBox x:Name="tbLog" Grid.Row="2" AcceptsReturn="True" FontFamily="Consolas" FontSize="11pt">
             
         </TextBox>
         

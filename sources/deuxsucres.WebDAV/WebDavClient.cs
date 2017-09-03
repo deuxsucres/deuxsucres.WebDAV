@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace deuxsucres.WebDAV
 {
@@ -15,6 +16,54 @@ namespace deuxsucres.WebDAV
     /// </summary>
     public class WebDavClient
     {
+        #region Constants
+
+        /// <summary>
+        /// The DAV XML namespace
+        /// </summary>
+        public static XNamespace NsDAV = XNamespace.Get("DAV:");
+
+        /// <summary>
+        /// PROPFIND method
+        /// </summary>
+        public static HttpMethod PropFind = new HttpMethod("PROPFIND");
+
+        /// <summary>
+        /// PROPPATCH method
+        /// </summary>
+        public static HttpMethod PropPatch = new HttpMethod("PROPPATCH");
+
+        /// <summary>
+        /// MKCOL method
+        /// </summary>
+        public static HttpMethod MkCol = new HttpMethod("MKCOL");
+
+        /// <summary>
+        /// COPY method
+        /// </summary>
+        public static HttpMethod Copy = new HttpMethod("COPY");
+
+        /// <summary>
+        /// MOVE method
+        /// </summary>
+        public static HttpMethod Move = new HttpMethod("MOVE");
+
+        /// <summary>
+        /// LOCK method
+        /// </summary>
+        public static HttpMethod Lock = new HttpMethod("LOCK");
+
+        /// <summary>
+        /// UNLOCK method
+        /// </summary>
+        public static HttpMethod Unlock = new HttpMethod("UNLOCK");
+
+        /// <summary>
+        /// OPTIONS method
+        /// </summary>
+        public static HttpMethod Options = new HttpMethod("OPTIONS");
+        #endregion
+
         HttpClient _httpClient;
         HttpMessageHandler _httpHandler;
 
@@ -69,24 +118,17 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Create a new request
         /// </summary>
-        protected virtual HttpRequestMessage CreateWebRequest(Uri uri, string method = "GET", IDictionary<string, string> headers = null)
+        protected virtual HttpRequestMessage CreateWebRequest(Uri uri, HttpMethod method = null, IDictionary<string, string> headers = null)
         {
-            var request = new HttpRequestMessage(new HttpMethod(method), new Uri(Uri, uri));
+            var request = new HttpRequestMessage(method ?? HttpMethod.Get, new Uri(Uri, uri));
             if (!string.IsNullOrWhiteSpace(UserAgent))
                 request.Headers.UserAgent.ParseAdd(UserAgent);
 
-            //// Authentication available ?
-            //if (CurrentAuthenticator != null)
-            //{
-            //    if (!CurrentAuthenticator.IsAlive())
-            //    {
-            //        CurrentAuthenticator = null;
-            //    }
-            //    else
-            //    {
-            //        CurrentAuthenticator.Authorize(this, request);
-            //    }
-            //}
+            if (headers != null)
+            {
+                foreach (var header in headers)
+                    request.Headers.Add(header.Key, header.Value);
+            }
 
             RequestCreated?.Invoke(this, new WebRequestEventArgs(request));
 
@@ -98,7 +140,7 @@ namespace deuxsucres.WebDAV
         /// </summary>
         public async Task<HttpResponseMessage> ExecuteWebRequestAsync(
             string path,
-            string method,
+            HttpMethod method,
             IDictionary<string, string> headers,
             HttpContent content,
             CancellationToken cancellationToken
@@ -145,13 +187,47 @@ namespace deuxsucres.WebDAV
         /// </summary>
         public Task<HttpResponseMessage> ExecuteWebRequestAsync(
             string path,
-            string method = "GET",
+            HttpMethod method = null,
             IDictionary<string, string> headers = null,
             HttpContent content = null
             )
             => ExecuteWebRequestAsync(path, method, headers, content, CancellationToken.None);
 
         #endregion
+
+        #region XML
+
+        /// <summary>
+        /// Create a document from a root element
+        /// </summary>
+        protected XDocument CreateDocument(XElement root)
+        {
+            return new XDocument(new XDeclaration("1.0", "UTF-8", null), root);
+        }
+
+        /// <summary>
+        /// Create a content from a XML element as root
+        /// </summary>
+        protected HttpContent BuildContent(XElement root)
+        {
+            var doc = CreateDocument(root);
+            return new StringContent(doc.Declaration.ToString() + Environment.NewLine + doc.ToString());
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Do a PROPFIND call
+        /// </summary>
+        public Task<HttpResponseMessage> DoPropFindAsync(string path, DepthValue depth = DepthValue.Zero
+            , IDictionary<string, string> headers = null
+            )
+        {
+            headers = headers ?? new Dictionary<string, string>();
+            headers["Depth"] = depth.ToHeaderValue();
+            HttpContent content = BuildContent(new XElement(NsDAV + "propfind", NsDAV, new XElement(NsDAV + "allprop")));
+            return ExecuteWebRequestAsync(path, PropFind, headers, content);
+        }
 
         /// <summary>
         /// Uri of the server

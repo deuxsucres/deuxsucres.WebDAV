@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,11 +31,16 @@ namespace WebDavTools
         {
             try
             {
-                WebDavClient client = new WebDavClient("http://www.ygrenier.com/sites/baikal/html/cal.php", "yanos", "shayna");
-                var response = await client.ExecuteWebRequestAsync("/", "OPTIONS");
+                WebDavClient client = new WebDavClient("http://www.ygrenier.com/sites/baikal/html/cal.php/", "yanos", "shayna");
+                var response = await client.DoPropFindAsync(tbPath.Text, DepthValue.One);
                 response.EnsureSuccessStatusCode();
-                string content = await response?.Content.ReadAsStringAsync();
-                tbLog.Text = content ?? string.Empty;
+                StringBuilder result = new StringBuilder();
+                result.AppendLine($"{response.StatusCode} {response.ReasonPhrase}");
+                foreach (var header in response.Headers)
+                    result.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
+                result.AppendLine();
+                result.AppendLine(await response?.Content.ReadAsStringAsync());
+                tbLog.Text = result.ToString();
             }
             catch (Exception ex)
             {
