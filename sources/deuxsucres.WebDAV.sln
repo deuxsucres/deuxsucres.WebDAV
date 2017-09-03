@@ -3,7 +3,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "deuxsucres.WebDAV", "deuxsucres.WebDAV\deuxsucres.WebDAV.csproj", "{1E77BFBA-7826-4B2D-B732-52F27F120E57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "deuxsucres.WebDAV", "deuxsucres.WebDAV\deuxsucres.WebDAV.csproj", "{1E77BFBA-7826-4B2D-B732-52F27F120E57}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{7B95B914-2E1C-4C86-B7B3-ADA4CCE73F5E}"
+	ProjectSection(SolutionItems) = preProject
+		..\documentation\rfc.md = ..\documentation\rfc.md
+		..\documentation\rfc4918.txt = ..\documentation\rfc4918.txt
+		..\documentation\webdav.md = ..\documentation\webdav.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
