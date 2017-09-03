@@ -19,6 +19,7 @@
 - [RFC 4791](https://tools.ietf.org/html/rfc4791) - Calendaring Extensions to WebDAV (CalDAV)
 - [RFC 4770](https://tools.ietf.org/html/rfc4770) - vCard Extensions for Instant Messaging (IM)
  **Obsoleted by RFC 4918**
+- [RFC 3253](https://tools.ietf.org/html/rfc3253) - Versioning Extensions to WebDAV (Web Distributed Authoring and Versioning)
 - [RFC 2739](https://tools.ietf.org/html/rfc2739) - Calendar Attributes for vCard and LDAP
  **Obsoleted by RFC 6350**
 - [RFC 2518](https://tools.ietf.org/html/rfc2518) - HTTP Extensions for Distributed Authoring -- WEBDAV **Obsoleted by RFC 4918**
@@ -26,3 +27,4 @@
 - [RFC 2445](https://tools.ietf.org/html/rfc2445) - Internet Calendaring and Scheduling Core Object Specification (iCalendar) **Obsoleted by RFC 5545**
 - [RFC 2426](https://tools.ietf.org/html/rfc2426) - vCard MIME Directory Profile **Obsoleted by RFC 6350**
 - [RFC 2425](https://tools.ietf.org/html/rfc2425) - A MIME Content-Type for Directory Information **Obsoleted by RFC 6350**
+- [RFC 2291](https://tools.ietf.org/html/rfc2291) - Requirements for a Distributed Authoring and Versioning Protocol for the World Wide Web

@@ -44,6 +44,8 @@ namespace deuxsucres.WebDAV
             {
                 AllowAutoRedirect = true
             };
+            if (!string.IsNullOrWhiteSpace(User) && !string.IsNullOrWhiteSpace(Password))
+                handler.Credentials = new NetworkCredential(User, Password);
             return handler;
         }
 
@@ -94,7 +96,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Execute a request and returns the response
         /// </summary>
-        protected async Task<HttpResponseMessage> ExecuteWebRequestAsync(
+        public async Task<HttpResponseMessage> ExecuteWebRequestAsync(
             string path,
             string method,
             IDictionary<string, string> headers,
@@ -102,7 +104,7 @@ namespace deuxsucres.WebDAV
             CancellationToken cancellationToken
             )
         {
-            Uri uri = new Uri(Uri, path ?? "/");
+            Uri uri = new Uri((path ?? "").TrimStart('/'), UriKind.Relative);
             HttpResponseMessage response = null;
 
             //IRequestAuthenticatorFactory factory = null;
@@ -141,7 +143,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Execute a request and returns the response
         /// </summary>
-        protected Task<HttpResponseMessage> ExecuteWebRequestAsync(
+        public Task<HttpResponseMessage> ExecuteWebRequestAsync(
             string path,
             string method = "GET",
             IDictionary<string, string> headers = null,
