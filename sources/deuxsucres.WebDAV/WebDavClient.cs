@@ -72,8 +72,9 @@ namespace deuxsucres.WebDAV
         /// </summary>
         public WebDavClient(string uri, string userName = null, string password = null, HttpMessageHandler handler = null)
         {
+            if (string.IsNullOrWhiteSpace(uri)) throw new ArgumentException(Locales.SR.Err_InvalidServerUri);
             _httpHandler = handler;
-            Uri = new Uri(uri);
+            Uri = new Uri(uri, UriKind.Absolute);
             User = userName;
             Password = password;
             var asm = typeof(WebDavClient).GetTypeInfo().Assembly;

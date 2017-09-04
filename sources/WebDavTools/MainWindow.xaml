@@ -10,27 +10,34 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             
-            <ComboBox SelectedIndex="0">
-                <ComboBoxItem>Serveur Yanos</ComboBoxItem>
+            <ComboBox x:Name="cbConnection" SelectedIndex="0" DisplayMemberPath="Name">
             </ComboBox>
 
-            <TextBox x:Name="tbPath" Grid.Column="1" Text="/" />
+            <TextBlock Grid.Column="1" Text="{Binding ElementName=cbConnection, Path=SelectedItem.Server}" />
+            <TextBlock Grid.Column="2" Text="{Binding ElementName=cbConnection, Path=SelectedItem.AbsolutePath}" />
+            <TextBox x:Name="tbPath" Grid.Column="3" Text="" />
         </Grid>
 
-        <Grid Grid.Row="1">
-            <Button Click="btnTest_Click">Test</Button>
-        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Click="btnOptions_Click">Options</Button>
+            <Button Click="btnTest_Click">Properties</Button>
+        </StackPanel>
 
-        <TextBox x:Name="tbLog" Grid.Row="2" AcceptsReturn="True" FontFamily="Consolas" FontSize="11pt">
+        <ProgressBar x:Name="pbProgress" Grid.Row="2" Margin="2" Height="3" IsIndeterminate="True" />
+
+        <TextBox x:Name="tbLog" Grid.Row="3" AcceptsReturn="True" FontFamily="Consolas" FontSize="11pt" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             
         </TextBox>
         
