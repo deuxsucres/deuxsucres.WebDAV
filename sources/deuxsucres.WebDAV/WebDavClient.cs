@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -172,15 +173,34 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do an OPTIONS call
         /// </summary>
-        public async Task<HttpResponseMessage> DoOptionsAsync(string path, IDictionary<string, string> headers = null)
+        public async Task<OptionsResult> DoOptionsAsync(string path, IDictionary<string, string> headers = null)
         {
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.Options, headers);
             response.EnsureSuccessStatusCode();
+            var result = new OptionsResult
+            {
+                ResourceRef = response.RequestMessage.RequestUri.ToString()
+            };
             if (!response.Headers.TryGetValues(WebDavConstants.DavHeader, out IEnumerable<string> values))
                 throw new WebDavException(Locales.SR.Err_NotDavResource);
-            foreach (string val in values)
-                System.Diagnostics.Debug.WriteLine(val);
-            return response;
+
+            var parts = values.SelectMany(val => val.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Select(s => s.Trim())
+                .ToList();
+            foreach (var part in parts)
+                result.ComplianceClasses.Add(new DAVComplianceClass(part));
+
+            if (response.Content != null && response.Content.Headers.TryGetValues(WebDavConstants.AllowHeader, out values))
+            {
+                parts = values.SelectMany(val => val.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Select(s => s.Trim())
+                    .ToList();
+                result.Allow.AddRange(parts);
+            }
+
+            return result;
         }
 
         /// <summary>

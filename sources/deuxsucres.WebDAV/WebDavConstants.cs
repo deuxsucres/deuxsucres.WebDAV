@@ -18,9 +18,14 @@ namespace deuxsucres.WebDAV
         public readonly static XNamespace NsDAV = XNamespace.Get("DAV:");
 
         /// <summary>
-        /// DAV Header
+        /// DAV header
         /// </summary>
         public const string DavHeader = "DAV";
+
+        /// <summary>
+        /// Allow header
+        /// </summary>
+        public const string AllowHeader = "Allow";
 
         /// <summary>
         /// PROPFIND method

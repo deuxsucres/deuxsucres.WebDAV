@@ -152,18 +152,26 @@ namespace WebDavTools
                 if (method == WebDavConstants.PropFind)
                 {
                     response = await client.DoPropFindAsync(tbPath.Text, DepthValue.One);
+                    tbLog.AppendText($"Result {response.StatusCode} {response.ReasonPhrase}\n");
                 }
                 else if (method == WebDavConstants.Options)
                 {
-                    response = await client.DoOptionsAsync(tbPath.Text);
+                    var options = await client.DoOptionsAsync(tbPath.Text);
+                    tbLog.AppendText("# Compliance classes\n");
+                    foreach (var cclass in options.ComplianceClasses)
+                        tbLog.AppendText($"- {cclass.Value}\n");
+                    tbLog.AppendText("\n");
+                    tbLog.AppendText("# Allows\n");
+                    foreach (var meth in options.Allow)
+                        tbLog.AppendText($"- {meth}\n");
                 }
                 else
                 {
                     response = await client.ExecuteWebRequestAsync(tbPath.Text, method);
+                    tbLog.AppendText($"Result {response.StatusCode} {response.ReasonPhrase}\n");
                 }
                 sw.Stop();
                 tbLog.AppendText($"Request executed in {sw.Elapsed}\n");
-                tbLog.AppendText($"Result {response.StatusCode} {response.ReasonPhrase}\n");
             }
             catch (Exception ex)
             {

@@ -71,6 +71,15 @@ namespace deuxsucres.WebDAV.Locales {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à The value is invalid..
+        /// </summary>
+        internal static string Err_InvalidValue {
+            get {
+                return ResourceManager.GetString("Err_InvalidValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à The uri is not a WebDAV resource..
         /// </summary>
         internal static string Err_NotDavResource {

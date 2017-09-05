@@ -120,6 +120,9 @@
   <data name="Err_InvalidServerUri" xml:space="preserve">
     <value>Uri du serveur invalide.</value>
   </data>
+  <data name="Err_InvalidValue" xml:space="preserve">
+    <value>La valeur est invalide.</value>
+  </data>
   <data name="Err_NotDavResource" xml:space="preserve">
     <value>L'uri n'est pas une resource WebDAV.</value>
   </data>
