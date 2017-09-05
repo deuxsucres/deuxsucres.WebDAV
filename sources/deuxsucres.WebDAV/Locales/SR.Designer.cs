@@ -69,5 +69,14 @@ namespace deuxsucres.WebDAV.Locales {
                 return ResourceManager.GetString("Err_InvalidServerUri", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à The uri is not a WebDAV resource..
+        /// </summary>
+        internal static string Err_NotDavResource {
+            get {
+                return ResourceManager.GetString("Err_NotDavResource", resourceCulture);
+            }
+        }
     }
 }

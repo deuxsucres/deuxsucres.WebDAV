@@ -37,9 +37,30 @@
 
         <ProgressBar x:Name="pbProgress" Grid.Row="2" Margin="2" Height="3" IsIndeterminate="True" />
 
-        <TextBox x:Name="tbLog" Grid.Row="3" AcceptsReturn="True" FontFamily="Consolas" FontSize="11pt" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            
-        </TextBox>
-        
+        <TabControl Grid.Row="3">
+            <TabControl.Resources>
+                <Style x:Key="LogText" TargetType="TextBox">
+                    <Setter Property="AcceptsReturn" Value="True" />
+                    <Setter Property="FontFamily" Value="Consolas" />
+                    <Setter Property="FontSize" Value="11pt" />
+                    <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+                    <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                    <Setter Property="IsReadOnly" Value="True"/>
+                </Style>
+            </TabControl.Resources>
+            <TabItem Header="Log">
+                <TextBox x:Name="tbLog" Style="{StaticResource LogText}">
+                </TextBox>
+            </TabItem>
+            <TabItem Header="Request">
+                <TextBox x:Name="tbRequest" Style="{StaticResource LogText}">
+                </TextBox>
+            </TabItem>
+            <TabItem Header="Response">
+                <TextBox x:Name="tbResponse" Style="{StaticResource LogText}">
+                </TextBox>
+            </TabItem>
+        </TabControl>
+                
     </Grid>
 </Window>

@@ -16,54 +16,6 @@ namespace deuxsucres.WebDAV
     /// </summary>
     public class WebDavClient
     {
-        #region Constants
-
-        /// <summary>
-        /// The DAV XML namespace
-        /// </summary>
-        public static XNamespace NsDAV = XNamespace.Get("DAV:");
-
-        /// <summary>
-        /// PROPFIND method
-        /// </summary>
-        public static HttpMethod PropFind = new HttpMethod("PROPFIND");
-
-        /// <summary>
-        /// PROPPATCH method
-        /// </summary>
-        public static HttpMethod PropPatch = new HttpMethod("PROPPATCH");
-
-        /// <summary>
-        /// MKCOL method
-        /// </summary>
-        public static HttpMethod MkCol = new HttpMethod("MKCOL");
-
-        /// <summary>
-        /// COPY method
-        /// </summary>
-        public static HttpMethod Copy = new HttpMethod("COPY");
-
-        /// <summary>
-        /// MOVE method
-        /// </summary>
-        public static HttpMethod Move = new HttpMethod("MOVE");
-
-        /// <summary>
-        /// LOCK method
-        /// </summary>
-        public static HttpMethod Lock = new HttpMethod("LOCK");
-
-        /// <summary>
-        /// UNLOCK method
-        /// </summary>
-        public static HttpMethod Unlock = new HttpMethod("UNLOCK");
-
-        /// <summary>
-        /// OPTIONS method
-        /// </summary>
-        public static HttpMethod Options = new HttpMethod("OPTIONS");
-        #endregion
-
         HttpClient _httpClient;
         HttpMessageHandler _httpHandler;
 
@@ -119,7 +71,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Create a new request
         /// </summary>
-        protected virtual HttpRequestMessage CreateWebRequest(Uri uri, HttpMethod method = null, IDictionary<string, string> headers = null)
+        protected virtual HttpRequestMessage CreateWebRequest(Uri uri, HttpMethod method, IDictionary<string, string> headers, HttpContent content)
         {
             var request = new HttpRequestMessage(method ?? HttpMethod.Get, new Uri(Uri, uri));
             if (!string.IsNullOrWhiteSpace(UserAgent))
@@ -130,6 +82,8 @@ namespace deuxsucres.WebDAV
                 foreach (var header in headers)
                     request.Headers.Add(header.Key, header.Value);
             }
+
+            request.Content = content;
 
             RequestCreated?.Invoke(this, new WebRequestEventArgs(request));
 
@@ -156,13 +110,9 @@ namespace deuxsucres.WebDAV
             //{
 
             // Create and execute the request
-            var request = CreateWebRequest(uri, method, headers);
+            var request = CreateWebRequest(uri, method, headers, content);
 
             BeforeExecuteRequest?.Invoke(this, new WebRequestEventArgs(request));
-
-            // Load content
-            if (content != null)
-                request.Content = content;
 
             // Get the response
             response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken);
@@ -212,10 +162,26 @@ namespace deuxsucres.WebDAV
         protected HttpContent BuildContent(XElement root)
         {
             var doc = CreateDocument(root);
-            return new StringContent(doc.Declaration.ToString() + Environment.NewLine + doc.ToString());
+            var content = new StringContent(doc.Declaration.ToString() + Environment.NewLine + doc.ToString());
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/xml");
+            return content;
         }
 
         #endregion
+
+        /// <summary>
+        /// Do an OPTIONS call
+        /// </summary>
+        public async Task<HttpResponseMessage> DoOptionsAsync(string path, IDictionary<string, string> headers = null)
+        {
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.Options, headers);
+            response.EnsureSuccessStatusCode();
+            if (!response.Headers.TryGetValues(WebDavConstants.DavHeader, out IEnumerable<string> values))
+                throw new WebDavException(Locales.SR.Err_NotDavResource);
+            foreach (string val in values)
+                System.Diagnostics.Debug.WriteLine(val);
+            return response;
+        }
 
         /// <summary>
         /// Do a PROPFIND call
@@ -226,8 +192,8 @@ namespace deuxsucres.WebDAV
         {
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = depth.ToHeaderValue();
-            HttpContent content = BuildContent(new XElement(NsDAV + "propfind", NsDAV, new XElement(NsDAV + "allprop")));
-            return ExecuteWebRequestAsync(path, PropFind, headers, content);
+            HttpContent content = BuildContent(new XElement(WebDavConstants.NsDAV + "propfind", WebDavConstants.NsDAV, new XElement(WebDavConstants.NsDAV + "allprop")));
+            return ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
         }
 
         /// <summary>
