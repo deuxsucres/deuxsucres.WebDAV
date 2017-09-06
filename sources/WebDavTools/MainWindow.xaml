@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WebDavTools"
         mc:Ignorable="d"
+        WindowState="Maximized"
         Title="WebDAV Tools" Height="350" Width="525">
-    <Grid>
+    <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -14,20 +15,28 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid Margin="0,0,0,4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="180" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             
-            <ComboBox x:Name="cbConnection" SelectedIndex="0" DisplayMemberPath="Name">
+            <ComboBox x:Name="cbConnection" SelectedIndex="0" DisplayMemberPath="Name" Margin="0,0,4,0" VerticalAlignment="Top">
             </ComboBox>
 
-            <TextBlock Grid.Column="1" Text="{Binding ElementName=cbConnection, Path=SelectedItem.Server}" />
-            <TextBlock Grid.Column="2" Text="{Binding ElementName=cbConnection, Path=SelectedItem.AbsolutePath}" />
-            <TextBox x:Name="tbPath" Grid.Column="3" Text="" />
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="8" Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.ColumnSpan="2" Text="{Binding ElementName=cbConnection, Path=SelectedItem.Server}" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding ElementName=cbConnection, Path=SelectedItem.AbsolutePath}" />
+                <TextBox x:Name="tbPath" Grid.Row="1" Grid.Column="1" Text="" />
+            </Grid>
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
@@ -35,32 +44,55 @@
             <Button Click="btnTest_Click">Properties</Button>
         </StackPanel>
 
-        <ProgressBar x:Name="pbProgress" Grid.Row="2" Margin="2" Height="3" IsIndeterminate="True" />
+        <ProgressBar x:Name="pbProgress" Grid.Row="2" Margin="0,2" Height="4" IsIndeterminate="True" />
 
-        <TabControl Grid.Row="3">
-            <TabControl.Resources>
-                <Style x:Key="LogText" TargetType="TextBox">
-                    <Setter Property="AcceptsReturn" Value="True" />
-                    <Setter Property="FontFamily" Value="Consolas" />
-                    <Setter Property="FontSize" Value="11pt" />
-                    <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
-                    <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-                    <Setter Property="IsReadOnly" Value="True"/>
-                </Style>
-            </TabControl.Resources>
-            <TabItem Header="Log">
-                <TextBox x:Name="tbLog" Style="{StaticResource LogText}">
-                </TextBox>
-            </TabItem>
-            <TabItem Header="Request">
-                <TextBox x:Name="tbRequest" Style="{StaticResource LogText}">
-                </TextBox>
-            </TabItem>
-            <TabItem Header="Response">
-                <TextBox x:Name="tbResponse" Style="{StaticResource LogText}">
-                </TextBox>
-            </TabItem>
-        </TabControl>
-                
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition MinWidth="160" MaxWidth="240" />
+                <ColumnDefinition MinWidth="160" MaxWidth="320" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <ListBox x:Name="lbHistory" Grid.Column="1" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding Url}" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Row="1" Text="{Binding Method}" FontWeight="Bold" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <TabControl Grid.Column="2" Margin="2,0,0,0">
+                <TabControl.Resources>
+                    <Style x:Key="LogText" TargetType="TextBox">
+                        <Setter Property="AcceptsReturn" Value="True" />
+                        <Setter Property="FontFamily" Value="Consolas" />
+                        <Setter Property="FontSize" Value="11pt" />
+                        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                        <Setter Property="IsReadOnly" Value="True"/>
+                    </Style>
+                </TabControl.Resources>
+                <TabItem Header="Log">
+                    <TextBox x:Name="tbLog" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Log, Mode=OneWay}">
+                    </TextBox>
+                </TabItem>
+                <TabItem Header="Request">
+                    <TextBox x:Name="tbRequest" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Request, Mode=OneWay}">
+                    </TextBox>
+                </TabItem>
+                <TabItem Header="Response">
+                    <TextBox x:Name="tbResponse" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Response, Mode=OneWay}">
+                    </TextBox>
+                </TabItem>
+            </TabControl>
+        </Grid>
+                       
     </Grid>
 </Window>

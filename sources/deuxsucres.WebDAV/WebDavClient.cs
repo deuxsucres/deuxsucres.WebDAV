@@ -105,32 +105,15 @@ namespace deuxsucres.WebDAV
             Uri uri = new Uri((path ?? "").TrimStart('/'), UriKind.Relative);
             HttpResponseMessage response = null;
 
-            //IRequestAuthenticatorFactory factory = null;
-            //bool endFactoriesReached = false;
-            //do
-            //{
-
             // Create and execute the request
             var request = CreateWebRequest(uri, method, headers, content);
 
-            BeforeExecuteRequest?.Invoke(this, new WebRequestEventArgs(request));
-
             // Get the response
+            BeforeExecuteRequest?.Invoke(this, new WebRequestEventArgs(request));
             response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken);
-
             AfterExecuteRequest?.Invoke(this, new WebResponseEventArgs(response));
 
-            //    // Authentication required ?
-            //    if (response.StatusCode == HttpStatusCode.Unauthorized && !endFactoriesReached)
-            //    {
-            //        CurrentAuthenticator = MakeAuthenticatorForRequest(response, ref factory);
-            //        // if factory is null, then we reached the end of the list
-            //        endFactoriesReached = factory == null;
-            //    }
-            //    else
-            //        break;
-            //} while (true);
-
+            // Return the response
             return response;
         }
 
