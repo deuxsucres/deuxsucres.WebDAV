@@ -150,13 +150,14 @@ namespace WebDavTools
             tbLog.ScrollToEnd();
         }
 
-        async Task DoRequest(HttpMethod method)
+        async Task<TResult> DoRequest<TResult>(string method, Func<RequestInfo, Task<TResult>> callRequest, Action<RequestInfo, TResult> processResult)
         {
+            TResult result = default(TResult);
             RequestInfo requestInfo = null;
             try
             {
                 requestInfo = CreateClient();
-                if (requestInfo == null) return;
+                if (requestInfo == null) return result;
 
                 pbProgress.Visibility = Visibility.Visible;
                 lbHistory.IsEnabled = false;
@@ -166,32 +167,12 @@ namespace WebDavTools
 
                 Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{tbPath.Text}");
 
-                HttpResponseMessage response = null;
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
-                if (method == WebDavConstants.PropFind)
-                {
-                    response = await requestInfo.Client.DoPropFindAsync(tbPath.Text, DepthValue.One);
-                    Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}");
-                }
-                else if (method == WebDavConstants.Options)
-                {
-                    var options = await requestInfo.Client.DoOptionsAsync(tbPath.Text);
-                    Log(requestInfo, "# Compliance classes");
-                    foreach (var cclass in options.ComplianceClasses)
-                        Log(requestInfo, $"- {cclass.Value}");
-                    Log(requestInfo, "");
-                    Log(requestInfo, "# Allows");
-                    foreach (var meth in options.Allow)
-                        Log(requestInfo, $"- {meth}");
-                }
-                else
-                {
-                    response = await requestInfo.Client.ExecuteWebRequestAsync(tbPath.Text, method);
-                    Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}");
-                }
+                result = await callRequest(requestInfo);
                 sw.Stop();
                 Log(requestInfo, $"Request executed in {sw.Elapsed}");
+                processResult(requestInfo, result);
             }
             catch (Exception ex)
             {
@@ -208,9 +189,100 @@ namespace WebDavTools
             requestInfo.History.Log = requestInfo.LogContent.ToString();
             lbHistory.Items.Insert(0, requestInfo.History);
             lbHistory.SelectedIndex = 0;
+
+            return result;
         }
 
-        private async void btnTest_Click(object sender, RoutedEventArgs e)
+        async Task DoRequest(HttpMethod method)
+        {
+            if (method == WebDavConstants.PropFind)
+            {
+                await DoRequest(method.Method,
+                    requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, DepthValue.One),
+                    (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
+                    );
+            }
+            else if (method == WebDavConstants.Options)
+            {
+                await DoRequest(method.Method,
+                    requestInfo => requestInfo.Client.GetOptionsAsync(tbPath.Text),
+                    (requestInfo, options) => {
+                        Log(requestInfo, "# Compliance classes");
+                        foreach (var cclass in options.ComplianceClasses)
+                            Log(requestInfo, $"- {cclass.Value}");
+                        Log(requestInfo, "");
+                        Log(requestInfo, "# Allows");
+                        foreach (string meth in options.Allow)
+                            Log(requestInfo, $"- {meth}");
+                    });
+            }
+            else
+            {
+                await DoRequest(method.Method,
+                    requestInfo => requestInfo.Client.ExecuteWebRequestAsync(tbPath.Text, method),
+                    (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
+                    );
+            }
+
+            //RequestInfo requestInfo = null;
+            //try
+            //{
+            //    requestInfo = CreateClient();
+            //    if (requestInfo == null) return;
+
+            //    pbProgress.Visibility = Visibility.Visible;
+            //    lbHistory.IsEnabled = false;
+            //    //tbLog.Clear();
+            //    //tbRequest.Clear();
+            //    //tbResponse.Clear();
+
+            //    Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{tbPath.Text}");
+
+            //    HttpResponseMessage response = null;
+            //    Stopwatch sw = new Stopwatch();
+            //    sw.Start();
+            //    if (method == WebDavConstants.PropFind)
+            //    {
+            //        response = await requestInfo.Client.DoPropFindAsync(tbPath.Text, DepthValue.One);
+            //        Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}");
+            //    }
+            //    else if (method == WebDavConstants.Options)
+            //    {
+            //        var options = await requestInfo.Client.GetOptionsAsync(tbPath.Text);
+            //        Log(requestInfo, "# Compliance classes");
+            //        foreach (var cclass in options.ComplianceClasses)
+            //            Log(requestInfo, $"- {cclass.Value}");
+            //        Log(requestInfo, "");
+            //        Log(requestInfo, "# Allows");
+            //        foreach (var meth in options.Allow)
+            //            Log(requestInfo, $"- {meth}");
+            //    }
+            //    else
+            //    {
+            //        response = await requestInfo.Client.ExecuteWebRequestAsync(tbPath.Text, method);
+            //        Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}");
+            //    }
+            //    sw.Stop();
+            //    Log(requestInfo, $"Request executed in {sw.Elapsed}");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log(requestInfo, $"Request failed: {ex.GetBaseException().Message}");
+            //    requestInfo.History.ErrorMessage = ex.GetBaseException().Message;
+            //}
+            //finally
+            //{
+            //    pbProgress.Visibility = Visibility.Hidden;
+            //    lbHistory.IsEnabled = true;
+            //}
+            //Log(requestInfo, string.Empty);
+
+            //requestInfo.History.Log = requestInfo.LogContent.ToString();
+            //lbHistory.Items.Insert(0, requestInfo.History);
+            //lbHistory.SelectedIndex = 0;
+        }
+
+        private async void btnGetProperties_Click(object sender, RoutedEventArgs e)
         {
             await DoRequest(WebDavConstants.PropFind);
         }
@@ -218,6 +290,14 @@ namespace WebDavTools
         private async void btnOptions_Click(object sender, RoutedEventArgs e)
         {
             await DoRequest(WebDavConstants.Options);
+        }
+
+        private async void btnListProperties_Click(object sender, RoutedEventArgs e)
+        {
+            await DoRequest("PROPFIND#PropName",
+                requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text, DepthValue.One),
+                (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
+                );
         }
     }
 }

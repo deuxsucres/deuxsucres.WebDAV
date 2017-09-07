@@ -162,7 +162,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do an OPTIONS call
         /// </summary>
-        public async Task<OptionsResult> DoOptionsAsync(string path, IDictionary<string, string> headers = null
+        public async Task<OptionsResult> GetOptionsAsync(string path, IDictionary<string, string> headers = null
             , CancellationToken? cancellationToken = null)
         {
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.Options, headers, cancellationToken: cancellationToken);
@@ -192,6 +192,32 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
+        /// Get the list of the properties
+        /// </summary>
+        public async Task<HttpResponseMessage> GetPropertyNamesAsync(string path, DepthValue depth = DepthValue.Zero
+            , IDictionary<string, string> headers = null, CancellationToken? cancellationToken = null
+            )
+        {
+            // Valid DAV options
+            DavOptions options = await GetOptionsAsync(path, cancellationToken: cancellationToken);
+            if (!options.IsAllowed(WebDavConstants.PropFind))
+                throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
+
+            // Call PROPFIND
+            headers = headers ?? new Dictionary<string, string>();
+            headers["Depth"] = depth.ToHeaderValue();
+            HttpContent content = BuildContent(new XElement(WebDavConstants.NsDAV + "propfind", new XElement(WebDavConstants.NsDAV + "propname")));
+
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
+            //response.EnsureSuccessStatusCode();
+
+            //var doc = XDocument.Load(await response.Content.ReadAsStreamAsync());
+            //var responses = doc.Descendants(WebDavConstants.NsDAV + "response").ToList();
+
+            return response;
+        }
+
+        /// <summary>
         /// Do a PROPFIND call
         /// </summary>
         public async Task<HttpResponseMessage> DoPropFindAsync(string path, DepthValue depth = DepthValue.Zero
@@ -199,14 +225,14 @@ namespace deuxsucres.WebDAV
             )
         {
             // Valid DAV options
-            DavOptions options = await DoOptionsAsync(path, cancellationToken: cancellationToken);
+            DavOptions options = await GetOptionsAsync(path, cancellationToken: cancellationToken);
             if (!options.IsAllowed(WebDavConstants.PropFind))
                 throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
 
             // Call PROPFIND
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = depth.ToHeaderValue();
-            HttpContent content = BuildContent(new XElement(WebDavConstants.NsDAV + "propfind", WebDavConstants.NsDAV, new XElement(WebDavConstants.NsDAV + "allprop")));
+            HttpContent content = BuildContent(new XElement(WebDavConstants.NsDAV + "propfind", new XElement(WebDavConstants.NsDAV + "allprop")));
             return await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
         }
 

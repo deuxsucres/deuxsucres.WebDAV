@@ -41,7 +41,8 @@
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Click="btnOptions_Click">Options</Button>
-            <Button Click="btnTest_Click">Properties</Button>
+            <Button Click="btnListProperties_Click">List Properties</Button>
+            <Button Click="btnGetProperties_Click">Get Properties</Button>
         </StackPanel>
 
         <ProgressBar x:Name="pbProgress" Grid.Row="2" Margin="0,2" Height="4" IsIndeterminate="True" />
