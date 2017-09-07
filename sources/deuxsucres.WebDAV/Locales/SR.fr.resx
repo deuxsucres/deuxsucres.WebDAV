@@ -123,6 +123,9 @@
   <data name="Err_InvalidValue" xml:space="preserve">
     <value>La valeur est invalide.</value>
   </data>
+  <data name="Err_MethodNotAllowed" xml:space="preserve">
+    <value>La méthode '{0}' n'est pas supportée par cette ressource.</value>
+  </data>
   <data name="Err_NotDavResource" xml:space="preserve">
     <value>L'uri n'est pas une resource WebDAV.</value>
   </data>

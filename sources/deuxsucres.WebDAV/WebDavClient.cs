@@ -27,7 +27,7 @@ namespace deuxsucres.WebDAV
         {
             if (string.IsNullOrWhiteSpace(uri)) throw new ArgumentException(Locales.SR.Err_InvalidServerUri);
             _httpHandler = handler;
-            Uri = new Uri(uri, UriKind.Absolute);
+            ServerUri = new Uri(uri, UriKind.Absolute);
             User = userName;
             Password = password;
             var asm = typeof(WebDavClient).GetTypeInfo().Assembly;
@@ -70,47 +70,52 @@ namespace deuxsucres.WebDAV
         protected HttpClient HttpClient => _httpClient ?? (_httpClient = CreateHttpClient());
 
         /// <summary>
+        /// Create an uri from a path within the WebDAV uri path
+        /// </summary>
+        /// <remarks>
+        /// If the path start with a '/' then it remove.
+        /// </remarks>
+        protected virtual Uri CreateUriFromPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return ServerUri;
+            return new Uri(ServerUri, path.TrimStart('/'));
+        }
+
+        /// <summary>
         /// Create a new request
         /// </summary>
         protected virtual HttpRequestMessage CreateWebRequest(Uri uri, HttpMethod method, IDictionary<string, string> headers, HttpContent content)
         {
-            var request = new HttpRequestMessage(method ?? HttpMethod.Get, new Uri(Uri, uri));
+            var request = new HttpRequestMessage(method ?? HttpMethod.Get, uri);
             if (!string.IsNullOrWhiteSpace(UserAgent))
                 request.Headers.UserAgent.ParseAdd(UserAgent);
-
             if (headers != null)
             {
                 foreach (var header in headers)
                     request.Headers.Add(header.Key, header.Value);
             }
-
             request.Content = content;
-
-            RequestCreated?.Invoke(this, new WebRequestEventArgs(request));
 
             return request;
         }
 
         /// <summary>
-        /// Execute a request and returns the response
+        /// Execute a request from an uri and returns the response
         /// </summary>
         public async Task<HttpResponseMessage> ExecuteWebRequestAsync(
-            string path,
+            Uri uri,
             HttpMethod method,
-            IDictionary<string, string> headers,
-            HttpContent content,
-            CancellationToken cancellationToken
+            IDictionary<string, string> headers = null,
+            HttpContent content = null,
+            CancellationToken? cancellationToken = null
             )
         {
-            Uri uri = new Uri((path ?? "").TrimStart('/'), UriKind.Relative);
-            HttpResponseMessage response = null;
-
             // Create and execute the request
             var request = CreateWebRequest(uri, method, headers, content);
 
             // Get the response
             BeforeExecuteRequest?.Invoke(this, new WebRequestEventArgs(request));
-            response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken);
+            var response = await HttpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cancellationToken ?? CancellationToken.None);
             AfterExecuteRequest?.Invoke(this, new WebResponseEventArgs(response));
 
             // Return the response
@@ -118,15 +123,16 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
-        /// Execute a request and returns the response
+        /// Execute a request from a path and returns the response
         /// </summary>
         public Task<HttpResponseMessage> ExecuteWebRequestAsync(
             string path,
-            HttpMethod method = null,
+            HttpMethod method,
             IDictionary<string, string> headers = null,
-            HttpContent content = null
+            HttpContent content = null,
+            CancellationToken? cancellationToken = null
             )
-            => ExecuteWebRequestAsync(path, method, headers, content, CancellationToken.None);
+        => ExecuteWebRequestAsync(CreateUriFromPath(path), method, headers, content, cancellationToken);
 
         #endregion
 
@@ -156,14 +162,13 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do an OPTIONS call
         /// </summary>
-        public async Task<OptionsResult> DoOptionsAsync(string path, IDictionary<string, string> headers = null)
+        public async Task<OptionsResult> DoOptionsAsync(string path, IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null)
         {
-            var response = await ExecuteWebRequestAsync(path, WebDavConstants.Options, headers);
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.Options, headers, cancellationToken: cancellationToken);
             response.EnsureSuccessStatusCode();
-            var result = new OptionsResult
-            {
-                ResourceRef = response.RequestMessage.RequestUri.ToString()
-            };
+            var result = new OptionsResult();
+
             if (!response.Headers.TryGetValues(WebDavConstants.DavHeader, out IEnumerable<string> values))
                 throw new WebDavException(Locales.SR.Err_NotDavResource);
 
@@ -172,7 +177,7 @@ namespace deuxsucres.WebDAV
                 .Select(s => s.Trim())
                 .ToList();
             foreach (var part in parts)
-                result.ComplianceClasses.Add(new DAVComplianceClass(part));
+                result.ComplianceClasses.Add(new DavComplianceClass(part));
 
             if (response.Content != null && response.Content.Headers.TryGetValues(WebDavConstants.AllowHeader, out values))
             {
@@ -189,20 +194,26 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do a PROPFIND call
         /// </summary>
-        public Task<HttpResponseMessage> DoPropFindAsync(string path, DepthValue depth = DepthValue.Zero
-            , IDictionary<string, string> headers = null
+        public async Task<HttpResponseMessage> DoPropFindAsync(string path, DepthValue depth = DepthValue.Zero
+            , IDictionary<string, string> headers = null, CancellationToken? cancellationToken = null
             )
         {
+            // Valid DAV options
+            DavOptions options = await DoOptionsAsync(path, cancellationToken: cancellationToken);
+            if (!options.IsAllowed(WebDavConstants.PropFind))
+                throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
+
+            // Call PROPFIND
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = depth.ToHeaderValue();
             HttpContent content = BuildContent(new XElement(WebDavConstants.NsDAV + "propfind", WebDavConstants.NsDAV, new XElement(WebDavConstants.NsDAV + "allprop")));
-            return ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
+            return await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
         }
 
         /// <summary>
         /// Uri of the server
         /// </summary>
-        public Uri Uri { get; private set; }
+        public Uri ServerUri { get; private set; }
 
         /// <summary>
         /// User name
@@ -218,11 +229,6 @@ namespace deuxsucres.WebDAV
         /// User agent
         /// </summary>
         public string UserAgent { get; set; }
-
-        /// <summary>
-        /// Event raised when a request is created
-        /// </summary>
-        public event EventHandler<WebRequestEventArgs> RequestCreated;
 
         /// <summary>
         /// Event raised before a request will be executed

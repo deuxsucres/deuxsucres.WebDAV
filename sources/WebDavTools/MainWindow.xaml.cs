@@ -96,7 +96,7 @@ namespace WebDavTools
                 history.Method = request.Method.Method;
                 history.Url = request.RequestUri.ToString();
                 history.Request = l.ToString();
-                tbRequest.Text = history.Request;
+                //tbRequest.Text = history.Request;
             };
             client.AfterExecuteRequest += async (s, e) =>
             {
@@ -134,7 +134,7 @@ namespace WebDavTools
                     response.Content = newContent;
                 }
                 history.Response = l.ToString();
-                tbResponse.Text = history.Response;
+                //tbResponse.Text = history.Response;
             };
             return new RequestInfo
             {
@@ -164,7 +164,7 @@ namespace WebDavTools
                 //tbRequest.Clear();
                 //tbResponse.Clear();
 
-                Log(requestInfo, $"Send request {method} on {requestInfo.Client.Uri}{tbPath.Text}");
+                Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{tbPath.Text}");
 
                 HttpResponseMessage response = null;
                 Stopwatch sw = new Stopwatch();

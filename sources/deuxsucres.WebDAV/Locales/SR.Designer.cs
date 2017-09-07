@@ -80,6 +80,15 @@ namespace deuxsucres.WebDAV.Locales {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à &apos;{0}&apos; method not allowed by this resource..
+        /// </summary>
+        internal static string Err_MethodNotAllowed {
+            get {
+                return ResourceManager.GetString("Err_MethodNotAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à The uri is not a WebDAV resource..
         /// </summary>
         internal static string Err_NotDavResource {

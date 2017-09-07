@@ -7,26 +7,26 @@ namespace deuxsucres.WebDAV
     /// <summary>
     /// DAV Compliance class
     /// </summary>
-    public class DAVComplianceClass
+    public class DavComplianceClass
     {
 
         /// <summary>
         /// Class 1
         /// </summary>
-        public static readonly DAVComplianceClass Class1 = new DAVComplianceClass("1");
+        public static readonly DavComplianceClass Class1 = new DavComplianceClass("1");
         /// <summary>
         /// Class 2
         /// </summary>
-        public static readonly DAVComplianceClass Class2 = new DAVComplianceClass("2");
+        public static readonly DavComplianceClass Class2 = new DavComplianceClass("2");
         /// <summary>
         /// Class 3
         /// </summary>
-        public static readonly DAVComplianceClass Class3 = new DAVComplianceClass("3");
+        public static readonly DavComplianceClass Class3 = new DavComplianceClass("3");
 
         /// <summary>
         /// Create a new compliance class
         /// </summary>
-        public DAVComplianceClass(string value)
+        public DavComplianceClass(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
                 throw new ArgumentException(Locales.SR.Err_InvalidValue, nameof(value));

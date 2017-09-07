@@ -27,6 +27,8 @@ namespace deuxsucres.WebDAV
         /// </summary>
         public const string AllowHeader = "Allow";
 
+        #region DAV methods
+
         /// <summary>
         /// PROPFIND method
         /// </summary>
@@ -66,5 +68,7 @@ namespace deuxsucres.WebDAV
         /// OPTIONS method
         /// </summary>
         public readonly static HttpMethod Options = new HttpMethod("OPTIONS");
+
+        #endregion
     }
 }
