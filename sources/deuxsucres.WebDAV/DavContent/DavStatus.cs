@@ -11,10 +11,11 @@ namespace deuxsucres.WebDAV
     public class DavStatus : DavNode
     {
         /// <summary>
-        /// Create a new node
+        /// Load the node
         /// </summary>
-        public DavStatus(Uri rootUri, XElement node) : base(rootUri, node)
+        protected override void Load(Uri rootUri, XElement node, bool checkName)
         {
+            base.Load(rootUri, node, checkName);
             var parts = ((string)node).Split(new char[] { ' ' }, 3);
             Protocol = parts[0];
             StatusCode = int.Parse(parts[1]);

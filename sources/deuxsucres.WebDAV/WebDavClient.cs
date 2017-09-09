@@ -134,9 +134,55 @@ namespace deuxsucres.WebDAV
             )
         => ExecuteWebRequestAsync(CreateUriFromPath(path), method, headers, content, cancellationToken);
 
+        /// <summary>
+        /// Ensure the response is a success
+        /// </summary>
+        public async virtual Task<HttpResponseMessage> EnsureSuccessStatusCodeAsync(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                string errorMessage = null;
+                try
+                {
+                    using (var str = await response.Content.ReadAsStreamAsync())
+                    {
+                        var content = XDocument.Load(str);
+                        if (content.Root.Name == WebDavConstants.NsDAV.GetName("error"))
+                        {
+                            var msg = content.Root.Descendants().Where(n => n.Name.ToString().Contains("message")).FirstOrDefault();
+                            if (msg != null)
+                                errorMessage = (string)msg;
+                        }
+                    }
+                }
+                catch { }
+                if (errorMessage != null)
+                    throw new WebDavException(errorMessage);
+            }
+            return response.EnsureSuccessStatusCode();
+        }
+
+        /// <summary>
+        /// Read the content as XML document
+        /// </summary>
+        public async virtual Task<XDocument> ReadXmlContentAsync(HttpResponseMessage response)
+        {
+            response.EnsureSuccessStatusCode();
+            return XDocument.Load(await response.Content.ReadAsStreamAsync());
+        }
+
+        /// <summary>
+        /// Extract a result from a response
+        /// </summary>
+        public async virtual Task<T> ExtractResult<T>(HttpResponseMessage response, bool checkName = true) where T : DavNode
+        {
+            var doc = await ReadXmlContentAsync(response);
+            return DavNode.LoadNode<T>(ServerUri, doc.Root, checkName);
+        }
+
         #endregion
 
-        #region XML
+        #region Content
 
         /// <summary>
         /// Create a document from a root element
@@ -218,9 +264,11 @@ namespace deuxsucres.WebDAV
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = DepthValue.One.ToHeaderValue();
 
-            HttpContent content = BuildContent(new DavPropfind(ServerUri).AsPropname());
+            HttpContent content = BuildContent(DavNode.CreateNode<DavPropfind>(ServerUri).AsPropname());
 
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
+
+            var result = await ExtractResult<DavMultistatus>(response);
             //response.EnsureSuccessStatusCode();
 
             //var doc = XDocument.Load(await response.Content.ReadAsStreamAsync());
@@ -249,7 +297,7 @@ namespace deuxsucres.WebDAV
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = depth.ToHeaderValue();
 
-            var propfind = new DavPropfind(ServerUri);
+            var propfind = DavNode.CreateNode<DavPropfind>(ServerUri);
             if (allProperties)
                 propfind = propfind.AsAllProp(properties);
             else

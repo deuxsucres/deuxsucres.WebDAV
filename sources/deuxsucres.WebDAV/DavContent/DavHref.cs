@@ -11,16 +11,6 @@ namespace deuxsucres.WebDAV
     /// </summary>
     public class DavHref : DavNode
     {
-
-        /// <summary>
-        /// Create a new href
-        /// </summary>
-        public DavHref(Uri rootUri, XElement node) : base(rootUri, node)
-        {
-            Href = (string)node;
-            Uri = new Uri(RootUri, Href ?? string.Empty);
-        }
-
         /// <summary>
         /// HRef
         /// </summary>

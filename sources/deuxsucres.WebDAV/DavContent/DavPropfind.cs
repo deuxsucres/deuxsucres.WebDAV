@@ -9,18 +9,9 @@ namespace deuxsucres.WebDAV
     /// <summary>
     /// Content of method PROPFIND
     /// </summary>
+    [ContentNodeName("propfind")]
     public class DavPropfind : DavNode
     {
-
-        /// <summary>
-        /// Create a new node
-        /// </summary>
-        public DavPropfind(Uri rootUri, XElement node) : base(rootUri, node) { }
-
-        /// <summary>
-        /// Create a new empty node
-        /// </summary>
-        public DavPropfind(Uri rootUri) : base(rootUri, WebDavConstants.NsDAV + "propfind") { }
 
         /// <summary>
         /// Define this content as a 'propname' query

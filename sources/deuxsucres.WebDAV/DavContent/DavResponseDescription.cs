@@ -11,14 +11,6 @@ namespace deuxsucres.WebDAV
     /// </summary>
     public class DavResponseDescription : DavNode
     {
-
-        /// <summary>
-        /// Create a new node
-        /// </summary>
-        public DavResponseDescription(Uri rootUri, XElement node) : base(rootUri, node)
-        {
-        }
-
         /// <summary>
         /// Description
         /// </summary>

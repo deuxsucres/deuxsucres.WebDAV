@@ -120,6 +120,11 @@
   <data name="Err_CantAddPropertyInPropnameContent" xml:space="preserve">
     <value>Can't add a property in a 'propname' content.</value>
   </data>
+  <data name="Err_InvalidNodeForContent" xml:space="preserve">
+    <value>The node '{0}' is invalid for content '{1}'.</value>
+    <comment>{0} Node name
+{1} Content node name</comment>
+  </data>
   <data name="Err_InvalidServerUri" xml:space="preserve">
     <value>Invalid server uri.</value>
   </data>

@@ -6,9 +6,9 @@ using System.Xml.Linq;
 namespace deuxsucres.WebDAV
 {
     /// <summary>
-    /// Error node
+    /// Response node
     /// </summary>
-    public class DavError : DavNode
+    public class DavResponse : DavNode
     {
     }
 }

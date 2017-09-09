@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 
@@ -12,24 +13,86 @@ namespace deuxsucres.WebDAV
     /// </summary>
     public class DavNode
     {
+
         /// <summary>
-        /// Create a new node from an existing element
+        /// Extract the node name of a type of DAV content
         /// </summary>
-        public DavNode(Uri rootUri, XElement node)
+        protected static XName GetContentNodeName(Type type)
         {
-            RootUri = rootUri ?? throw new ArgumentNullException(nameof(rootUri));
-            Node = node ?? throw new ArgumentNullException(nameof(node));
-            NodeName = Node.Name;
+            var cntName = type.GetTypeInfo().GetCustomAttribute<ContentNodeNameAttribute>();
+            if (cntName != null) return cntName.NodeName;
+            string name = type.Name;
+            if (name.StartsWith("Dav", StringComparison.OrdinalIgnoreCase))
+                name = name.Substring(3);
+            return WebDavConstants.NsDAV.GetName(name.ToLower());
+        }
+
+        /// <summary>
+        /// Extract the node name of a type of DAV content
+        /// </summary>
+        public static XName GetContentNodeName<T>() where T : DavNode
+        {
+            return GetContentNodeName(typeof(T));
+        }
+
+        /// <summary>
+        /// Create a new generic node
+        /// </summary>
+        public static DavNode CreateNode(Uri rootUri, XName name)
+        {
+            var result = new DavNode();
+            result.Load(rootUri, new XElement(name ?? throw new ArgumentNullException(nameof(name))), false);
+            return result;
         }
 
         /// <summary>
         /// Create a new empty node
         /// </summary>
-        public DavNode(Uri rootUri, XName name)
+        public static T CreateNode<T>(Uri rootUri) where T : DavNode
         {
+            var result = (T)Activator.CreateInstance(typeof(T));
+            result.Load(rootUri, new XElement(GetContentNodeName<T>()), false);
+            return result;
+        }
+
+        /// <summary>
+        /// Load a generic node from XML element
+        /// </summary>
+        public static DavNode LoadNode(Uri rootUri, XElement node, bool checkName = true)
+        {
+            var result = new DavNode();
+            result.Load(rootUri, node, false);
+            return result;
+        }
+
+        /// <summary>
+        /// Load a node from XML element
+        /// </summary>
+        public static T LoadNode<T>(Uri rootUri, XElement node, bool checkName = true) where T : DavNode
+        {
+            var result = (T)Activator.CreateInstance(typeof(T));
+            result.Load(rootUri, node, checkName);
+            return result;
+        }
+
+        /// <summary>
+        /// Load the node
+        /// </summary>
+        protected virtual void Load(Uri rootUri, XElement node, bool checkName)
+        {
+            if (checkName) CheckNodeName(node);
             RootUri = rootUri ?? throw new ArgumentNullException(nameof(rootUri));
-            NodeName = name ?? throw new ArgumentNullException(nameof(name));
-            Node = new XElement(name);
+            Node = node ?? throw new ArgumentNullException(nameof(node));
+        }
+
+        /// <summary>
+        /// Check a node is the correct name
+        /// </summary>
+        protected virtual void CheckNodeName(XElement node)
+        {
+            var cName = GetContentNodeName(GetType());
+            if (node?.Name != cName)
+                throw new WebDavException(string.Format(Locales.SR.Err_InvalidNodeForContent, node.Name, cName));
         }
 
         /// <summary>
@@ -40,7 +103,7 @@ namespace deuxsucres.WebDAV
             if (node == null) return null;
             if (builder != null)
                 return builder(this, node);
-            return (T)Activator.CreateInstance(typeof(T), RootUri, node);
+            return LoadNode<T>(RootUri, node);
         }
 
         /// <summary>
@@ -85,7 +148,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Name of the node
         /// </summary>
-        public virtual XName NodeName { get; private set; }
+        public XName NodeName => Node.Name;
 
     }
 

@@ -120,6 +120,9 @@
   <data name="Err_CantAddPropertyInPropnameContent" xml:space="preserve">
     <value>Impossible d'ajouter une propriété dans un contenu 'propname'.</value>
   </data>
+  <data name="Err_InvalidNodeForContent" xml:space="preserve">
+    <value>Le noeud '{0}' est invalide pour le contenu '{1}'.</value>
+  </data>
   <data name="Err_InvalidServerUri" xml:space="preserve">
     <value>Uri du serveur invalide.</value>
   </data>

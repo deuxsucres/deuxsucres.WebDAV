@@ -71,6 +71,15 @@ namespace deuxsucres.WebDAV.Locales {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à The node &apos;{0}&apos; is invalid for content &apos;{1}&apos;..
+        /// </summary>
+        internal static string Err_InvalidNodeForContent {
+            get {
+                return ResourceManager.GetString("Err_InvalidNodeForContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Invalid server uri..
         /// </summary>
         internal static string Err_InvalidServerUri {
