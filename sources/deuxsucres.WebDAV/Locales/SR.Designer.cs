@@ -71,6 +71,15 @@ namespace deuxsucres.WebDAV.Locales {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à The lock type &apos;{0}&apos; is invalid..
+        /// </summary>
+        internal static string Err_InvalidLockType {
+            get {
+                return ResourceManager.GetString("Err_InvalidLockType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à The node &apos;{0}&apos; is invalid for content &apos;{1}&apos;..
         /// </summary>
         internal static string Err_InvalidNodeForContent {
@@ -94,6 +103,15 @@ namespace deuxsucres.WebDAV.Locales {
         internal static string Err_InvalidValue {
             get {
                 return ResourceManager.GetString("Err_InvalidValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Lock type undefined..
+        /// </summary>
+        internal static string Err_LockTypeUndefined {
+            get {
+                return ResourceManager.GetString("Err_LockTypeUndefined", resourceCulture);
             }
         }
         

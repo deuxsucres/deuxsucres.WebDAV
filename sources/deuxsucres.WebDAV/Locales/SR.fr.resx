@@ -120,6 +120,9 @@
   <data name="Err_CantAddPropertyInPropnameContent" xml:space="preserve">
     <value>Impossible d'ajouter une propriété dans un contenu 'propname'.</value>
   </data>
+  <data name="Err_InvalidLockType" xml:space="preserve">
+    <value>Le type de verrou '{0}' est invalide.</value>
+  </data>
   <data name="Err_InvalidNodeForContent" xml:space="preserve">
     <value>Le noeud '{0}' est invalide pour le contenu '{1}'.</value>
   </data>
@@ -128,6 +131,9 @@
   </data>
   <data name="Err_InvalidValue" xml:space="preserve">
     <value>La valeur est invalide.</value>
+  </data>
+  <data name="Err_LockTypeUndefined" xml:space="preserve">
+    <value>Type de verrou non défini.</value>
   </data>
   <data name="Err_MethodNotAllowed" xml:space="preserve">
     <value>La méthode '{0}' n'est pas supportée par cette ressource.</value>

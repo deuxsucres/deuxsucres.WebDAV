@@ -98,5 +98,19 @@ namespace deuxsucres.WebDAV
             return value.Cast<char>().All(c => IsCHAR(c) && !IsSeparator(c) && !IsCTL(c));
         }
 
+        /// <summary>
+        /// Parse a depth value
+        /// </summary>
+        public static DepthValue? ParseDepth(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            foreach (DepthValue depth in Enum.GetValues(typeof(DepthValue)))
+            {
+                if (string.Equals(value, depth.ToHeaderValue(), StringComparison.OrdinalIgnoreCase))
+                    return depth;
+            }
+            return null;
+        }
+
     }
 }

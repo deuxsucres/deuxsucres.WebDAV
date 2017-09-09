@@ -25,5 +25,6 @@ namespace deuxsucres.WebDAV
                     return "infinity";
             }
         }
+
     }
 }

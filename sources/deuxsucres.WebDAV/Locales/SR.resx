@@ -120,6 +120,10 @@
   <data name="Err_CantAddPropertyInPropnameContent" xml:space="preserve">
     <value>Can't add a property in a 'propname' content.</value>
   </data>
+  <data name="Err_InvalidLockType" xml:space="preserve">
+    <value>The lock type '{0}' is invalid.</value>
+    <comment>{0} lock type name</comment>
+  </data>
   <data name="Err_InvalidNodeForContent" xml:space="preserve">
     <value>The node '{0}' is invalid for content '{1}'.</value>
     <comment>{0} Node name
@@ -130,6 +134,9 @@
   </data>
   <data name="Err_InvalidValue" xml:space="preserve">
     <value>The value is invalid.</value>
+  </data>
+  <data name="Err_LockTypeUndefined" xml:space="preserve">
+    <value>Lock type undefined.</value>
   </data>
   <data name="Err_MethodNotAllowed" xml:space="preserve">
     <value>'{0}' method not allowed by this resource.</value>
