@@ -226,7 +226,7 @@ namespace WebDavTools
             if (method == WebDavConstants.PropFind)
             {
                 await DoRequest(method.Method,
-                    requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, DepthValue.One),
+                    requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, true, DepthValue.One),
                     (requestInfo, response) => Log(requestInfo, $"Result {(int)response.StatusCode} {response.ReasonPhrase}")
                     );
             }
@@ -266,7 +266,7 @@ namespace WebDavTools
         private async void btnListProperties_Click(object sender, RoutedEventArgs e)
         {
             await DoRequest(WebDavConstants.PropFind.Method,
-                requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text, DepthValue.Zero),
+                requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text),
                 (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
                 );
         }

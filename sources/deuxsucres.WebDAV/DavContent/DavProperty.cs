@@ -19,8 +19,22 @@ namespace deuxsucres.WebDAV
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Invalid name.", nameof(name));
             Name = name;
-            XmlTag = (ns ?? WebDavConstants.NsDAV) + Name;
+            NodeName = (ns ?? WebDavConstants.NsDAV) + Name;
         }
+
+        /// <summary>
+        /// Create a new property
+        /// </summary>
+        public DavProperty(XName nodeName)
+        {
+            NodeName = nodeName ?? throw new ArgumentNullException(nameof(nodeName));
+            Name = NodeName.LocalName;
+        }
+
+        /// <summary>
+        /// Implicit cast from a <see cref="XName"/>
+        /// </summary>
+        public static implicit operator DavProperty(XName name) => new DavProperty(name);
 
         /// <summary>
         /// Name of the property
@@ -28,13 +42,13 @@ namespace deuxsucres.WebDAV
         public string Name { get; }
 
         /// <summary>
-        /// XML tag
+        /// Node name
         /// </summary>
-        public XName XmlTag { get; }
+        public XName NodeName { get; }
 
         /// <summary>
         /// Namespace
         /// </summary>
-        public XNamespace Namespace => XmlTag.Namespace;
+        public XNamespace Namespace => NodeName.Namespace;
     }
 }

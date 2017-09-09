@@ -62,6 +62,15 @@ namespace deuxsucres.WebDAV.Locales {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Can&apos;t add a property in a &apos;propname&apos; content..
+        /// </summary>
+        internal static string Err_CantAddPropertyInPropnameContent {
+            get {
+                return ResourceManager.GetString("Err_CantAddPropertyInPropnameContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Invalid server uri..
         /// </summary>
         internal static string Err_InvalidServerUri {

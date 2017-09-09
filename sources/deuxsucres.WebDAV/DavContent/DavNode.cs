@@ -4,21 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace deuxsucres.WebDAV.Results
+namespace deuxsucres.WebDAV
 {
 
     /// <summary>
-    /// Base of the DAV node result
+    /// Base of the DAV node content
     /// </summary>
     public class DavNode
     {
         /// <summary>
-        /// Create a new node
+        /// Create a new node from an existing element
         /// </summary>
         public DavNode(Uri rootUri, XElement node)
         {
             RootUri = rootUri ?? throw new ArgumentNullException(nameof(rootUri));
             Node = node ?? throw new ArgumentNullException(nameof(node));
+            NodeName = Node.Name;
+        }
+
+        /// <summary>
+        /// Create a new empty node
+        /// </summary>
+        public DavNode(Uri rootUri, XName name)
+        {
+            RootUri = rootUri ?? throw new ArgumentNullException(nameof(rootUri));
+            NodeName = name ?? throw new ArgumentNullException(nameof(name));
+            Node = new XElement(name);
         }
 
         /// <summary>
@@ -70,6 +81,12 @@ namespace deuxsucres.WebDAV.Results
         /// Node
         /// </summary>
         public XElement Node { get; private set; }
+
+        /// <summary>
+        /// Name of the node
+        /// </summary>
+        public virtual XName NodeName { get; private set; }
+
     }
 
 }

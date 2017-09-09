@@ -143,7 +143,7 @@ namespace deuxsucres.WebDAV
         /// </summary>
         protected XDocument CreateDocument(XElement root)
         {
-            root.Add(new XAttribute(XNamespace.Xmlns + "d", WebDavConstants.NsDAV.NamespaceName));
+            root.Add(new XAttribute(XNamespace.Xmlns + "D", WebDavConstants.NsDAV.NamespaceName));
             return new XDocument(new XDeclaration("1.0", "UTF-8", null), root);
         }
 
@@ -158,6 +158,14 @@ namespace deuxsucres.WebDAV
                 CharSet = "utf-8"
             };
             return content;
+        }
+
+        /// <summary>
+        /// Create a content from a DAV content as root
+        /// </summary>
+        protected HttpContent BuildContent(DavNode root)
+        {
+            return BuildContent(root.Node);
         }
 
         #endregion
@@ -197,8 +205,8 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Get the list of the properties
         /// </summary>
-        public async Task<HttpResponseMessage> GetPropertyNamesAsync(string path, DepthValue depth = DepthValue.Zero
-            , IDictionary<string, string> headers = null, CancellationToken? cancellationToken = null
+        public async Task<HttpResponseMessage> GetPropertyNamesAsync(string path, IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
             )
         {
             // Valid DAV options
@@ -208,8 +216,9 @@ namespace deuxsucres.WebDAV
 
             // Call PROPFIND
             headers = headers ?? new Dictionary<string, string>();
-            headers["Depth"] = depth.ToHeaderValue();
-            HttpContent content = BuildContent(new XElement(WebDavConstants.NsDAV + "propfind", new XElement(WebDavConstants.NsDAV + "propname")));
+            headers["Depth"] = DepthValue.One.ToHeaderValue();
+
+            HttpContent content = BuildContent(new DavPropfind(ServerUri).AsPropname());
 
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
             //response.EnsureSuccessStatusCode();
@@ -223,8 +232,12 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do a PROPFIND call
         /// </summary>
-        public async Task<HttpResponseMessage> DoPropFindAsync(string path, DepthValue depth = DepthValue.Zero
-            , IDictionary<string, string> headers = null, CancellationToken? cancellationToken = null
+        public async Task<HttpResponseMessage> DoPropFindAsync(string path
+            , bool allProperties
+            , DepthValue depth = DepthValue.Zero
+            , IEnumerable<DavProperty> properties = null
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
             )
         {
             // Valid DAV options
@@ -235,7 +248,14 @@ namespace deuxsucres.WebDAV
             // Call PROPFIND
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = depth.ToHeaderValue();
-            HttpContent content = BuildContent(new XElement(WebDavConstants.NsDAV + "propfind", new XElement(WebDavConstants.NsDAV + "allprop")));
+
+            var propfind = new DavPropfind(ServerUri);
+            if (allProperties)
+                propfind = propfind.AsAllProp(properties);
+            else
+                propfind = propfind.AsProp(properties);
+
+            HttpContent content = BuildContent(propfind);
             return await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
         }
 
