@@ -5,12 +5,16 @@ using System.Xml.Linq;
 
 namespace deuxsucres.WebDAV
 {
-
     /// <summary>
-    /// DAV Href
+    /// 'prop' node
     /// </summary>
-    public class DavHref : DavNode
+    public class DavProp : DavNode
     {
+
+        /// <summary>
+        /// Source of the properties
+        /// </summary>
+        protected List<DavProperty> SourceProperties { get; private set; } = new List<DavProperty>();
 
         /// <summary>
         /// Load the node
@@ -18,18 +22,13 @@ namespace deuxsucres.WebDAV
         protected override void Load(Uri rootUri, XElement node, bool checkName)
         {
             base.Load(rootUri, node, checkName);
-            Href = (string)Node;
+            SourceProperties.AddRange(MakeNodes<DavProperty>(Node.Elements()));
         }
 
         /// <summary>
-        /// HRef
+        /// Properties
         /// </summary>
-        public string Href { get; private set; }
+        public DavProperty[] Properties => SourceProperties.ToArray();
 
-        /// <summary>
-        /// Absolute uri
-        /// </summary>
-        public Uri Uri => new Uri(RootUri, Href ?? string.Empty);
     }
-
 }

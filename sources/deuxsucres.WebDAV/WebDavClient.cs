@@ -251,7 +251,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Get the list of the properties
         /// </summary>
-        public async Task<HttpResponseMessage> GetPropertyNamesAsync(string path, IDictionary<string, string> headers = null
+        public async Task<DavMultistatus> GetPropertyNamesAsync(string path, IDictionary<string, string> headers = null
             , CancellationToken? cancellationToken = null
             )
         {
@@ -267,20 +267,13 @@ namespace deuxsucres.WebDAV
             HttpContent content = BuildContent(DavNode.CreateNode<DavPropfind>(ServerUri).AsPropname());
 
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
-
-            var result = await ExtractResult<DavMultistatus>(response);
-            //response.EnsureSuccessStatusCode();
-
-            //var doc = XDocument.Load(await response.Content.ReadAsStreamAsync());
-            //var responses = doc.Descendants(WebDavConstants.NsDAV + "response").ToList();
-
-            return response;
+            return await ExtractResult<DavMultistatus>(response);
         }
 
         /// <summary>
         /// Do a PROPFIND call
         /// </summary>
-        public async Task<HttpResponseMessage> DoPropFindAsync(string path
+        public async Task<DavMultistatus> DoPropFindAsync(string path
             , bool allProperties
             , DepthValue depth = DepthValue.Zero
             , IEnumerable<DavProperty> properties = null
@@ -304,7 +297,9 @@ namespace deuxsucres.WebDAV
                 propfind = propfind.AsProp(properties);
 
             HttpContent content = BuildContent(propfind);
-            return await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
+
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
+            return await ExtractResult<DavMultistatus>(response);
         }
 
         /// <summary>

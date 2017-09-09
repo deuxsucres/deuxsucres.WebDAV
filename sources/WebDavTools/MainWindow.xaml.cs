@@ -181,6 +181,61 @@ namespace WebDavTools
             tbLog.ScrollToEnd();
         }
 
+        void Log(RequestInfo info, DavMultistatus response)
+        {
+            Log(info, $"{response.Responses.Length} response(s)");
+            Log(info, string.Empty);
+            if (response.ResponseDescription != null)
+            {
+                Log(info, response.ResponseDescription.Description);
+                Log(info, string.Empty);
+            }
+            foreach (var resp in response.Responses)
+            {
+                Log(info, resp);
+                Log(info, string.Empty);
+            }
+        }
+
+        void Log(RequestInfo info, DavResponse response)
+        {
+            Log(info, $"# {response.Href.Href}");
+            if (response.ResponseDescription != null)
+            {
+                Log(info, response.ResponseDescription.Description);
+                Log(info, string.Empty);
+            }
+            if ((response.Status != null && response.Status.StatusCode != 200) || response.Error != null)
+            {
+                Log(info, $"Error: {response.Error?.ToString() ?? response.Status.StatusDescription}");
+            }
+            else
+            {
+                foreach (var propstat in response.Propstats)
+                {
+                    //Log(info, $"# {prop.NodeName}");
+                    if (propstat.ResponseDescription != null)
+                    {
+                        Log(info, propstat.ResponseDescription.Description);
+                        Log(info, string.Empty);
+                    }
+                    if ((propstat.Status != null && propstat.Status.StatusCode != 200) || propstat.Error != null)
+                    {
+                        Log(info, $"Error: {propstat.Error?.ToString() ?? propstat.Status.StatusDescription}");
+                    }
+                    else
+                    {
+                        foreach (var prop in propstat.Prop.Properties)
+                        {
+                            Log(info, $"- {prop.NodeName}");
+                            if (prop.Node.HasElements)
+                                Log(info, prop.Node.ToString());
+                        }
+                    }
+                }
+            }
+        }
+
         async Task<TResult> DoRequest<TResult>(string method, Func<RequestInfo, Task<TResult>> callRequest, Action<RequestInfo, TResult> processResult)
         {
             TResult result = default(TResult);
@@ -227,8 +282,7 @@ namespace WebDavTools
             {
                 await DoRequest(method.Method,
                     requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, true, DepthValue.One),
-                    (requestInfo, response) => Log(requestInfo, $"Result {(int)response.StatusCode} {response.ReasonPhrase}")
-                    );
+                    (requestInfo, response) => Log(requestInfo, response));
             }
             else if (method == WebDavConstants.Options)
             {
@@ -267,8 +321,7 @@ namespace WebDavTools
         {
             await DoRequest(WebDavConstants.PropFind.Method,
                 requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text),
-                (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
-                );
+                (requestInfo, response) => Log(requestInfo, response));
         }
     }
 }
