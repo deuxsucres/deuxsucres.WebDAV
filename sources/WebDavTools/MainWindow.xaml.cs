@@ -64,6 +64,28 @@ namespace WebDavTools
             cbConnection.SelectedIndex = 0;
         }
 
+        async Task<string> ExtractTextContent(HttpResponseMessage response)
+        {
+            var buffer = new MemoryStream();
+            var str = await response.Content.ReadAsStreamAsync();
+            await str.CopyToAsync(buffer);
+            buffer.Seek(0, System.IO.SeekOrigin.Begin);
+
+            string result;
+            using (var src = new MemoryStream(buffer.ToArray()))
+            using (var rdr = new StreamReader(src))
+                result = await rdr.ReadToEndAsync();
+
+            buffer.Seek(0, System.IO.SeekOrigin.Begin);
+            var newContent = new StreamContent(buffer);
+            foreach (var header in response.Content.Headers)
+                newContent.Headers.Add(header.Key, header.Value);
+
+            response.Content = newContent;
+
+            return result;
+        }
+
         RequestInfo CreateClient(string method)
         {
             var connection = cbConnection.SelectedItem as ServerConnection;
@@ -129,32 +151,6 @@ namespace WebDavTools
                     l.AppendLine();
                 }
 
-                /*if (response.Content != null && (response.Content.Headers.ContentType.MediaType == "text/xml" || response.Content.Headers.ContentType.MediaType == "application/xml"))
-                {
-
-                    var buffer = new System.IO.MemoryStream();
-                    var str = await response.Content.ReadAsStreamAsync();
-                    await str.CopyToAsync(buffer);
-                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
-
-                    try
-                    {
-                        XDocument doc = XDocument.Load(buffer);
-                        l.AppendLine(doc.ToString());
-                    }
-                    catch (Exception lex)
-                    {
-                        l.AppendLine($"XML Error: {lex.GetBaseException().Message}");
-                    }
-
-                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
-                    var newContent = new StreamContent(buffer);
-                    foreach (var header in response.Content.Headers)
-                        newContent.Headers.Add(header.Key, header.Value);
-
-                    response.Content = newContent;
-                }
-                else*/
                 if (response.Content != null && (
                     response.Content.Headers.ContentType.MediaType == "text/plain" 
                     || response.Content.Headers.ContentType.MediaType == "text/html"
@@ -162,21 +158,22 @@ namespace WebDavTools
                     || response.Content.Headers.ContentType.MediaType == "application/xml"
                     ))
                 {
-                    var buffer = new MemoryStream();
-                    var str = await response.Content.ReadAsStreamAsync();
-                    await str.CopyToAsync(buffer);
-                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
+                    string textContent = await ExtractTextContent(response);
 
-                    using (var src = new MemoryStream(buffer.ToArray()))
-                    using (var rdr = new StreamReader(src))
-                        l.AppendLine(await rdr.ReadToEndAsync());
-
-                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
-                    var newContent = new StreamContent(buffer);
-                    foreach (var header in response.Content.Headers)
-                        newContent.Headers.Add(header.Key, header.Value);
-
-                    response.Content = newContent;
+                    if (response.Content.Headers.ContentType.MediaType == "text/xml" || response.Content.Headers.ContentType.MediaType == "application/xml")
+                    {
+                        try
+                        {
+                            XDocument doc = XDocument.Parse(textContent);
+                            textContent = doc.ToString();
+                        }
+                        catch (Exception lex)
+                        {
+                            l.AppendLine($"XML parse error: {lex.GetBaseException().Message}");
+                            l.AppendLine();
+                        }
+                    }
+                    l.AppendLine(textContent);
                 }
                 history.Response = l.ToString();
                 //tbResponse.Text = history.Response;
