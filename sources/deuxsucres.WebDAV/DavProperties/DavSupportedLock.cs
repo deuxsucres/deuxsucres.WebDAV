@@ -6,15 +6,10 @@ using System.Xml.Linq;
 namespace deuxsucres.WebDAV
 {
     /// <summary>
-    /// 'prop' node
+    /// 'supportedlock' property node
     /// </summary>
-    public class DavProp : DavNode
+    public class DavSupportedLock : DavProperty
     {
-
-        /// <summary>
-        /// Source of the properties
-        /// </summary>
-        protected List<DavProperty> SourceProperties { get; private set; } = new List<DavProperty>();
 
         /// <summary>
         /// Load the node
@@ -22,13 +17,21 @@ namespace deuxsucres.WebDAV
         protected override void Load(Uri rootUri, XElement node, bool checkName)
         {
             base.Load(rootUri, node, checkName);
-            SourceProperties.AddRange(MakeProperties(Node.Elements()));
+            LockEntry = MakeNode<DavLockEntry>(Node.Element(WebDavConstants.NsDAV + "lockentry"));
         }
 
         /// <summary>
-        /// Properties
+        /// To string
         /// </summary>
-        public DavProperty[] Properties => SourceProperties.ToArray();
+        public override string ToString()
+        {
+            return LockEntry?.ToString();
+        }
+
+        /// <summary>
+        /// Lock entry
+        /// </summary>
+        public DavLockEntry LockEntry { get; private set; }
 
     }
 }

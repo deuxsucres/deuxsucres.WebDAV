@@ -5,30 +5,33 @@ using System.Xml.Linq;
 
 namespace deuxsucres.WebDAV
 {
+
     /// <summary>
-    /// 'prop' node
+    /// 'getcontenttype' property node
     /// </summary>
-    public class DavProp : DavNode
+    public class DavGetContentType : DavProperty
     {
-
-        /// <summary>
-        /// Source of the properties
-        /// </summary>
-        protected List<DavProperty> SourceProperties { get; private set; } = new List<DavProperty>();
-
         /// <summary>
         /// Load the node
         /// </summary>
         protected override void Load(Uri rootUri, XElement node, bool checkName)
         {
             base.Load(rootUri, node, checkName);
-            SourceProperties.AddRange(MakeProperties(Node.Elements()));
+            ContentType = (string)node;
         }
 
         /// <summary>
-        /// Properties
+        /// To string
         /// </summary>
-        public DavProperty[] Properties => SourceProperties.ToArray();
+        public override string ToString()
+        {
+            return ContentType;
+        }
 
+        /// <summary>
+        /// Content type
+        /// </summary>
+        public string ContentType { get; private set; }
     }
+
 }

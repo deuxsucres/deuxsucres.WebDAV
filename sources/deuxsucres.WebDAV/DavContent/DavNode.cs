@@ -66,6 +66,16 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
+        /// Load a generic node from XML element
+        /// </summary>
+        public static DavNode LoadNode(Type tNode, Uri rootUri, XElement node, bool checkName = true)
+        {
+            var result = (DavNode)Activator.CreateInstance(tNode ?? throw new ArgumentNullException(nameof(tNode)));
+            result.Load(rootUri, node, false);
+            return result;
+        }
+
+        /// <summary>
         /// Load a node from XML element
         /// </summary>
         public static T LoadNode<T>(Uri rootUri, XElement node, bool checkName = true) where T : DavNode
@@ -133,6 +143,35 @@ namespace deuxsucres.WebDAV
         {
             if (name == null) return null;
             return MakeNodes(Node.Elements(name), builder);
+        }
+
+        /// <summary>
+        /// Create a new property from registered properties or default property node
+        /// </summary>
+        public DavProperty MakeProperty(XElement node)
+        {
+            if (node == null) return null;
+            var prop = DavProperties.CreateProperty(RootUri, node);
+            return prop ?? MakeNode<DavProperty>(node);
+        }
+
+        /// <summary>
+        /// Create a list od properties from a list of elements
+        /// </summary>
+        public IEnumerable<DavProperty> MakeProperties(IEnumerable<XElement> nodes)
+        {
+            if (nodes == null) return null;
+            return nodes
+                .Where(n => n != null)
+                .Select(n => MakeProperty(n));
+        }
+
+        /// <summary>
+        /// To string
+        /// </summary>
+        public override string ToString()
+        {
+            return Node.ToString();
         }
 
         /// <summary>

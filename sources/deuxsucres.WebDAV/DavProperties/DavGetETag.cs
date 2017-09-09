@@ -6,29 +6,30 @@ using System.Xml.Linq;
 namespace deuxsucres.WebDAV
 {
     /// <summary>
-    /// 'prop' node
+    /// 'getetag' property name
     /// </summary>
-    public class DavProp : DavNode
+    public class DavGetETag : DavProperty
     {
-
-        /// <summary>
-        /// Source of the properties
-        /// </summary>
-        protected List<DavProperty> SourceProperties { get; private set; } = new List<DavProperty>();
-
         /// <summary>
         /// Load the node
         /// </summary>
         protected override void Load(Uri rootUri, XElement node, bool checkName)
         {
             base.Load(rootUri, node, checkName);
-            SourceProperties.AddRange(MakeProperties(Node.Elements()));
+            ETag = (string)node;
         }
 
         /// <summary>
-        /// Properties
+        /// To string
         /// </summary>
-        public DavProperty[] Properties => SourceProperties.ToArray();
+        public override string ToString()
+        {
+            return ETag;
+        }
 
+        /// <summary>
+        /// ETag
+        /// </summary>
+        public string ETag { get; private set; }
     }
 }

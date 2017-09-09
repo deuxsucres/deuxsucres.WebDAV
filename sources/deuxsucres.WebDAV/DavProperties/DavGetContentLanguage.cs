@@ -6,29 +6,30 @@ using System.Xml.Linq;
 namespace deuxsucres.WebDAV
 {
     /// <summary>
-    /// 'prop' node
+    /// 'getcontentlanguage' property node
     /// </summary>
-    public class DavProp : DavNode
+    public class DavGetContentLanguage : DavProperty
     {
-
-        /// <summary>
-        /// Source of the properties
-        /// </summary>
-        protected List<DavProperty> SourceProperties { get; private set; } = new List<DavProperty>();
-
         /// <summary>
         /// Load the node
         /// </summary>
         protected override void Load(Uri rootUri, XElement node, bool checkName)
         {
             base.Load(rootUri, node, checkName);
-            SourceProperties.AddRange(MakeProperties(Node.Elements()));
+            Language = (string)node;
         }
 
         /// <summary>
-        /// Properties
+        /// To string
         /// </summary>
-        public DavProperty[] Properties => SourceProperties.ToArray();
+        public override string ToString()
+        {
+            return Language;
+        }
 
+        /// <summary>
+        /// Language
+        /// </summary>
+        public string Language { get; private set; }
     }
 }

@@ -129,15 +129,23 @@ namespace WebDavTools
                     l.AppendLine();
                 }
 
-                if (response.Content != null && (response.Content.Headers.ContentType.MediaType == "text/xml" || response.Content.Headers.ContentType.MediaType == "application/xml"))
+                /*if (response.Content != null && (response.Content.Headers.ContentType.MediaType == "text/xml" || response.Content.Headers.ContentType.MediaType == "application/xml"))
                 {
+
                     var buffer = new System.IO.MemoryStream();
                     var str = await response.Content.ReadAsStreamAsync();
                     await str.CopyToAsync(buffer);
                     buffer.Seek(0, System.IO.SeekOrigin.Begin);
 
-                    XDocument doc = XDocument.Load(buffer);
-                    l.AppendLine(doc.ToString());
+                    try
+                    {
+                        XDocument doc = XDocument.Load(buffer);
+                        l.AppendLine(doc.ToString());
+                    }
+                    catch (Exception lex)
+                    {
+                        l.AppendLine($"XML Error: {lex.GetBaseException().Message}");
+                    }
 
                     buffer.Seek(0, System.IO.SeekOrigin.Begin);
                     var newContent = new StreamContent(buffer);
@@ -146,9 +154,15 @@ namespace WebDavTools
 
                     response.Content = newContent;
                 }
-                else if (response.Content != null && (response.Content.Headers.ContentType.MediaType == "text/plain" || response.Content.Headers.ContentType.MediaType == "text/html"))
+                else*/
+                if (response.Content != null && (
+                    response.Content.Headers.ContentType.MediaType == "text/plain" 
+                    || response.Content.Headers.ContentType.MediaType == "text/html"
+                    || response.Content.Headers.ContentType.MediaType == "text/xml"
+                    || response.Content.Headers.ContentType.MediaType == "application/xml"
+                    ))
                 {
-                    var buffer = new System.IO.MemoryStream();
+                    var buffer = new MemoryStream();
                     var str = await response.Content.ReadAsStreamAsync();
                     await str.CopyToAsync(buffer);
                     buffer.Seek(0, System.IO.SeekOrigin.Begin);
@@ -228,8 +242,17 @@ namespace WebDavTools
                         foreach (var prop in propstat.Prop.Properties)
                         {
                             Log(info, $"- {prop.NodeName}");
-                            if (prop.Node.HasElements)
-                                Log(info, prop.Node.ToString());
+                            if(prop.GetType() != typeof(DavProperty))
+                            {
+                                string vs = prop.ToString();
+                                if(!string.IsNullOrEmpty(vs))
+                                    Log(info, vs);
+                            }
+                            else
+                            {
+                                if (prop.Node.HasElements)
+                                    Log(info, prop.Node.ToString());
+                            }
                         }
                     }
                 }
