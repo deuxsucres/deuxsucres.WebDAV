@@ -64,16 +64,25 @@ namespace WebDavTools
             cbConnection.SelectedIndex = 0;
         }
 
-        RequestInfo CreateClient()
+        RequestInfo CreateClient(string method)
         {
             var connection = cbConnection.SelectedItem as ServerConnection;
             if (connection == null) return null;
             var client = new WebDavClient(connection.Uri.ToString(), connection.UserName, connection.Password);
-            var history = new RequestHistory();
+            var history = new RequestHistory
+            {
+                Method = method
+            };
             client.BeforeExecuteRequest += async (s, e) =>
             {
                 // Request
                 var request = e.Request;
+                history.Url = request.RequestUri.ToString();
+
+                // Si ce n'est pas la méthode attendue on passe
+                if (!string.Equals(request.Method.Method, history.Method, StringComparison.OrdinalIgnoreCase))
+                    return;
+
                 StringBuilder l = new StringBuilder();
                 l.AppendLine($"HTTP {request.Version} {request.Method} {request.RequestUri}");
                 l.AppendLine();
@@ -94,7 +103,6 @@ namespace WebDavTools
                     l.AppendLine(await request.Content.ReadAsStringAsync());
                 }
                 history.Method = request.Method.Method;
-                history.Url = request.RequestUri.ToString();
                 history.Request = l.ToString();
                 //tbRequest.Text = history.Request;
             };
@@ -102,8 +110,13 @@ namespace WebDavTools
             {
                 // Response
                 var response = e.Response;
+
+                // Si ce n'est pas la méthode attendue on passe
+                if (!string.Equals(response.RequestMessage.Method.Method, history.Method, StringComparison.OrdinalIgnoreCase))
+                    return;
+
                 StringBuilder l = new StringBuilder();
-                l.AppendLine($"Response: HTTP {response.Version} {response.StatusCode} {response.ReasonPhrase}");
+                l.AppendLine($"Response: HTTP {response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
                 l.AppendLine();
                 foreach (var header in response.Headers)
                     l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
@@ -125,6 +138,24 @@ namespace WebDavTools
 
                     XDocument doc = XDocument.Load(buffer);
                     l.AppendLine(doc.ToString());
+
+                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
+                    var newContent = new StreamContent(buffer);
+                    foreach (var header in response.Content.Headers)
+                        newContent.Headers.Add(header.Key, header.Value);
+
+                    response.Content = newContent;
+                }
+                else if (response.Content != null && (response.Content.Headers.ContentType.MediaType == "text/plain" || response.Content.Headers.ContentType.MediaType == "text/html"))
+                {
+                    var buffer = new System.IO.MemoryStream();
+                    var str = await response.Content.ReadAsStreamAsync();
+                    await str.CopyToAsync(buffer);
+                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
+
+                    using (var src = new MemoryStream(buffer.ToArray()))
+                    using (var rdr = new StreamReader(src))
+                        l.AppendLine(await rdr.ReadToEndAsync());
 
                     buffer.Seek(0, System.IO.SeekOrigin.Begin);
                     var newContent = new StreamContent(buffer);
@@ -156,14 +187,11 @@ namespace WebDavTools
             RequestInfo requestInfo = null;
             try
             {
-                requestInfo = CreateClient();
+                requestInfo = CreateClient(method);
                 if (requestInfo == null) return result;
 
                 pbProgress.Visibility = Visibility.Visible;
                 lbHistory.IsEnabled = false;
-                //tbLog.Clear();
-                //tbRequest.Clear();
-                //tbResponse.Clear();
 
                 Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{tbPath.Text}");
 
@@ -199,7 +227,7 @@ namespace WebDavTools
             {
                 await DoRequest(method.Method,
                     requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, DepthValue.One),
-                    (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
+                    (requestInfo, response) => Log(requestInfo, $"Result {(int)response.StatusCode} {response.ReasonPhrase}")
                     );
             }
             else if (method == WebDavConstants.Options)
@@ -220,66 +248,9 @@ namespace WebDavTools
             {
                 await DoRequest(method.Method,
                     requestInfo => requestInfo.Client.ExecuteWebRequestAsync(tbPath.Text, method),
-                    (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
+                    (requestInfo, response) => Log(requestInfo, $"Result {(int)response.StatusCode} {response.ReasonPhrase}")
                     );
             }
-
-            //RequestInfo requestInfo = null;
-            //try
-            //{
-            //    requestInfo = CreateClient();
-            //    if (requestInfo == null) return;
-
-            //    pbProgress.Visibility = Visibility.Visible;
-            //    lbHistory.IsEnabled = false;
-            //    //tbLog.Clear();
-            //    //tbRequest.Clear();
-            //    //tbResponse.Clear();
-
-            //    Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{tbPath.Text}");
-
-            //    HttpResponseMessage response = null;
-            //    Stopwatch sw = new Stopwatch();
-            //    sw.Start();
-            //    if (method == WebDavConstants.PropFind)
-            //    {
-            //        response = await requestInfo.Client.DoPropFindAsync(tbPath.Text, DepthValue.One);
-            //        Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}");
-            //    }
-            //    else if (method == WebDavConstants.Options)
-            //    {
-            //        var options = await requestInfo.Client.GetOptionsAsync(tbPath.Text);
-            //        Log(requestInfo, "# Compliance classes");
-            //        foreach (var cclass in options.ComplianceClasses)
-            //            Log(requestInfo, $"- {cclass.Value}");
-            //        Log(requestInfo, "");
-            //        Log(requestInfo, "# Allows");
-            //        foreach (var meth in options.Allow)
-            //            Log(requestInfo, $"- {meth}");
-            //    }
-            //    else
-            //    {
-            //        response = await requestInfo.Client.ExecuteWebRequestAsync(tbPath.Text, method);
-            //        Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}");
-            //    }
-            //    sw.Stop();
-            //    Log(requestInfo, $"Request executed in {sw.Elapsed}");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log(requestInfo, $"Request failed: {ex.GetBaseException().Message}");
-            //    requestInfo.History.ErrorMessage = ex.GetBaseException().Message;
-            //}
-            //finally
-            //{
-            //    pbProgress.Visibility = Visibility.Hidden;
-            //    lbHistory.IsEnabled = true;
-            //}
-            //Log(requestInfo, string.Empty);
-
-            //requestInfo.History.Log = requestInfo.LogContent.ToString();
-            //lbHistory.Items.Insert(0, requestInfo.History);
-            //lbHistory.SelectedIndex = 0;
         }
 
         private async void btnGetProperties_Click(object sender, RoutedEventArgs e)
@@ -294,8 +265,8 @@ namespace WebDavTools
 
         private async void btnListProperties_Click(object sender, RoutedEventArgs e)
         {
-            await DoRequest("PROPFIND#PropName",
-                requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text, DepthValue.One),
+            await DoRequest(WebDavConstants.PropFind.Method,
+                requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text, DepthValue.Zero),
                 (requestInfo, response) => Log(requestInfo, $"Result {response.StatusCode} {response.ReasonPhrase}")
                 );
         }

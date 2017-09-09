@@ -143,6 +143,7 @@ namespace deuxsucres.WebDAV
         /// </summary>
         protected XDocument CreateDocument(XElement root)
         {
+            root.Add(new XAttribute(XNamespace.Xmlns + "d", WebDavConstants.NsDAV.NamespaceName));
             return new XDocument(new XDeclaration("1.0", "UTF-8", null), root);
         }
 
@@ -153,7 +154,9 @@ namespace deuxsucres.WebDAV
         {
             var doc = CreateDocument(root);
             var content = new StringContent(doc.Declaration.ToString() + Environment.NewLine + doc.ToString());
-            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/xml");
+            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/xml") {
+                CharSet = "utf-8"
+            };
             return content;
         }
 
@@ -162,12 +165,12 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do an OPTIONS call
         /// </summary>
-        public async Task<OptionsResult> GetOptionsAsync(string path, IDictionary<string, string> headers = null
+        public async Task<DavOptions> GetOptionsAsync(string path, IDictionary<string, string> headers = null
             , CancellationToken? cancellationToken = null)
         {
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.Options, headers, cancellationToken: cancellationToken);
             response.EnsureSuccessStatusCode();
-            var result = new OptionsResult();
+            var result = new DavOptions();
 
             if (!response.Headers.TryGetValues(WebDavConstants.DavHeader, out IEnumerable<string> values))
                 throw new WebDavException(Locales.SR.Err_NotDavResource);
@@ -176,7 +179,7 @@ namespace deuxsucres.WebDAV
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .Select(s => s.Trim())
                 .ToList();
-            foreach (var part in parts)
+            foreach (string part in parts)
                 result.ComplianceClasses.Add(new DavComplianceClass(part));
 
             if (response.Content != null && response.Content.Headers.TryGetValues(WebDavConstants.AllowHeader, out values))
