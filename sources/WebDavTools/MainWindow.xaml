@@ -40,6 +40,16 @@
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <StackPanel.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="Button">
+                        <Setter Property="MinWidth" Value="80" />
+                        <Setter Property="Padding" Value="6,2" />
+                        <Setter Property="Margin" Value="0,2,4,2"/>
+                    </Style>
+                </ResourceDictionary>
+            </StackPanel.Resources>
+            <Button Click="btnBrowse_Click">Browse</Button>
             <Button Click="btnOptions_Click">Options</Button>
             <Button Click="btnListProperties_Click">List Properties</Button>
             <Button Click="btnGetProperties_Click">Get Properties</Button>
@@ -49,25 +59,34 @@
 
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="160" MaxWidth="240" />
-                <ColumnDefinition MinWidth="160" MaxWidth="320" />
+                <ColumnDefinition MinWidth="80" MaxWidth="320" />
+                <ColumnDefinition MinWidth="80" MaxWidth="320" />
                 <ColumnDefinition />
+                <ColumnDefinition MinWidth="80" MaxWidth="320" />
             </Grid.ColumnDefinitions>
 
-            <ListBox x:Name="lbHistory" Grid.Column="1" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="{Binding Url}" TextWrapping="Wrap"/>
-                            <TextBlock Grid.Row="1" Text="{Binding Method}" FontWeight="Bold" />
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+            <ListBox x:Name="lbBrowser" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                
             </ListBox>
+
+            <ScrollViewer Grid.Column="1">
+                <ScrollViewer.Resources>
+                    <ResourceDictionary>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="TextWrapping" Value="Wrap"/>
+                        </Style>
+                        <Style x:Key="label" TargetType="TextBlock">
+                            <Setter Property="FontWeight" Value="Bold"/>
+                        </Style>
+                    </ResourceDictionary>
+                </ScrollViewer.Resources>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Style="{StaticResource label}">Url</TextBlock>
+                    <TextBlock x:Name="tbDetailUrl" />
+                    <TextBlock Style="{StaticResource label}">Path</TextBlock>
+                    <TextBlock x:Name="tbDetailPath" />
+                </StackPanel>
+            </ScrollViewer>
 
             <TabControl Grid.Column="2" Margin="2,0,0,0">
                 <TabControl.Resources>
@@ -93,6 +112,22 @@
                     </TextBox>
                 </TabItem>
             </TabControl>
+            
+            <ListBox x:Name="lbHistory" Grid.Column="3" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{Binding Url}" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Row="1" Text="{Binding Method}" FontWeight="Bold" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
         </Grid>
                        
     </Grid>

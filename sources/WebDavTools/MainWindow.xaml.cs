@@ -35,6 +35,7 @@ namespace WebDavTools
             public WebDavClient Client { get; set; }
             public RequestHistory History { get; set; }
             public StringBuilder LogContent { get; set; } = new StringBuilder();
+            public string Path { get; set; }
         }
 
         public MainWindow()
@@ -181,6 +182,7 @@ namespace WebDavTools
             return new RequestInfo
             {
                 Client = client,
+                Path = tbPath.Text,
                 History = history
             };
         }
@@ -258,6 +260,7 @@ namespace WebDavTools
 
         async Task<TResult> DoRequest<TResult>(string method, Func<RequestInfo, Task<TResult>> callRequest, Action<RequestInfo, TResult> processResult)
         {
+            tbLog.Clear();
             TResult result = default(TResult);
             RequestInfo requestInfo = null;
             try
@@ -327,6 +330,34 @@ namespace WebDavTools
             }
         }
 
+
+        private void RefreshBrowserDetail(RequestInfo requestInfo, DavResponse response)
+        {
+            var resUri = new Uri(requestInfo.Client.ServerUri, response?.Href?.Href ?? string.Empty);
+            tbDetailUrl.Text = resUri.ToString();
+            Uri path = requestInfo.Client.ServerUri.MakeRelativeUri(resUri);
+            tbDetailPath.Text = path.ToString();
+        }
+
+        private void RefreshBrowser(RequestInfo requestInfo, DavMultistatus result)
+        {
+            var uri = new Uri(requestInfo.Client.ServerUri, (tbPath.Text ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
+            var rootResponse = result.Responses.FirstOrDefault(r => new Uri(requestInfo.Client.ServerUri, (r.Href?.Href ?? string.Empty)).ToString().TrimEnd('/') == uri);
+            RefreshBrowserDetail(requestInfo, rootResponse);
+            lbBrowser.Items.Clear();
+            foreach (var response in result.Responses.Where(r => r != rootResponse))
+            {
+                lbBrowser.Items.Add(response);
+            }
+        }
+
+        async Task BrowseAsync()
+        {
+            var result = await DoRequest(WebDavConstants.PropFind.Method,
+                    requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, true, DepthValue.One),
+                    RefreshBrowser);
+        }
+
         private async void btnGetProperties_Click(object sender, RoutedEventArgs e)
         {
             await DoRequest(WebDavConstants.PropFind);
@@ -342,6 +373,11 @@ namespace WebDavTools
             await DoRequest(WebDavConstants.PropFind.Method,
                 requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text),
                 (requestInfo, response) => Log(requestInfo, response));
+        }
+
+        private async void btnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            await BrowseAsync();
         }
     }
 }
