@@ -219,7 +219,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do an OPTIONS call
         /// </summary>
-        public async Task<DavOptions> GetOptionsAsync(string path, IDictionary<string, string> headers = null
+        public async Task<DavOptions> OptionsAsync(string path, IDictionary<string, string> headers = null
             , CancellationToken? cancellationToken = null)
         {
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.Options, headers, cancellationToken: cancellationToken);
@@ -251,12 +251,12 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Get the list of the properties
         /// </summary>
-        public async Task<DavMultistatus> GetPropertyNamesAsync(string path, IDictionary<string, string> headers = null
+        public async Task<DavMultistatus> PropListAsync(string path, IDictionary<string, string> headers = null
             , CancellationToken? cancellationToken = null
             )
         {
             // Valid DAV options
-            DavOptions options = await GetOptionsAsync(path, cancellationToken: cancellationToken);
+            DavOptions options = await OptionsAsync(path, cancellationToken: cancellationToken);
             if (!options.IsAllowed(WebDavConstants.PropFind))
                 throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
 
@@ -273,7 +273,7 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Do a PROPFIND call
         /// </summary>
-        public async Task<DavMultistatus> DoPropFindAsync(string path
+        public async Task<DavMultistatus> PropFindAsync(string path
             , bool allProperties
             , DepthValue depth = DepthValue.Zero
             , IEnumerable<DavProperty> properties = null
@@ -282,7 +282,7 @@ namespace deuxsucres.WebDAV
             )
         {
             // Valid DAV options
-            DavOptions options = await GetOptionsAsync(path, cancellationToken: cancellationToken);
+            DavOptions options = await OptionsAsync(path, cancellationToken: cancellationToken);
             if (!options.IsAllowed(WebDavConstants.PropFind))
                 throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
 

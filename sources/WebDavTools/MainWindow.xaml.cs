@@ -311,13 +311,13 @@ namespace WebDavTools
             if (method == WebDavConstants.PropFind)
             {
                 await DoRequest(method.Method, path,
-                    requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, true, DepthValue.One),
+                    requestInfo => requestInfo.Client.PropFindAsync(tbPath.Text, true, DepthValue.One),
                     (requestInfo, response) => Log(requestInfo, response));
             }
             else if (method == WebDavConstants.Options)
             {
                 await DoRequest(method.Method, path,
-                    requestInfo => requestInfo.Client.GetOptionsAsync(tbPath.Text),
+                    requestInfo => requestInfo.Client.OptionsAsync(tbPath.Text),
                     (requestInfo, options) => {
                         Log(requestInfo, "# Compliance classes");
                         foreach (var cclass in options.ComplianceClasses)
@@ -381,7 +381,7 @@ namespace WebDavTools
         async Task BrowseAsync(string path)
         {
             var result = await DoRequest(WebDavConstants.PropFind.Method, path,
-                    requestInfo => requestInfo.Client.DoPropFindAsync(path, true, DepthValue.One),
+                    requestInfo => requestInfo.Client.PropFindAsync(path, true, DepthValue.One),
                     RefreshBrowser);
         }
 
@@ -398,7 +398,7 @@ namespace WebDavTools
         private async void btnListProperties_Click(object sender, RoutedEventArgs e)
         {
             await DoRequest(WebDavConstants.PropFind.Method, tbPath.Text,
-                requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text),
+                requestInfo => requestInfo.Client.PropListAsync(tbPath.Text),
                 (requestInfo, response) => Log(requestInfo, response));
         }
 
