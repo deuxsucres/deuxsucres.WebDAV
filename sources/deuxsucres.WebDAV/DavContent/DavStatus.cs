@@ -13,9 +13,9 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             var parts = ((string)node).Split(new char[] { ' ' }, 3);
             Protocol = parts[0];
             StatusCode = int.Parse(parts[1]);

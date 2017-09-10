@@ -15,9 +15,9 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             DavLockScopeType? lockType = Node.Element(WebDavConstants.NsDAV + "exclusive") != null ? (DavLockScopeType?)DavLockScopeType.Exclusive
                 : Node.Element(WebDavConstants.NsDAV + "shared") != null ? (DavLockScopeType?)DavLockScopeType.Shared 
                 : null;

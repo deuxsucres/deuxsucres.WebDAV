@@ -368,7 +368,7 @@ namespace WebDavTools
         private void RefreshBrowser(RequestInfo requestInfo, DavMultistatus result)
         {
             var items = result.Responses.Select(r=>BuildBrowseItem(requestInfo, r)).ToList();
-            var uri = new Uri(requestInfo.Client.ServerUri, (requestInfo.Path ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
+            string uri = new Uri(requestInfo.Client.ServerUri, (requestInfo.Path ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
             var rootItem = items.FirstOrDefault(i => i.Uri.ToString().TrimEnd('/') == uri);
             if (rootItem != null)
                 tbPath.Text = rootItem.Path;

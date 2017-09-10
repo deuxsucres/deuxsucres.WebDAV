@@ -11,11 +11,6 @@ namespace deuxsucres.WebDAV
     public class DavProperty : DavNode
     {
         /// <summary>
-        /// Default root uri
-        /// </summary>
-        public static readonly Uri DefaultRootUri = new Uri("http://localhost");
-
-        /// <summary>
         /// Default constructor
         /// </summary>
         public DavProperty() : base() { }
@@ -23,27 +18,27 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Create a new property
         /// </summary>
-        public DavProperty(string name, XNamespace ns = null, Uri rootUri = null)
+        public DavProperty(string name, XNamespace ns = null)
         {
             if (string.IsNullOrEmpty(name))
                 throw new ArgumentException("Invalid name.", nameof(name));
-            Load(rootUri ?? DefaultRootUri, new XElement((ns ?? WebDavConstants.NsDAV) + Name), false);
+            Load(new XElement((ns ?? WebDavConstants.NsDAV) + Name), false);
         }
 
         /// <summary>
         /// Create a new property
         /// </summary>
-        public DavProperty(XName nodeName, Uri rootUri = null)
+        public DavProperty(XName nodeName)
         {
-            Load(rootUri ?? DefaultRootUri, new XElement(nodeName ?? throw new ArgumentNullException(nameof(nodeName))), false);
+            Load(new XElement(nodeName ?? throw new ArgumentNullException(nameof(nodeName))), false);
         }
 
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, false);
+            base.Load(node, false);
         }
 
         /// <summary>

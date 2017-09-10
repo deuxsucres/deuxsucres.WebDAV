@@ -177,7 +177,7 @@ namespace deuxsucres.WebDAV
         public async virtual Task<T> ExtractResult<T>(HttpResponseMessage response, bool checkName = true) where T : DavNode
         {
             var doc = await ReadXmlContentAsync(response);
-            return DavNode.LoadNode<T>(ServerUri, doc.Root, checkName);
+            return DavNode.LoadNode<T>(doc.Root, checkName);
         }
 
         #endregion
@@ -264,7 +264,7 @@ namespace deuxsucres.WebDAV
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = DepthValue.One.ToHeaderValue();
 
-            HttpContent content = BuildContent(DavNode.CreateNode<DavPropfind>(ServerUri).AsPropname());
+            HttpContent content = BuildContent(DavNode.CreateNode<DavPropfind>().AsPropname());
 
             var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
             return await ExtractResult<DavMultistatus>(response);
@@ -290,7 +290,7 @@ namespace deuxsucres.WebDAV
             headers = headers ?? new Dictionary<string, string>();
             headers["Depth"] = depth.ToHeaderValue();
 
-            var propfind = DavNode.CreateNode<DavPropfind>(ServerUri);
+            var propfind = DavNode.CreateNode<DavPropfind>();
             if (allProperties)
                 propfind = propfind.AsAllProp(properties);
             else

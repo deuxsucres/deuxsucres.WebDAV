@@ -19,15 +19,15 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             foreach (var child in Node.Elements())
             {
                 if (child.Name == WebDavConstants.NsDAV + "remove")
-                    SourceUpdateNodes.Add(DavNode.LoadNode<DavRemove>(RootUri, node));
+                    SourceUpdateNodes.Add(DavNode.LoadNode<DavRemove>(node));
                 else if (child.Name == WebDavConstants.NsDAV + "set")
-                    SourceUpdateNodes.Add(DavNode.LoadNode<DavSet>(RootUri, node));
+                    SourceUpdateNodes.Add(DavNode.LoadNode<DavSet>(node));
             }
         }
 

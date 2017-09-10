@@ -13,9 +13,9 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             if (DateTimeOffset.TryParse((string)Node, out DateTimeOffset dto))
                 CreationDate = dto;
         }

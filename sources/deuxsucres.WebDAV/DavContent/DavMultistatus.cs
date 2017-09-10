@@ -20,9 +20,9 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             SourceResponses.AddRange(MakeNodes<DavResponse>(WebDavConstants.NsDAV.GetName("response")));
             ResponseDescription = MakeNode<DavResponseDescription>(WebDavConstants.NsDAV.GetName("responsedescription"));
         }

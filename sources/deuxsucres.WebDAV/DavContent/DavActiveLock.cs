@@ -14,9 +14,9 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             LockScope = MakeNode<DavLockScope>(Node.Element(WebDavConstants.NsDAV + "lockscope"));
             LockType = MakeNode<DavLockType>(Node.Element(WebDavConstants.NsDAV + "locktype"));
             Depth = ParseHelpers.ParseDepth((string)Node.Element(WebDavConstants.NsDAV + "depth")) ?? DepthValue.Infinity;

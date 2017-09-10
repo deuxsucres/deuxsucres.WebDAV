@@ -15,9 +15,9 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             Href = (string)Node;
         }
 
@@ -26,10 +26,6 @@ namespace deuxsucres.WebDAV
         /// </summary>
         public string Href { get; private set; }
 
-        /// <summary>
-        /// Absolute uri
-        /// </summary>
-        public Uri Uri => new Uri(RootUri, Href ?? string.Empty);
     }
 
 }

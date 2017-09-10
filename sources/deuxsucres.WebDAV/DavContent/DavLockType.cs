@@ -15,9 +15,9 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Load the node
         /// </summary>
-        protected override void Load(Uri rootUri, XElement node, bool checkName)
+        protected override void Load(XElement node, bool checkName)
         {
-            base.Load(rootUri, node, checkName);
+            base.Load(node, checkName);
             DavLockTypeType? lockType = Node.Element(WebDavConstants.NsDAV + "write") != null ? (DavLockTypeType?)DavLockTypeType.Write
                 : null;
             if (!lockType.HasValue)

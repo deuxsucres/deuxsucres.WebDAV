@@ -38,60 +38,59 @@ namespace deuxsucres.WebDAV
         /// <summary>
         /// Create a new generic node
         /// </summary>
-        public static DavNode CreateNode(Uri rootUri, XName name)
+        public static DavNode CreateNode(XName name)
         {
             var result = new DavNode();
-            result.Load(rootUri, new XElement(name ?? throw new ArgumentNullException(nameof(name))), false);
+            result.Load(new XElement(name ?? throw new ArgumentNullException(nameof(name))), false);
             return result;
         }
 
         /// <summary>
         /// Create a new empty node
         /// </summary>
-        public static T CreateNode<T>(Uri rootUri) where T : DavNode
+        public static T CreateNode<T>() where T : DavNode
         {
             var result = (T)Activator.CreateInstance(typeof(T));
-            result.Load(rootUri, new XElement(GetContentNodeName<T>()), false);
+            result.Load(new XElement(GetContentNodeName<T>()), false);
             return result;
         }
 
         /// <summary>
         /// Load a generic node from XML element
         /// </summary>
-        public static DavNode LoadNode(Uri rootUri, XElement node, bool checkName = true)
+        public static DavNode LoadNode(XElement node, bool checkName = true)
         {
             var result = new DavNode();
-            result.Load(rootUri, node, false);
+            result.Load(node, false);
             return result;
         }
 
         /// <summary>
         /// Load a generic node from XML element
         /// </summary>
-        public static DavNode LoadNode(Type tNode, Uri rootUri, XElement node, bool checkName = true)
+        public static DavNode LoadNode(Type tNode, XElement node, bool checkName = true)
         {
             var result = (DavNode)Activator.CreateInstance(tNode ?? throw new ArgumentNullException(nameof(tNode)));
-            result.Load(rootUri, node, false);
+            result.Load(node, false);
             return result;
         }
 
         /// <summary>
         /// Load a node from XML element
         /// </summary>
-        public static T LoadNode<T>(Uri rootUri, XElement node, bool checkName = true) where T : DavNode
+        public static T LoadNode<T>(XElement node, bool checkName = true) where T : DavNode
         {
             var result = (T)Activator.CreateInstance(typeof(T));
-            result.Load(rootUri, node, checkName);
+            result.Load(node, checkName);
             return result;
         }
 
         /// <summary>
         /// Load the node
         /// </summary>
-        protected virtual void Load(Uri rootUri, XElement node, bool checkName)
+        protected virtual void Load(XElement node, bool checkName)
         {
             if (checkName) CheckNodeName(node);
-            RootUri = rootUri ?? throw new ArgumentNullException(nameof(rootUri));
             Node = node ?? throw new ArgumentNullException(nameof(node));
         }
 
@@ -113,7 +112,7 @@ namespace deuxsucres.WebDAV
             if (node == null) return null;
             if (builder != null)
                 return builder(this, node);
-            return LoadNode<T>(RootUri, node);
+            return LoadNode<T>(node);
         }
 
         /// <summary>
@@ -151,7 +150,7 @@ namespace deuxsucres.WebDAV
         public DavProperty MakeProperty(XElement node)
         {
             if (node == null) return null;
-            var prop = DavProperties.CreateProperty(RootUri, node);
+            var prop = DavProperties.CreateProperty(node);
             return prop ?? MakeNode<DavProperty>(node);
         }
 
@@ -173,11 +172,6 @@ namespace deuxsucres.WebDAV
         {
             return Node.ToString();
         }
-
-        /// <summary>
-        /// The root URI
-        /// </summary>
-        public Uri RootUri { get; private set; }
 
         /// <summary>
         /// Node
