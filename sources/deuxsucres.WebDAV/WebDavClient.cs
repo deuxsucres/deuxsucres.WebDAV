@@ -230,6 +230,78 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
+        /// Do a GET call
+        /// </summary>
+        public async Task<HttpResponseMessage> GetAsync(string path
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, HttpMethod.Get, cancellationToken);
+            var response = await ExecuteWebRequestAsync(path, HttpMethod.Get, headers, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        /// <summary>
+        /// Do a HEAD call
+        /// </summary>
+        public async Task<HttpResponseMessage> HeadAsync(string path
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, HttpMethod.Head, cancellationToken);
+            var response = await ExecuteWebRequestAsync(path, HttpMethod.Head, headers, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        /// <summary>
+        /// Do a POST call
+        /// </summary>
+        public async Task<HttpResponseMessage> PostAsync(string path
+            , HttpContent content = null
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, HttpMethod.Post, cancellationToken);
+            var response = await ExecuteWebRequestAsync(path, HttpMethod.Post, headers, content, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        /// <summary>
+        /// Do a PUT call
+        /// </summary>
+        public async Task<HttpResponseMessage> PutAsync(string path
+            , HttpContent content = null
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, HttpMethod.Put, cancellationToken);
+            var response = await ExecuteWebRequestAsync(path, HttpMethod.Put, headers, content, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        /// <summary>
+        /// Do a DELETE call
+        /// </summary>
+        public async Task<HttpResponseMessage> DeleteAsync(string path
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, HttpMethod.Delete, cancellationToken);
+            var response = await ExecuteWebRequestAsync(path, HttpMethod.Delete, headers, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        /// <summary>
         /// Do an OPTIONS call
         /// </summary>
         public async Task<DavOptions> OptionsAsync(string path, IDictionary<string, string> headers = null
@@ -336,6 +408,71 @@ namespace deuxsucres.WebDAV
             var upds = DavNode.CreateNode<DavPropertyUpdate>();
             updates?.Invoke(upds);
             return await PropPatchAsync(path, upds, headers, cancellationToken);
+        }
+
+        /// <summary>
+        /// Do a MKCOL call
+        /// </summary>
+        public async Task<HttpResponseMessage> MkColAsync(string path
+            , HttpContent content = null
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, WebDavConstants.PropPatch, cancellationToken);
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.MkCol, headers, content, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        /// <summary>
+        /// Do a COPY call
+        /// </summary>
+        public async Task<HttpResponseMessage> CopyAsync(string path
+            , string destination
+            , bool? overwrite = null
+            , DepthValue? depth = null
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, WebDavConstants.Copy, cancellationToken);
+
+            headers = headers ?? new Dictionary<string, string>();
+            headers["Destination"] = CreateUriFromPath(destination).ToString();
+            if (overwrite.HasValue)
+                headers["Overwrite"] = overwrite.Value ? "T" : "F";
+            if (depth.HasValue)
+                headers["Depth"] = depth.Value.ToHeaderValue();
+
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.Copy, headers, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+
+        /// <summary>
+        /// Do a MOVE call
+        /// </summary>
+        public async Task<HttpResponseMessage> MoveAsync(string path
+            , string destination
+            , bool? overwrite = null
+            , DepthValue? depth = null
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            await ValidAllowedMethodAsync(path, WebDavConstants.Move, cancellationToken);
+
+            headers = headers ?? new Dictionary<string, string>();
+            headers["Destination"] = CreateUriFromPath(destination).ToString();
+            if (overwrite.HasValue)
+                headers["Overwrite"] = overwrite.Value ? "T" : "F";
+            if (depth.HasValue)
+                headers["Depth"] = depth.Value.ToHeaderValue();
+
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.Move, headers, null, cancellationToken);
+            response.EnsureSuccessStatusCode();
+            return response;
         }
 
         /// <summary>
