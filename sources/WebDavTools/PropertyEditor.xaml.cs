@@ -31,6 +31,7 @@ namespace WebDavTools
             Property = property;
             tbName.Text = property?.NodeName?.ToString() ?? string.Empty;
             tbContent.Text = property?.ToString() ?? string.Empty;
+            tbName.IsEnabled = Property == null;
         }
 
         public static DavProperty EditProperty(DavProperty property, Window owner)
@@ -51,8 +52,34 @@ namespace WebDavTools
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(tbName.Text))
+                    throw new InvalidOperationException("Le nom est obligatoire");
                 XName pname = XName.Get(tbName.Text);
+                XElement xContent = new XElement(pname);
 
+                if (!string.IsNullOrWhiteSpace(tbContent.Text))
+                {
+                    try
+                    {
+                        var x = XElement.Parse(tbContent.Text);
+                        if (x.Name == pname)
+                        {
+                            foreach (var n in x.Nodes())
+                                xContent.Add(n);
+                        }
+                        else
+                        {
+                            xContent.Add(x);
+                        }
+                    }
+                    catch
+                    {
+                        xContent.Add(tbContent.Text);
+                    }
+                }
+
+                Property = DavProperties.LoadProperty(xContent);
+                
                 DialogResult = true;
             }
             catch (Exception ex)

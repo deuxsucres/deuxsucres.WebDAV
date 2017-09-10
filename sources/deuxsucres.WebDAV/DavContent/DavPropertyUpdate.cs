@@ -32,6 +32,19 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
+        /// Add a set property node
+        /// </summary>
+        public DavPropertyUpdate Set(DavProperty prop)
+        {
+            if (prop == null) return this;
+            var setNode = DavNode.CreateNode<DavSet>();
+            setNode.AddProperty(prop);
+            SourceUpdateNodes.Add(setNode);
+            Node.Add(setNode.Node);
+            return this;
+        }
+
+        /// <summary>
         /// Add a remove property node
         /// </summary>
         public DavPropertyUpdate Remove(DavProperty prop)

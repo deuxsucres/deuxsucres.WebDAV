@@ -426,17 +426,27 @@ namespace WebDavTools
                 await BrowseAsync(item.Path);
         }
 
-        private void btnAddProperty_Click(object sender, RoutedEventArgs e)
+        private async void btnAddProperty_Click(object sender, RoutedEventArgs e)
         {
-
+            var property = PropertyEditor.EditProperty(null, this);
+            if (property != null)
+            {
+                await CallPropPatchAsync(tbPath.Text, updates => updates.Set(property));
+                await BrowseAsync(tbPath.Text);
+            }
         }
 
-        private void btnPropertyEdit_Click(object sender, RoutedEventArgs e)
+        private async void btnPropertyEdit_Click(object sender, RoutedEventArgs e)
         {
-            //if ((sender as Button)?.DataContext is DavProperty property)
-            //{
-            //    property = PropertyEditor.EditProperty(property, this);
-            //}
+            if ((sender as Button)?.DataContext is DavProperty property)
+            {
+                property = PropertyEditor.EditProperty(property, this);
+                if (property != null)
+                {
+                    await CallPropPatchAsync(tbPath.Text, updates => updates.Set(property));
+                    await BrowseAsync(tbPath.Text);
+                }
+            }
         }
 
         private async void btnPropertyDelete_Click(object sender, RoutedEventArgs e)
@@ -452,6 +462,7 @@ namespace WebDavTools
                     ) == MessageBoxResult.Yes)
                 {
                     await CallPropPatchAsync(tbPath.Text, updates => updates.Remove(property));
+                    await BrowseAsync(tbPath.Text);
                 }
             }
         }

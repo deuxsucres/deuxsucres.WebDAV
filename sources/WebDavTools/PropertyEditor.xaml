@@ -37,8 +37,8 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button Content="Annuler" IsCancel="True" />
-            <Button Grid.Column="1" IsDefault="True" Content="Valider" Click="btnValid_Click" />
+            <Button IsDefault="True" Content="Valider" Click="btnValid_Click" />
+            <Button Grid.Column="1" Content="Annuler" IsCancel="True" />
         </Grid>
     </Grid>
 </Window>
