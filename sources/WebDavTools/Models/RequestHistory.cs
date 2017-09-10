@@ -14,5 +14,7 @@ namespace WebDavTools.Models
         public string Request { get; set; }
         public string Response { get; set; }
         public string ErrorMessage { get; set; }
+        public string Path { get; internal set; }
+        public Uri ServerUri { get; internal set; }
     }
 }

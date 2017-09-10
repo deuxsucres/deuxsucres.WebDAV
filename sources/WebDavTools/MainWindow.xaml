@@ -202,7 +202,7 @@
                         </Style>
                     </TabControl.Resources>
                     <TabItem Header="Log">
-                        <TextBox x:Name="tbLog" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Log, Mode=OneWay}">
+                        <TextBox x:Name="tbLog" Style="{StaticResource LogText}">
                         </TextBox>
                     </TabItem>
                     <TabItem Header="Request">

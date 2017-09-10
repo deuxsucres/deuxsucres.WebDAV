@@ -26,17 +26,12 @@ namespace WebDavTools
     /// </summary>
     public partial class MainWindow : Window
     {
-        class RequestInfo
+        class RequestResult<T>
         {
-            public void Log(string line)
-            {
-                LogContent.AppendLine(line ?? string.Empty);
-            }
-            public WebDavClient Client { get; set; }
-            public RequestHistory History { get; set; }
-            public StringBuilder LogContent { get; set; } = new StringBuilder();
-            public string Path { get; set; }
+            public Uri ServerUri { get; set; }
+            public T Result { get; set; }
         }
+        Dictionary<HttpRequestMessage, RequestHistory> _requests = new Dictionary<HttpRequestMessage, RequestHistory>();
 
         public MainWindow()
         {
@@ -94,24 +89,101 @@ namespace WebDavTools
             return result;
         }
 
-        RequestInfo CreateClient(string method, string path)
+        void Log(string line = null)
+        {
+            tbLog.AppendText($"{line}\n");
+            tbLog.ScrollToEnd();
+        }
+
+        void Log(RequestResult<DavMultistatus> result)
+        {
+            var response = result.Result;
+            Log($"{response.Responses.Length} response(s)");
+            Log();
+            if (response.ResponseDescription != null)
+            {
+                Log(response.ResponseDescription.Description);
+                Log();
+            }
+            foreach (var resp in response.Responses)
+            {
+                Log(new RequestResult<DavResponse> { ServerUri = result.ServerUri, Result = resp });
+                Log();
+            }
+        }
+
+        void Log(RequestResult<DavResponse> result)
+        {
+            var response = result.Result;
+            Log($"# {response.Href.Href}");
+            if (response.ResponseDescription != null)
+            {
+                Log(response.ResponseDescription.Description);
+                Log(string.Empty);
+            }
+            if ((response.Status != null && response.Status.StatusCode != 200) || response.Error != null)
+            {
+                Log($"Error: {response.Error?.ToString() ?? response.Status.StatusDescription}");
+            }
+            else
+            {
+                foreach (var propstat in response.Propstats)
+                {
+                    //Log(info, $"# {prop.NodeName}");
+                    if (propstat.ResponseDescription != null)
+                    {
+                        Log(propstat.ResponseDescription.Description);
+                        Log(string.Empty);
+                    }
+                    if ((propstat.Status != null && propstat.Status.StatusCode != 200) || propstat.Error != null)
+                    {
+                        Log($"Error: {propstat.Error?.ToString() ?? propstat.Status.StatusDescription}");
+                    }
+                    else
+                    {
+                        foreach (var prop in propstat.Prop.Properties)
+                        {
+                            Log($"- {prop.NodeName}");
+                            if(prop.GetType() != typeof(DavProperty))
+                            {
+                                string vs = prop.ToString();
+                                if(!string.IsNullOrEmpty(vs))
+                                    Log(vs);
+                            }
+                            else
+                            {
+                                if (prop.Node.HasElements)
+                                    Log(prop.Node.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        async Task<RequestResult<T>> CallRequestAsync<T>(Func<WebDavClient, Task<T>> call)
         {
             var connection = cbConnection.SelectedItem as ServerConnection;
             if (connection == null) return null;
+
             var client = new WebDavClient(connection.Uri.ToString(), connection.UserName, connection.Password);
-            var history = new RequestHistory
-            {
-                Method = method
-            };
+
+            Log("-------------------------------------------------------------");
+
             client.BeforeExecuteRequest += async (s, e) =>
             {
-                // Request
+                var history = new RequestHistory
+                {
+                    Url = e.Request.RequestUri.ToString(),
+                    ServerUri = client.ServerUri,
+                    Path = client.ServerUri.MakeRelativeUri(e.Request.RequestUri).ToString(),
+                    Method = e.Request.Method.Method
+                };
                 var request = e.Request;
-                history.Url = request.RequestUri.ToString();
 
-                // Si ce n'est pas la méthode attendue on passe
-                if (!string.Equals(request.Method.Method, history.Method, StringComparison.OrdinalIgnoreCase))
-                    return;
+                Log($"Call {history.Method} {history.Url}");
+
+                _requests[request] = history;
 
                 StringBuilder l = new StringBuilder();
                 l.AppendLine($"HTTP {request.Version} {request.Method} {request.RequestUri}");
@@ -132,17 +204,14 @@ namespace WebDavTools
                 {
                     l.AppendLine(await request.Content.ReadAsStringAsync());
                 }
-                history.Method = request.Method.Method;
                 history.Request = l.ToString();
-                //tbRequest.Text = history.Request;
             };
             client.AfterExecuteRequest += async (s, e) =>
             {
-                // Response
                 var response = e.Response;
+                var request = response.RequestMessage;
 
-                // Si ce n'est pas la méthode attendue on passe
-                if (!string.Equals(response.RequestMessage.Method.Method, history.Method, StringComparison.OrdinalIgnoreCase))
+                if (!_requests.TryGetValue(request, out RequestHistory history))
                     return;
 
                 StringBuilder l = new StringBuilder();
@@ -160,7 +229,7 @@ namespace WebDavTools
                 }
 
                 if (response.Content != null && (
-                    response.Content.Headers.ContentType.MediaType == "text/plain" 
+                    response.Content.Headers.ContentType.MediaType == "text/plain"
                     || response.Content.Headers.ContentType.MediaType == "text/html"
                     || response.Content.Headers.ContentType.MediaType == "text/xml"
                     || response.Content.Headers.ContentType.MediaType == "application/xml"
@@ -184,163 +253,51 @@ namespace WebDavTools
                     l.AppendLine(textContent);
                 }
                 history.Response = l.ToString();
-                //tbResponse.Text = history.Response;
+
+                _requests.Remove(request);
+                lbHistory.Items.Insert(0, history);
+                lbHistory.SelectedIndex = 0;
             };
-            return new RequestInfo
+
+            return new RequestResult<T>
             {
-                Client = client,
-                Path = path,
-                History = history
+                ServerUri = client.ServerUri,
+                Result = await call?.Invoke(client)
             };
         }
 
-        void Log(RequestInfo info, string line)
+        async Task CallOptionsAsync(string path)
         {
-            info?.Log(line);
-            tbLog.AppendText($"{line}\n");
-            tbLog.ScrollToEnd();
+            var options = (await CallRequestAsync(c => c.OptionsAsync(path)))?.Result;
+            if (options != null)
+            {
+                Log("# Compliance classes");
+                foreach (var cclass in options.ComplianceClasses)
+                    Log($"- {cclass.Value}");
+                Log();
+                Log("# Allows");
+                foreach (string meth in options.Allow)
+                    Log($"- {meth}");
+            }
+            Log();
         }
 
-        void Log(RequestInfo info, DavMultistatus response)
+        async Task CallPropListAsync(string path)
         {
-            Log(info, $"{response.Responses.Length} response(s)");
-            Log(info, string.Empty);
-            if (response.ResponseDescription != null)
-            {
-                Log(info, response.ResponseDescription.Description);
-                Log(info, string.Empty);
-            }
-            foreach (var resp in response.Responses)
-            {
-                Log(info, resp);
-                Log(info, string.Empty);
-            }
+            var result = await CallRequestAsync(c => c.PropListAsync(path));
+            Log(result);
         }
 
-        void Log(RequestInfo info, DavResponse response)
+        async Task CallPropFindAsync(string path)
         {
-            Log(info, $"# {response.Href.Href}");
-            if (response.ResponseDescription != null)
-            {
-                Log(info, response.ResponseDescription.Description);
-                Log(info, string.Empty);
-            }
-            if ((response.Status != null && response.Status.StatusCode != 200) || response.Error != null)
-            {
-                Log(info, $"Error: {response.Error?.ToString() ?? response.Status.StatusDescription}");
-            }
-            else
-            {
-                foreach (var propstat in response.Propstats)
-                {
-                    //Log(info, $"# {prop.NodeName}");
-                    if (propstat.ResponseDescription != null)
-                    {
-                        Log(info, propstat.ResponseDescription.Description);
-                        Log(info, string.Empty);
-                    }
-                    if ((propstat.Status != null && propstat.Status.StatusCode != 200) || propstat.Error != null)
-                    {
-                        Log(info, $"Error: {propstat.Error?.ToString() ?? propstat.Status.StatusDescription}");
-                    }
-                    else
-                    {
-                        foreach (var prop in propstat.Prop.Properties)
-                        {
-                            Log(info, $"- {prop.NodeName}");
-                            if(prop.GetType() != typeof(DavProperty))
-                            {
-                                string vs = prop.ToString();
-                                if(!string.IsNullOrEmpty(vs))
-                                    Log(info, vs);
-                            }
-                            else
-                            {
-                                if (prop.Node.HasElements)
-                                    Log(info, prop.Node.ToString());
-                            }
-                        }
-                    }
-                }
-            }
+            var result = await CallRequestAsync(c => c.PropFindAsync(path, true, DepthValue.One));
+            Log(result);
         }
 
-        async Task<TResult> DoRequest<TResult>(string method, string path, Func<RequestInfo, Task<TResult>> callRequest, Action<RequestInfo, TResult> processResult)
+        BrowseItem BuildBrowseItem(Uri serverUri, DavResponse response)
         {
-            tbLog.Clear();
-            TResult result = default(TResult);
-            RequestInfo requestInfo = null;
-            try
-            {
-                requestInfo = CreateClient(method, path);
-                if (requestInfo == null) return result;
-
-                pbProgress.Visibility = Visibility.Visible;
-                lbHistory.IsEnabled = false;
-
-                Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{path}");
-
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                result = await callRequest(requestInfo);
-                sw.Stop();
-                Log(requestInfo, $"Request executed in {sw.Elapsed}");
-                processResult(requestInfo, result);
-            }
-            catch (Exception ex)
-            {
-                Log(requestInfo, $"Request failed: {ex.GetBaseException().Message}");
-                requestInfo.History.ErrorMessage = ex.GetBaseException().Message;
-            }
-            finally
-            {
-                pbProgress.Visibility = Visibility.Hidden;
-                lbHistory.IsEnabled = true;
-            }
-            Log(requestInfo, string.Empty);
-
-            requestInfo.History.Log = requestInfo.LogContent.ToString();
-            lbHistory.Items.Insert(0, requestInfo.History);
-            lbHistory.SelectedIndex = 0;
-
-            return result;
-        }
-
-        async Task DoRequest(HttpMethod method, string path)
-        {
-            if (method == WebDavConstants.PropFind)
-            {
-                await DoRequest(method.Method, path,
-                    requestInfo => requestInfo.Client.PropFindAsync(tbPath.Text, true, DepthValue.One),
-                    (requestInfo, response) => Log(requestInfo, response));
-            }
-            else if (method == WebDavConstants.Options)
-            {
-                await DoRequest(method.Method, path,
-                    requestInfo => requestInfo.Client.OptionsAsync(tbPath.Text),
-                    (requestInfo, options) => {
-                        Log(requestInfo, "# Compliance classes");
-                        foreach (var cclass in options.ComplianceClasses)
-                            Log(requestInfo, $"- {cclass.Value}");
-                        Log(requestInfo, "");
-                        Log(requestInfo, "# Allows");
-                        foreach (string meth in options.Allow)
-                            Log(requestInfo, $"- {meth}");
-                    });
-            }
-            else
-            {
-                await DoRequest(method.Method, path,
-                    requestInfo => requestInfo.Client.ExecuteWebRequestAsync(tbPath.Text, method),
-                    (requestInfo, response) => Log(requestInfo, $"Result {(int)response.StatusCode} {response.ReasonPhrase}")
-                    );
-            }
-        }
-
-        BrowseItem BuildBrowseItem(RequestInfo requestInfo, DavResponse response)
-        {
-            Uri resUri = new Uri(requestInfo.Client.ServerUri, response?.Href?.Href ?? string.Empty);
-            string resPath = requestInfo.Client.ServerUri.MakeRelativeUri(resUri).ToString();
+            Uri resUri = new Uri(serverUri, response?.Href?.Href ?? string.Empty);
+            string resPath = serverUri.MakeRelativeUri(resUri).ToString();
             var pItems = resPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
             List<PathItem> path = new List<PathItem>();
             for (int i = 0, pLen = pItems.Length; i < pLen; i++)
@@ -365,7 +322,7 @@ namespace WebDavTools
             };
         }
 
-        private void RefreshBrowserDetail(RequestInfo requestInfo, BrowseItem item)
+        private void RefreshBrowserDetail(BrowseItem item)
         {
             tbDetailDisplayName.Text = item?.DisplayName ?? string.Empty;
             tbDetailUrl.Text = item?.Uri?.ToString() ?? "-";
@@ -378,14 +335,14 @@ namespace WebDavTools
             pathSelector.ItemsSource = item?.PathItems;
         }
 
-        private void RefreshBrowser(RequestInfo requestInfo, DavMultistatus result)
+        private void RefreshBrowser(RequestResult<DavMultistatus> result)
         {
-            var items = result.Responses.Select(r=>BuildBrowseItem(requestInfo, r)).ToList();
-            string uri = new Uri(requestInfo.Client.ServerUri, (requestInfo.Path ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
-            var rootItem = items.FirstOrDefault(i => i.Uri.ToString().TrimEnd('/') == uri);
+            var items = result.Result.Responses.Select(r => BuildBrowseItem(result.ServerUri, r)).ToList();
+            //string uri = new Uri(requestInfo.Client.ServerUri, (requestInfo.Path ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
+            var rootItem = items.FirstOrDefault();
             if (rootItem != null)
                 tbPath.Text = rootItem.Path;
-            RefreshBrowserDetail(requestInfo, rootItem);
+            RefreshBrowserDetail(rootItem);
             lbBrowser.Items.Clear();
             foreach (var item in items.Where(r => r != rootItem))
                 lbBrowser.Items.Add(item);
@@ -393,26 +350,23 @@ namespace WebDavTools
 
         async Task BrowseAsync(string path)
         {
-            var result = await DoRequest(WebDavConstants.PropFind.Method, path,
-                    requestInfo => requestInfo.Client.PropFindAsync(path, true, DepthValue.One),
-                    RefreshBrowser);
+            var result = await CallRequestAsync(c => c.PropFindAsync(path, true, DepthValue.One));
+            RefreshBrowser(result);
         }
 
         private async void btnGetProperties_Click(object sender, RoutedEventArgs e)
         {
-            await DoRequest(WebDavConstants.PropFind, tbPath.Text);
+            await CallPropFindAsync(tbPath.Text);
         }
 
         private async void btnOptions_Click(object sender, RoutedEventArgs e)
         {
-            await DoRequest(WebDavConstants.Options, tbPath.Text);
+            await CallOptionsAsync(tbPath.Text);
         }
 
         private async void btnListProperties_Click(object sender, RoutedEventArgs e)
         {
-            await DoRequest(WebDavConstants.PropFind.Method, tbPath.Text,
-                requestInfo => requestInfo.Client.PropListAsync(tbPath.Text),
-                (requestInfo, response) => Log(requestInfo, response));
+            await CallPropListAsync(tbPath.Text);
         }
 
         private async void btnBrowse_Click(object sender, RoutedEventArgs e)
@@ -442,7 +396,7 @@ namespace WebDavTools
         {
             tbPath.Text = string.Empty;
             lbBrowser.Items.Clear();
-            RefreshBrowserDetail(null, null);
+            RefreshBrowserDetail(null);
         }
 
         private async void btnPathItem_Click(object sender, RoutedEventArgs e)
