@@ -458,5 +458,29 @@ namespace WebDavTools
         {
 
         }
+
+        private void btnPropertyEdit_Click(object sender, RoutedEventArgs e)
+        {
+            //if ((sender as Button)?.DataContext is DavProperty property)
+            //{
+            //    property = PropertyEditor.EditProperty(property, this);
+            //}
+        }
+
+        private void btnPropertyDelete_Click(object sender, RoutedEventArgs e)
+        {
+            //if ((sender as Button)?.DataContext is DavProperty property)
+            //{
+            //    if (MessageBox.Show(
+            //        $"Etes vous sur de vouloir supprimer la propriété '{property.NodeName}' ?"
+            //        , "Suppression d'une propriété"
+            //        , MessageBoxButton.YesNo
+            //        , MessageBoxImage.Stop
+            //        , MessageBoxResult.No
+            //        ) == MessageBoxResult.Yes)
+            //    {
+            //    }
+            //}
+        }
     }
 }

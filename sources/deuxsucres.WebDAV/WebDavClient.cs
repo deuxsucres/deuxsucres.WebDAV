@@ -217,6 +217,19 @@ namespace deuxsucres.WebDAV
         #endregion
 
         /// <summary>
+        /// Valid if a method is allowed for a path
+        /// </summary>
+        protected async Task<DavOptions> ValidAllowedMethodAsync(string path, HttpMethod method, CancellationToken? cancellationToken)
+        {
+            if (!CheckAllowedMethod) return null;
+            // Valid DAV options
+            DavOptions options = await OptionsAsync(path, cancellationToken: cancellationToken);
+            if (!options.IsAllowed(method))
+                throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
+            return options;
+        }
+
+        /// <summary>
         /// Do an OPTIONS call
         /// </summary>
         public async Task<DavOptions> OptionsAsync(string path, IDictionary<string, string> headers = null
@@ -255,10 +268,7 @@ namespace deuxsucres.WebDAV
             , CancellationToken? cancellationToken = null
             )
         {
-            // Valid DAV options
-            DavOptions options = await OptionsAsync(path, cancellationToken: cancellationToken);
-            if (!options.IsAllowed(WebDavConstants.PropFind))
-                throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
+            await ValidAllowedMethodAsync(path, WebDavConstants.PropFind, cancellationToken);
 
             // Call PROPFIND
             headers = headers ?? new Dictionary<string, string>();
@@ -266,7 +276,7 @@ namespace deuxsucres.WebDAV
 
             HttpContent content = BuildContent(DavNode.CreateNode<DavPropfind>().AsPropname());
 
-            var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content, cancellationToken);
             return await ExtractResult<DavMultistatus>(response);
         }
 
@@ -281,10 +291,7 @@ namespace deuxsucres.WebDAV
             , CancellationToken? cancellationToken = null
             )
         {
-            // Valid DAV options
-            DavOptions options = await OptionsAsync(path, cancellationToken: cancellationToken);
-            if (!options.IsAllowed(WebDavConstants.PropFind))
-                throw new WebDavException(string.Format(Locales.SR.Err_MethodNotAllowed, WebDavConstants.PropFind));
+            await ValidAllowedMethodAsync(path, WebDavConstants.PropFind, cancellationToken);
 
             // Call PROPFIND
             headers = headers ?? new Dictionary<string, string>();
@@ -298,8 +305,37 @@ namespace deuxsucres.WebDAV
 
             HttpContent content = BuildContent(propfind);
 
-            var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content);
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropFind, headers, content, cancellationToken);
             return await ExtractResult<DavMultistatus>(response);
+        }
+
+        /// <summary>
+        /// Do a PROPPATCH call
+        /// </summary>
+        public async Task<DavMultistatus> PropPatchAsync(string path
+            , DavPropertyUpdate updates
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            HttpContent content = BuildContent(updates ?? throw new ArgumentNullException(nameof(updates)));
+            await ValidAllowedMethodAsync(path, WebDavConstants.PropPatch, cancellationToken);
+            var response = await ExecuteWebRequestAsync(path, WebDavConstants.PropPatch, headers, content, cancellationToken);
+            return await ExtractResult<DavMultistatus>(response);
+        }
+
+        /// <summary>
+        /// Do a PROPPATCH call
+        /// </summary>
+        public async Task<DavMultistatus> PropPatchAsync(string path
+            , Action<DavPropertyUpdate> updates
+            , IDictionary<string, string> headers = null
+            , CancellationToken? cancellationToken = null
+            )
+        {
+            var upds = DavNode.CreateNode<DavPropertyUpdate>();
+            updates?.Invoke(upds);
+            return await PropPatchAsync(path, upds, headers, cancellationToken);
         }
 
         /// <summary>
@@ -321,6 +357,11 @@ namespace deuxsucres.WebDAV
         /// User agent
         /// </summary>
         public string UserAgent { get; set; }
+
+        /// <summary>
+        /// Check the method is allowed on each call
+        /// </summary>
+        public bool CheckAllowedMethod { get; set; } = true;
 
         /// <summary>
         /// Event raised before a request will be executed

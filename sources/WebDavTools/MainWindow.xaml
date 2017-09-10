@@ -171,8 +171,8 @@
                                         </Grid.ColumnDefinitions>
 
                                         <StackPanel>
-                                            <Button Content="E" />
-                                            <Button Content="-" />
+                                            <Button Content="E" Click="btnPropertyEdit_Click" />
+                                            <Button Content="-" Click="btnPropertyDelete_Click" />
                                         </StackPanel>
                                         
                                         <Grid Grid.Column="1">
