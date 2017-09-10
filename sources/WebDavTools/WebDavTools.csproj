@@ -61,12 +61,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\BrowseItem.cs" />
     <Compile Include="Models\RequestHistory.cs" />
     <Compile Include="Models\ServerConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

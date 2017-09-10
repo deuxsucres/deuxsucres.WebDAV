@@ -38,6 +38,34 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
+        /// List all properties
+        /// </summary>
+        public IEnumerable<DavProperty> GetProperties()
+        {
+            return SourcePropstats
+                .SelectMany(sp => sp.Prop?.Properties ?? Enumerable.Empty<DavProperty>())
+                ;
+        }
+
+        /// <summary>
+        /// List all properties of a name
+        /// </summary>
+        public IEnumerable<DavProperty> GetProperties(XName name)
+            => GetProperties().Where(p => p.Name == name);
+
+        /// <summary>
+        /// List all properties of a type
+        /// </summary>
+        public IEnumerable<T> GetProperties<T>() where T : DavProperty
+            => GetProperties().OfType<T>();
+
+        /// <summary>
+        /// Get the first property of a type
+        /// </summary>
+        public T GetProperty<T>() where T : DavProperty
+            => GetProperties<T>().FirstOrDefault();
+
+        /// <summary>
         /// Href
         /// </summary>
         public DavHref Href { get; private set; }

@@ -60,6 +60,13 @@ namespace WebDavTools
                     Uri = new Uri("http://serveur.deuxsucres.com/projects/system2s/svn-repos/"),
                     UserName = "yanos",
                     Password = "Shay16na"
+                },
+                new ServerConnection
+                {
+                    Name = "Serveur Web2 deuxsucres",
+                    Uri = new Uri("http://web-access.sites.deuxsucres.com/"),
+                    UserName = "yanos",
+                    Password = "Shay16na"
                 }
             };
             cbConnection.SelectedIndex = 0;
@@ -87,7 +94,7 @@ namespace WebDavTools
             return result;
         }
 
-        RequestInfo CreateClient(string method)
+        RequestInfo CreateClient(string method, string path)
         {
             var connection = cbConnection.SelectedItem as ServerConnection;
             if (connection == null) return null;
@@ -182,7 +189,7 @@ namespace WebDavTools
             return new RequestInfo
             {
                 Client = client,
-                Path = tbPath.Text,
+                Path = path,
                 History = history
             };
         }
@@ -258,20 +265,20 @@ namespace WebDavTools
             }
         }
 
-        async Task<TResult> DoRequest<TResult>(string method, Func<RequestInfo, Task<TResult>> callRequest, Action<RequestInfo, TResult> processResult)
+        async Task<TResult> DoRequest<TResult>(string method, string path, Func<RequestInfo, Task<TResult>> callRequest, Action<RequestInfo, TResult> processResult)
         {
             tbLog.Clear();
             TResult result = default(TResult);
             RequestInfo requestInfo = null;
             try
             {
-                requestInfo = CreateClient(method);
+                requestInfo = CreateClient(method, path);
                 if (requestInfo == null) return result;
 
                 pbProgress.Visibility = Visibility.Visible;
                 lbHistory.IsEnabled = false;
 
-                Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{tbPath.Text}");
+                Log(requestInfo, $"Send request {method} on {requestInfo.Client.ServerUri}{path}");
 
                 Stopwatch sw = new Stopwatch();
                 sw.Start();
@@ -299,17 +306,17 @@ namespace WebDavTools
             return result;
         }
 
-        async Task DoRequest(HttpMethod method)
+        async Task DoRequest(HttpMethod method, string path)
         {
             if (method == WebDavConstants.PropFind)
             {
-                await DoRequest(method.Method,
+                await DoRequest(method.Method, path,
                     requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, true, DepthValue.One),
                     (requestInfo, response) => Log(requestInfo, response));
             }
             else if (method == WebDavConstants.Options)
             {
-                await DoRequest(method.Method,
+                await DoRequest(method.Method, path,
                     requestInfo => requestInfo.Client.GetOptionsAsync(tbPath.Text),
                     (requestInfo, options) => {
                         Log(requestInfo, "# Compliance classes");
@@ -323,61 +330,99 @@ namespace WebDavTools
             }
             else
             {
-                await DoRequest(method.Method,
+                await DoRequest(method.Method, path,
                     requestInfo => requestInfo.Client.ExecuteWebRequestAsync(tbPath.Text, method),
                     (requestInfo, response) => Log(requestInfo, $"Result {(int)response.StatusCode} {response.ReasonPhrase}")
                     );
             }
         }
 
-
-        private void RefreshBrowserDetail(RequestInfo requestInfo, DavResponse response)
+        BrowseItem BuildBrowseItem(RequestInfo requestInfo, DavResponse response)
         {
-            var resUri = new Uri(requestInfo.Client.ServerUri, response?.Href?.Href ?? string.Empty);
-            tbDetailUrl.Text = resUri.ToString();
-            Uri path = requestInfo.Client.ServerUri.MakeRelativeUri(resUri);
-            tbDetailPath.Text = path.ToString();
+            Uri resUri = new Uri(requestInfo.Client.ServerUri, response?.Href?.Href ?? string.Empty);
+            string resPath = requestInfo.Client.ServerUri.MakeRelativeUri(resUri).ToString();
+            return new BrowseItem
+            {
+                Uri = resUri,
+                Path = resPath,
+                DisplayName = response.GetProperty<DavDisplayName>()?.DisplayName ?? System.IO.Path.GetFileName(resPath.TrimEnd('/')),
+                CreationDate = response.GetProperty<DavCreationDate>()?.CreationDate,
+                LastModified = response.GetProperty<DavGetLastModified>()?.LastModified,
+                ContentType = response.GetProperty<DavGetContentType>()?.ContentType,
+                ContentLength = response.GetProperty<DavGetContentLength>()?.ContentLength,
+                IsCollection = response.GetProperty<DavResourceType>()?.IsCollection ?? false
+            };
+        }
+
+        private void RefreshBrowserDetail(RequestInfo requestInfo, BrowseItem item)
+        {
+            tbDetailDisplayName.Text = item?.DisplayName ?? string.Empty;
+            tbDetailUrl.Text = item?.Uri?.ToString() ?? "-";
+            tbDetailPath.Text = item?.Path ?? "-";
+            tbDetailCreationDate.Text = item?.CreationDate?.ToString() ?? "-";
+            tbDetailLastModified.Text = item?.LastModified?.ToString() ?? "-";
+            tbDetailContentType.Text = item?.ContentType ?? "-";
+            tbDetailContentLength.Text = item?.ContentLength?.ToString() ?? "-";
         }
 
         private void RefreshBrowser(RequestInfo requestInfo, DavMultistatus result)
         {
-            var uri = new Uri(requestInfo.Client.ServerUri, (tbPath.Text ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
-            var rootResponse = result.Responses.FirstOrDefault(r => new Uri(requestInfo.Client.ServerUri, (r.Href?.Href ?? string.Empty)).ToString().TrimEnd('/') == uri);
-            RefreshBrowserDetail(requestInfo, rootResponse);
+            var items = result.Responses.Select(r=>BuildBrowseItem(requestInfo, r)).ToList();
+            var uri = new Uri(requestInfo.Client.ServerUri, (requestInfo.Path ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
+            var rootItem = items.FirstOrDefault(i => i.Uri.ToString().TrimEnd('/') == uri);
+            if (rootItem != null)
+                tbPath.Text = rootItem.Path;
+            RefreshBrowserDetail(requestInfo, rootItem);
             lbBrowser.Items.Clear();
-            foreach (var response in result.Responses.Where(r => r != rootResponse))
-            {
-                lbBrowser.Items.Add(response);
-            }
+            foreach (var item in items.Where(r => r != rootItem))
+                lbBrowser.Items.Add(item);
         }
 
-        async Task BrowseAsync()
+        async Task BrowseAsync(string path)
         {
-            var result = await DoRequest(WebDavConstants.PropFind.Method,
-                    requestInfo => requestInfo.Client.DoPropFindAsync(tbPath.Text, true, DepthValue.One),
+            var result = await DoRequest(WebDavConstants.PropFind.Method, path,
+                    requestInfo => requestInfo.Client.DoPropFindAsync(path, true, DepthValue.One),
                     RefreshBrowser);
         }
 
         private async void btnGetProperties_Click(object sender, RoutedEventArgs e)
         {
-            await DoRequest(WebDavConstants.PropFind);
+            await DoRequest(WebDavConstants.PropFind, tbPath.Text);
         }
 
         private async void btnOptions_Click(object sender, RoutedEventArgs e)
         {
-            await DoRequest(WebDavConstants.Options);
+            await DoRequest(WebDavConstants.Options, tbPath.Text);
         }
 
         private async void btnListProperties_Click(object sender, RoutedEventArgs e)
         {
-            await DoRequest(WebDavConstants.PropFind.Method,
+            await DoRequest(WebDavConstants.PropFind.Method, tbPath.Text,
                 requestInfo => requestInfo.Client.GetPropertyNamesAsync(tbPath.Text),
                 (requestInfo, response) => Log(requestInfo, response));
         }
 
         private async void btnBrowse_Click(object sender, RoutedEventArgs e)
         {
-            await BrowseAsync();
+            await BrowseAsync(tbPath.Text);
+        }
+
+        private async void lbBrowser_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var visual = VisualTreeHelper.HitTest(lbBrowser, Mouse.GetPosition(lbBrowser))?.VisualHit as FrameworkElement;
+            var item = visual?.DataContext as BrowseItem;
+            if (item == null) return;
+            if (item.IsCollection)
+            {
+                await BrowseAsync(item.Path);
+            }
+        }
+
+        private void cbConnection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            tbPath.Text = string.Empty;
+            lbBrowser.Items.Clear();
+            RefreshBrowserDetail(null, null);
         }
     }
 }

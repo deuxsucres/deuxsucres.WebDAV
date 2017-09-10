@@ -21,7 +21,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             
-            <ComboBox x:Name="cbConnection" SelectedIndex="0" DisplayMemberPath="Name" Margin="0,0,4,0" VerticalAlignment="Top">
+            <ComboBox x:Name="cbConnection" SelectedIndex="0" DisplayMemberPath="Name" Margin="0,0,4,0" VerticalAlignment="Top" SelectionChanged="cbConnection_SelectionChanged">
             </ComboBox>
 
             <Grid Grid.Column="1">
@@ -65,8 +65,31 @@
                 <ColumnDefinition MinWidth="80" MaxWidth="320" />
             </Grid.ColumnDefinitions>
 
-            <ListBox x:Name="lbBrowser" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                
+            <ListBox x:Name="lbBrowser" 
+                     Margin="2,0" 
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     MouseDoubleClick="lbBrowser_MouseDoubleClick"
+                     >
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock FontWeight="Bold" Foreground="Blue" Text="{Binding DisplayName}" Visibility="{Binding IsCollection, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <TextBlock FontWeight="Bold" Text="{Binding DisplayName}" Visibility="{Binding IsCollection, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=not}"/>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding ContentType}" />
+                                <TextBlock Grid.Column="1" Text="{Binding ContentLength}" HorizontalAlignment="Right" />
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
 
             <ScrollViewer Grid.Column="1">
@@ -81,10 +104,19 @@
                     </ResourceDictionary>
                 </ScrollViewer.Resources>
                 <StackPanel Orientation="Vertical">
+                    <TextBlock x:Name="tbDetailDisplayName" FontSize="14pt" FontWeight="Bold" />
                     <TextBlock Style="{StaticResource label}">Url</TextBlock>
                     <TextBlock x:Name="tbDetailUrl" />
                     <TextBlock Style="{StaticResource label}">Path</TextBlock>
                     <TextBlock x:Name="tbDetailPath" />
+                    <TextBlock Style="{StaticResource label}">Creation date</TextBlock>
+                    <TextBlock x:Name="tbDetailCreationDate" />
+                    <TextBlock Style="{StaticResource label}">Last modified</TextBlock>
+                    <TextBlock x:Name="tbDetailLastModified" />
+                    <TextBlock Style="{StaticResource label}">Content type</TextBlock>
+                    <TextBlock x:Name="tbDetailContentType" />
+                    <TextBlock Style="{StaticResource label}">Content length</TextBlock>
+                    <TextBlock x:Name="tbDetailContentLength" />
                 </StackPanel>
             </ScrollViewer>
 
