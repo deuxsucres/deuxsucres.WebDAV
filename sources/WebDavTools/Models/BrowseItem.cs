@@ -1,4 +1,5 @@
-﻿using System;
+﻿using deuxsucres.WebDAV;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,13 @@ namespace WebDavTools.Models
     {
         public Uri Uri { get; set; }
         public string Path { get; set; }
+        public List<PathItem> PathItems { get; set; }
         public string DisplayName { get; set; }
         public DateTimeOffset? CreationDate { get; set; }
         public DateTimeOffset? LastModified { get; set; }
         public string ContentType { get; set; }
         public int? ContentLength { get; set; }
         public bool IsCollection { get; set; }
+        public IList<DavProperty> Properties { get; set; }
     }
 }

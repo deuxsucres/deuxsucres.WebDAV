@@ -69,6 +69,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\BrowseItem.cs" />
+    <Compile Include="Models\BrowseResult.cs" />
+    <Compile Include="Models\PathItem.cs" />
     <Compile Include="Models\RequestHistory.cs" />
     <Compile Include="Models\ServerConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

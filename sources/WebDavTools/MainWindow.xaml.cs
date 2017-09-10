@@ -341,16 +341,27 @@ namespace WebDavTools
         {
             Uri resUri = new Uri(requestInfo.Client.ServerUri, response?.Href?.Href ?? string.Empty);
             string resPath = requestInfo.Client.ServerUri.MakeRelativeUri(resUri).ToString();
+            var pItems = resPath.Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            List<PathItem> path = new List<PathItem>();
+            for (int i = 0, pLen = pItems.Length; i < pLen; i++)
+            {
+                path.Add(new PathItem {
+                    Name = pItems[i],
+                    Path = string.Join("/", pItems.Take(i + 1)) + "/"
+                });
+            }
             return new BrowseItem
             {
                 Uri = resUri,
                 Path = resPath,
+                PathItems = path,
                 DisplayName = response.GetProperty<DavDisplayName>()?.DisplayName ?? System.IO.Path.GetFileName(resPath.TrimEnd('/')),
                 CreationDate = response.GetProperty<DavCreationDate>()?.CreationDate,
                 LastModified = response.GetProperty<DavGetLastModified>()?.LastModified,
                 ContentType = response.GetProperty<DavGetContentType>()?.ContentType,
                 ContentLength = response.GetProperty<DavGetContentLength>()?.ContentLength,
-                IsCollection = response.GetProperty<DavResourceType>()?.IsCollection ?? false
+                IsCollection = response.GetProperty<DavResourceType>()?.IsCollection ?? false,
+                Properties = response?.GetProperties()?.ToList()
             };
         }
 
@@ -363,6 +374,8 @@ namespace WebDavTools
             tbDetailLastModified.Text = item?.LastModified?.ToString() ?? "-";
             tbDetailContentType.Text = item?.ContentType ?? "-";
             tbDetailContentLength.Text = item?.ContentLength?.ToString() ?? "-";
+            tbDetailProperties.ItemsSource = item?.Properties;
+            pathSelector.ItemsSource = item?.PathItems;
         }
 
         private void RefreshBrowser(RequestInfo requestInfo, DavMultistatus result)
@@ -417,9 +430,6 @@ namespace WebDavTools
                 try
                 {
                     await BrowseAsync(item.Path);
-                    var client = CreateClient("GET", item.Path);
-                    var r = await client.Client.ExecuteWebRequestAsync(item.Path, HttpMethod.Get);
-                    r.EnsureSuccessStatusCode();
                 }
                 catch (Exception ex)
                 {
@@ -433,6 +443,20 @@ namespace WebDavTools
             tbPath.Text = string.Empty;
             lbBrowser.Items.Clear();
             RefreshBrowserDetail(null, null);
+        }
+
+        private async void btnPathItem_Click(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as Button)?.DataContext as PathItem;
+            if (item == null)
+                await BrowseAsync(string.Empty);
+            else
+                await BrowseAsync(item.Path);
+        }
+
+        private void btnAddProperty_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

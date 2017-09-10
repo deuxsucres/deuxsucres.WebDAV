@@ -58,107 +58,179 @@
         <ProgressBar x:Name="pbProgress" Grid.Row="2" Margin="0,2" Height="4" IsIndeterminate="True" />
 
         <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="80" MaxWidth="320" />
-                <ColumnDefinition MinWidth="80" MaxWidth="320" />
-                <ColumnDefinition />
-                <ColumnDefinition MinWidth="80" MaxWidth="320" />
-            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-            <ListBox x:Name="lbBrowser" 
+            <StackPanel Orientation="Horizontal" Margin="2">
+                <StackPanel.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="2,0,2,0"/>
+                        <Setter Property="Cursor" Value="Hand" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <TextBlock Foreground="#FF5057EC">
+                                        <ContentPresenter />
+                                    </TextBlock>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </StackPanel.Resources>
+                <Button Content="/" Click="btnPathItem_Click" />
+                <ItemsControl x:Name="pathSelector">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="{Binding Name}" Click="btnPathItem_Click" />
+                                <TextBlock Text="/" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="80" MaxWidth="320" />
+                    <ColumnDefinition MinWidth="80" MaxWidth="320" />
+                    <ColumnDefinition />
+                    <ColumnDefinition MinWidth="80" MaxWidth="320" />
+                </Grid.ColumnDefinitions>
+
+                <ListBox x:Name="lbBrowser" 
                      Margin="2,0" 
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      MouseDoubleClick="lbBrowser_MouseDoubleClick"
                      >
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <TextBlock FontWeight="Bold" Foreground="Blue" Text="{Binding DisplayName}" Visibility="{Binding IsCollection, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                            <TextBlock FontWeight="Bold" Text="{Binding DisplayName}" Visibility="{Binding IsCollection, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=not}"/>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Text="{Binding ContentType}" />
-                                <TextBlock Grid.Column="1" Text="{Binding ContentLength}" HorizontalAlignment="Right" />
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock FontWeight="Bold" Foreground="Blue" Text="{Binding DisplayName}" Visibility="{Binding IsCollection, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <TextBlock FontWeight="Bold" Text="{Binding DisplayName}" Visibility="{Binding IsCollection, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=not}"/>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding ContentType}" />
+                                    <TextBlock Grid.Column="1" Text="{Binding ContentLength}" HorizontalAlignment="Right" />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
-            <ScrollViewer Grid.Column="1">
-                <ScrollViewer.Resources>
-                    <ResourceDictionary>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="TextWrapping" Value="Wrap"/>
-                        </Style>
-                        <Style x:Key="label" TargetType="TextBlock">
-                            <Setter Property="FontWeight" Value="Bold"/>
-                        </Style>
-                    </ResourceDictionary>
-                </ScrollViewer.Resources>
-                <StackPanel Orientation="Vertical">
-                    <TextBlock x:Name="tbDetailDisplayName" FontSize="14pt" FontWeight="Bold" />
-                    <TextBlock Style="{StaticResource label}">Url</TextBlock>
-                    <TextBlock x:Name="tbDetailUrl" />
-                    <TextBlock Style="{StaticResource label}">Path</TextBlock>
-                    <TextBlock x:Name="tbDetailPath" />
-                    <TextBlock Style="{StaticResource label}">Creation date</TextBlock>
-                    <TextBlock x:Name="tbDetailCreationDate" />
-                    <TextBlock Style="{StaticResource label}">Last modified</TextBlock>
-                    <TextBlock x:Name="tbDetailLastModified" />
-                    <TextBlock Style="{StaticResource label}">Content type</TextBlock>
-                    <TextBlock x:Name="tbDetailContentType" />
-                    <TextBlock Style="{StaticResource label}">Content length</TextBlock>
-                    <TextBlock x:Name="tbDetailContentLength" />
-                </StackPanel>
-            </ScrollViewer>
+                <ScrollViewer Grid.Column="1">
+                    <ScrollViewer.Resources>
+                        <ResourceDictionary>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                            <Style x:Key="label" TargetType="TextBlock">
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </Style>
+                        </ResourceDictionary>
+                    </ScrollViewer.Resources>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock x:Name="tbDetailDisplayName" FontSize="14pt" FontWeight="Bold" />
+                        <TextBlock Style="{StaticResource label}">Url</TextBlock>
+                        <TextBlock x:Name="tbDetailUrl" />
+                        <TextBlock Style="{StaticResource label}">Path</TextBlock>
+                        <TextBlock x:Name="tbDetailPath" />
+                        <TextBlock Style="{StaticResource label}">Creation date</TextBlock>
+                        <TextBlock x:Name="tbDetailCreationDate" />
+                        <TextBlock Style="{StaticResource label}">Last modified</TextBlock>
+                        <TextBlock x:Name="tbDetailLastModified" />
+                        <TextBlock Style="{StaticResource label}">Content type</TextBlock>
+                        <TextBlock x:Name="tbDetailContentType" />
+                        <TextBlock Style="{StaticResource label}">Content length</TextBlock>
+                        <TextBlock x:Name="tbDetailContentLength" />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource label}">Properties</TextBlock>
+                            <Button Click="btnAddProperty_Click">+</Button>
+                        </StackPanel>
+                        <ItemsControl x:Name="tbDetailProperties">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
 
-            <TabControl Grid.Column="2" Margin="2,0,0,0">
-                <TabControl.Resources>
-                    <Style x:Key="LogText" TargetType="TextBox">
-                        <Setter Property="AcceptsReturn" Value="True" />
-                        <Setter Property="FontFamily" Value="Consolas" />
-                        <Setter Property="FontSize" Value="11pt" />
-                        <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
-                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-                        <Setter Property="IsReadOnly" Value="True"/>
-                    </Style>
-                </TabControl.Resources>
-                <TabItem Header="Log">
-                    <TextBox x:Name="tbLog" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Log, Mode=OneWay}">
-                    </TextBox>
-                </TabItem>
-                <TabItem Header="Request">
-                    <TextBox x:Name="tbRequest" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Request, Mode=OneWay}">
-                    </TextBox>
-                </TabItem>
-                <TabItem Header="Response">
-                    <TextBox x:Name="tbResponse" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Response, Mode=OneWay}">
-                    </TextBox>
-                </TabItem>
-            </TabControl>
-            
-            <ListBox x:Name="lbHistory" Grid.Column="3" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <TextBlock Text="{Binding Url}" TextWrapping="Wrap"/>
-                            <TextBlock Grid.Row="1" Text="{Binding Method}" FontWeight="Bold" />
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                                        <StackPanel>
+                                            <Button Content="E" />
+                                            <Button Content="-" />
+                                        </StackPanel>
+                                        
+                                        <Grid Grid.Column="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock FontWeight="DemiBold" Text="{Binding NodeName}" />
+                                            <TextBlock Grid.Row="1" Text="{Binding}" />
+                                        </Grid>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <TabControl Grid.Column="2" Margin="2,0,0,0">
+                    <TabControl.Resources>
+                        <Style x:Key="LogText" TargetType="TextBox">
+                            <Setter Property="AcceptsReturn" Value="True" />
+                            <Setter Property="FontFamily" Value="Consolas" />
+                            <Setter Property="FontSize" Value="11pt" />
+                            <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+                            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                            <Setter Property="IsReadOnly" Value="True"/>
+                        </Style>
+                    </TabControl.Resources>
+                    <TabItem Header="Log">
+                        <TextBox x:Name="tbLog" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Log, Mode=OneWay}">
+                        </TextBox>
+                    </TabItem>
+                    <TabItem Header="Request">
+                        <TextBox x:Name="tbRequest" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Request, Mode=OneWay}">
+                        </TextBox>
+                    </TabItem>
+                    <TabItem Header="Response">
+                        <TextBox x:Name="tbResponse" Style="{StaticResource LogText}" Text="{Binding ElementName=lbHistory, Path=SelectedItem.Response, Mode=OneWay}">
+                        </TextBox>
+                    </TabItem>
+                </TabControl>
+
+                <ListBox x:Name="lbHistory" Grid.Column="3" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Text="{Binding Url}" TextWrapping="Wrap"/>
+                                <TextBlock Grid.Row="1" Text="{Binding Method}" FontWeight="Bold" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </Grid>
 
         </Grid>
                        
