@@ -97,6 +97,7 @@ namespace WebDavTools
 
         void Log(RequestResult<DavMultistatus> result)
         {
+            if (result == null) return;
             var response = result.Result;
             Log($"{response.Responses.Length} response(s)");
             Log();
@@ -114,6 +115,7 @@ namespace WebDavTools
 
         void Log(RequestResult<DavResponse> result)
         {
+            if (result == null) return;
             var response = result.Result;
             Log($"# {response.Href.Href}");
             if (response.ResponseDescription != null)
@@ -144,10 +146,10 @@ namespace WebDavTools
                         foreach (var prop in propstat.Prop.Properties)
                         {
                             Log($"- {prop.NodeName}");
-                            if(prop.GetType() != typeof(DavProperty))
+                            if (prop.GetType() != typeof(DavProperty))
                             {
                                 string vs = prop.ToString();
-                                if(!string.IsNullOrEmpty(vs))
+                                if (!string.IsNullOrEmpty(vs))
                                     Log(vs);
                             }
                             else
@@ -166,104 +168,113 @@ namespace WebDavTools
             var connection = cbConnection.SelectedItem as ServerConnection;
             if (connection == null) return null;
 
-            var client = new WebDavClient(connection.Uri.ToString(), connection.UserName, connection.Password);
-
-            Log("-------------------------------------------------------------");
-
-            client.BeforeExecuteRequest += async (s, e) =>
+            try
             {
-                var history = new RequestHistory
+                var client = new WebDavClient(connection.Uri.ToString(), connection.UserName, connection.Password);
+
+                Log("-------------------------------------------------------------");
+
+                client.BeforeExecuteRequest += async (s, e) =>
                 {
-                    Url = e.Request.RequestUri.ToString(),
-                    ServerUri = client.ServerUri,
-                    Path = client.ServerUri.MakeRelativeUri(e.Request.RequestUri).ToString(),
-                    Method = e.Request.Method.Method
-                };
-                var request = e.Request;
-
-                Log($"Call {history.Method} {history.Url}");
-
-                _requests[request] = history;
-
-                StringBuilder l = new StringBuilder();
-                l.AppendLine($"HTTP {request.Version} {request.Method} {request.RequestUri}");
-                l.AppendLine();
-                foreach (var header in request.Headers)
-                    l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
-                l.AppendLine();
-                foreach (var prop in request.Properties)
-                    l.AppendLine($"{prop.Key}: {prop.Value}");
-                l.AppendLine();
-                if (request.Content != null)
-                {
-                    foreach (var header in request.Content.Headers)
-                        l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
-                    l.AppendLine();
-                }
-                if (request.Content != null && (request.Content.Headers.ContentType.MediaType == "text/xml" || request.Content.Headers.ContentType.MediaType == "application/xml" || request.Content.Headers.ContentType.MediaType == "text/plain"))
-                {
-                    l.AppendLine(await request.Content.ReadAsStringAsync());
-                }
-                history.Request = l.ToString();
-            };
-            client.AfterExecuteRequest += async (s, e) =>
-            {
-                var response = e.Response;
-                var request = response.RequestMessage;
-
-                if (!_requests.TryGetValue(request, out RequestHistory history))
-                    return;
-
-                StringBuilder l = new StringBuilder();
-                l.AppendLine($"Response: HTTP {response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
-                l.AppendLine();
-                foreach (var header in response.Headers)
-                    l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
-                l.AppendLine();
-                l.AppendLine("# Content");
-                if (response.Content != null)
-                {
-                    foreach (var header in response.Content.Headers)
-                        l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
-                    l.AppendLine();
-                }
-
-                if (response.Content != null && (
-                    response.Content.Headers.ContentType.MediaType == "text/plain"
-                    || response.Content.Headers.ContentType.MediaType == "text/html"
-                    || response.Content.Headers.ContentType.MediaType == "text/xml"
-                    || response.Content.Headers.ContentType.MediaType == "application/xml"
-                    ))
-                {
-                    string textContent = await ExtractTextContent(response);
-
-                    if (response.Content.Headers.ContentType.MediaType == "text/xml" || response.Content.Headers.ContentType.MediaType == "application/xml")
+                    var history = new RequestHistory
                     {
-                        try
-                        {
-                            XDocument doc = XDocument.Parse(textContent);
-                            textContent = doc.ToString();
-                        }
-                        catch (Exception lex)
-                        {
-                            l.AppendLine($"XML parse error: {lex.GetBaseException().Message}");
-                            l.AppendLine();
-                        }
+                        Url = e.Request.RequestUri.ToString(),
+                        ServerUri = client.ServerUri,
+                        Path = client.ServerUri.MakeRelativeUri(e.Request.RequestUri).ToString(),
+                        Method = e.Request.Method.Method
+                    };
+                    var request = e.Request;
+
+                    Log($"Call {history.Method} {history.Url}");
+
+                    _requests[request] = history;
+
+                    StringBuilder l = new StringBuilder();
+                    l.AppendLine($"HTTP {request.Version} {request.Method} {request.RequestUri}");
+                    l.AppendLine();
+                    foreach (var header in request.Headers)
+                        l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
+                    l.AppendLine();
+                    foreach (var prop in request.Properties)
+                        l.AppendLine($"{prop.Key}: {prop.Value}");
+                    l.AppendLine();
+                    if (request.Content != null)
+                    {
+                        foreach (var header in request.Content.Headers)
+                            l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
+                        l.AppendLine();
                     }
-                    l.AppendLine(textContent);
-                }
-                history.Response = l.ToString();
+                    if (request.Content != null && (request.Content.Headers.ContentType.MediaType == "text/xml" || request.Content.Headers.ContentType.MediaType == "application/xml" || request.Content.Headers.ContentType.MediaType == "text/plain"))
+                    {
+                        l.AppendLine(await request.Content.ReadAsStringAsync());
+                    }
+                    history.Request = l.ToString();
+                };
+                client.AfterExecuteRequest += async (s, e) =>
+                {
+                    var response = e.Response;
+                    var request = response.RequestMessage;
 
-                _requests.Remove(request);
-                lbHistory.Items.Insert(0, history);
-                lbHistory.SelectedIndex = 0;
-            };
+                    if (!_requests.TryGetValue(request, out RequestHistory history))
+                        return;
 
-            return new RequestResult<T>
+                    StringBuilder l = new StringBuilder();
+                    l.AppendLine($"Response: HTTP {response.Version} {(int)response.StatusCode} {response.ReasonPhrase}");
+                    l.AppendLine();
+                    foreach (var header in response.Headers)
+                        l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
+                    l.AppendLine();
+                    l.AppendLine("# Content");
+                    if (response.Content != null)
+                    {
+                        foreach (var header in response.Content.Headers)
+                            l.AppendLine($"{header.Key}: {string.Join(";", header.Value)}");
+                        l.AppendLine();
+                    }
+
+                    if (response.Content != null && (
+                        response.Content.Headers.ContentType.MediaType == "text/plain"
+                        || response.Content.Headers.ContentType.MediaType == "text/html"
+                        || response.Content.Headers.ContentType.MediaType == "text/xml"
+                        || response.Content.Headers.ContentType.MediaType == "application/xml"
+                        ))
+                    {
+                        string textContent = await ExtractTextContent(response);
+
+                        if (response.Content.Headers.ContentType.MediaType == "text/xml" || response.Content.Headers.ContentType.MediaType == "application/xml")
+                        {
+                            try
+                            {
+                                XDocument doc = XDocument.Parse(textContent);
+                                textContent = doc.ToString();
+                            }
+                            catch (Exception lex)
+                            {
+                                l.AppendLine($"XML parse error: {lex.GetBaseException().Message}");
+                                l.AppendLine();
+                            }
+                        }
+                        l.AppendLine(textContent);
+                    }
+                    history.Response = l.ToString();
+
+                    _requests.Remove(request);
+                    lbHistory.Items.Insert(0, history);
+                    lbHistory.SelectedIndex = 0;
+                };
+
+                return new RequestResult<T>
+                {
+                    ServerUri = client.ServerUri,
+                    Result = await call?.Invoke(client)
+                };
+
+            }
+            catch (Exception ex)
             {
-                ServerUri = client.ServerUri,
-                Result = await call?.Invoke(client)
-            };
+                Log($"Error: {ex.GetBaseException().Message}");
+                return null;
+            }
         }
 
         async Task CallOptionsAsync(string path)
@@ -294,6 +305,12 @@ namespace WebDavTools
             Log(result);
         }
 
+        async Task CallPropPatchAsync(string path, Action<DavPropertyUpdate> updates)
+        {
+            var result = await CallRequestAsync(c => c.PropPatchAsync(path, updates));
+            Log(result);
+        }
+
         BrowseItem BuildBrowseItem(Uri serverUri, DavResponse response)
         {
             Uri resUri = new Uri(serverUri, response?.Href?.Href ?? string.Empty);
@@ -302,7 +319,8 @@ namespace WebDavTools
             List<PathItem> path = new List<PathItem>();
             for (int i = 0, pLen = pItems.Length; i < pLen; i++)
             {
-                path.Add(new PathItem {
+                path.Add(new PathItem
+                {
                     Name = pItems[i],
                     Path = string.Join("/", pItems.Take(i + 1)) + "/"
                 });
@@ -421,20 +439,21 @@ namespace WebDavTools
             //}
         }
 
-        private void btnPropertyDelete_Click(object sender, RoutedEventArgs e)
+        private async void btnPropertyDelete_Click(object sender, RoutedEventArgs e)
         {
-            //if ((sender as Button)?.DataContext is DavProperty property)
-            //{
-            //    if (MessageBox.Show(
-            //        $"Etes vous sur de vouloir supprimer la propriété '{property.NodeName}' ?"
-            //        , "Suppression d'une propriété"
-            //        , MessageBoxButton.YesNo
-            //        , MessageBoxImage.Stop
-            //        , MessageBoxResult.No
-            //        ) == MessageBoxResult.Yes)
-            //    {
-            //    }
-            //}
+            if ((sender as Button)?.DataContext is DavProperty property)
+            {
+                if (MessageBox.Show(
+                    $"Etes vous sur de vouloir supprimer la propriété '{property.NodeName}' ?"
+                    , "Suppression d'une propriété"
+                    , MessageBoxButton.YesNo
+                    , MessageBoxImage.Stop
+                    , MessageBoxResult.No
+                    ) == MessageBoxResult.Yes)
+                {
+                    await CallPropPatchAsync(tbPath.Text, updates => updates.Remove(property));
+                }
+            }
         }
     }
 }

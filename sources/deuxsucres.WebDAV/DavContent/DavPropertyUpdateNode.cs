@@ -20,6 +20,23 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
+        /// Add a property
+        /// </summary>
+        public DavPropertyUpdateNode AddProperty(DavProperty prop)
+        {
+            if (prop != null)
+            {
+                if (Prop == null)
+                {
+                    Prop = CreateNode<DavProp>();
+                    Node.Add(Prop.Node);
+                }
+                Prop.AddProperty(prop);
+            }
+            return this;
+        }
+
+        /// <summary>
         /// Properties informations
         /// </summary>
         public DavProp Prop { get; private set; }

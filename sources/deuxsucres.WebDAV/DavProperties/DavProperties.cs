@@ -39,16 +39,24 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
-        /// Create a property from the name registered or null if not registered
+        /// Create a property from the name registered
         /// </summary>
-        public static DavProperty CreateProperty(XElement node)
+        public static DavProperty CreateProperty(XName name, bool nullIfNotRegistered = false)
+        {
+            if (name == null) return null;
+            return LoadProperty(new XElement(name), nullIfNotRegistered);
+        }
+
+        /// <summary>
+        /// Load a property from the name registered
+        /// </summary>
+        public static DavProperty LoadProperty(XElement node, bool nullIfNotRegistered = false)
         {
             if (node == null) return null;
             if (!_registered.TryGetValue(node.Name, out Type tProp))
-                return null;
+                return nullIfNotRegistered ? null : DavNode.LoadNode<DavProperty>(node, false);
             return DavNode.LoadNode(tProp, node, false) as DavProperty;
         }
-
     }
 
 }

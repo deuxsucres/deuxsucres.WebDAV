@@ -150,8 +150,7 @@ namespace deuxsucres.WebDAV
         public DavProperty MakeProperty(XElement node)
         {
             if (node == null) return null;
-            var prop = DavProperties.CreateProperty(node);
-            return prop ?? MakeNode<DavProperty>(node);
+            return DavProperties.LoadProperty(node);
         }
 
         /// <summary>

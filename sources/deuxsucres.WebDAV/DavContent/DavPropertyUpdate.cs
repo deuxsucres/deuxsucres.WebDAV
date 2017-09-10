@@ -32,6 +32,28 @@ namespace deuxsucres.WebDAV
         }
 
         /// <summary>
+        /// Add a remove property node
+        /// </summary>
+        public DavPropertyUpdate Remove(DavProperty prop)
+        {
+            if (prop == null) return this;
+            return Remove(prop.NodeName);
+        }
+
+        /// <summary>
+        /// Add a remove property node
+        /// </summary>
+        public DavPropertyUpdate Remove(XName name)
+        {
+            if (name == null) return this;
+            var removeNode = DavNode.CreateNode<DavRemove>();
+            removeNode.AddProperty(DavProperties.CreateProperty(name));
+            SourceUpdateNodes.Add(removeNode);
+            Node.Add(removeNode.Node);
+            return this;
+        }
+
+        /// <summary>
         /// List of the update nodes
         /// </summary>
         public DavPropertyUpdateNode[] UpdateNodes => SourceUpdateNodes.ToArray();
