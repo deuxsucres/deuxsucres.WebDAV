@@ -414,7 +414,17 @@ namespace WebDavTools
             if (item == null) return;
             if (item.IsCollection)
             {
-                await BrowseAsync(item.Path);
+                try
+                {
+                    await BrowseAsync(item.Path);
+                    var client = CreateClient("GET", item.Path);
+                    var r = await client.Client.ExecuteWebRequestAsync(item.Path, HttpMethod.Get);
+                    r.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
