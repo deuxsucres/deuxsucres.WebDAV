@@ -8,7 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{7B95B914-2E1C-4C86-B7B3-ADA4CCE73F5E}"
 	ProjectSection(SolutionItems) = preProject
 		..\documentation\rfc.md = ..\documentation\rfc.md
+		..\documentation\rfc4791.txt = ..\documentation\rfc4791.txt
 		..\documentation\rfc4918.txt = ..\documentation\rfc4918.txt
+		..\documentation\rfc5545.txt = ..\documentation\rfc5545.txt
 		..\documentation\webdav.md = ..\documentation\webdav.md
 	EndProjectSection
 EndProject
@@ -17,6 +19,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{F9ED6192-657E-4873-94BD-40472394F3C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDavTools", "WebDavTools\WebDavTools.csproj", "{1BBE9F7E-3207-4C4F-B097-3873019A552D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "deuxsucres.CalDAV", "deuxsucres.CalDAV\deuxsucres.CalDAV.csproj", "{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +36,10 @@ Global
 		{1BBE9F7E-3207-4C4F-B097-3873019A552D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BBE9F7E-3207-4C4F-B097-3873019A552D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BBE9F7E-3207-4C4F-B097-3873019A552D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +47,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1E77BFBA-7826-4B2D-B732-52F27F120E57} = {15929DDE-86D8-4C46-8F1B-A13279DC37B7}
 		{1BBE9F7E-3207-4C4F-B097-3873019A552D} = {F9ED6192-657E-4873-94BD-40472394F3C3}
+		{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E} = {15929DDE-86D8-4C46-8F1B-A13279DC37B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {07144510-C1C9-40F9-8E8F-4AC02C6CF06E}
