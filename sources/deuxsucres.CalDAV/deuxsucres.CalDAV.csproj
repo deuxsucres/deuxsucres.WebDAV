@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\deuxsucres.iCalendar\deuxsucres.iCalendar.csproj" />
     <ProjectReference Include="..\deuxsucres.WebDAV\deuxsucres.WebDAV.csproj" />
   </ItemGroup>
 
