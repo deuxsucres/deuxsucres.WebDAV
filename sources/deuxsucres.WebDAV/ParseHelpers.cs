@@ -112,5 +112,20 @@ namespace deuxsucres.WebDAV
             return null;
         }
 
+        /// <summary>
+        /// Parse a timeout value
+        /// </summary>
+        public static uint? ParseTimeout(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            if (string.Equals("Infinite", value, StringComparison.OrdinalIgnoreCase))
+                return uint.MaxValue;
+            if (!value.StartsWith("Second-", StringComparison.OrdinalIgnoreCase))
+                return null;
+            if (uint.TryParse(value.Substring(7), out uint r))
+                return r;
+            return null;
+        }
+
     }
 }

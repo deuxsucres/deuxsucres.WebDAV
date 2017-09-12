@@ -16,13 +16,13 @@ namespace deuxsucres.WebDAV
         protected override void Load(XElement node, bool checkName)
         {
             base.Load(node, checkName);
-            Timeout = (int)node;
+            Timeout = ParseHelpers.ParseTimeout((string)node);
         }
 
         /// <summary>
         /// Timeout
         /// </summary>
-        public int Timeout { get; private set; }
+        public uint? Timeout { get; private set; }
 
     }
 }
