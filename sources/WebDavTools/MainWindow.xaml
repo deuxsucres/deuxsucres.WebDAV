@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:WebDavTools"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="WebDAV Tools" Height="350" Width="525">
+        Title="WebDAV Tools" Height="405.071" Width="525">
     <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -164,26 +164,28 @@
                         <ItemsControl x:Name="tbDetailProperties">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
+                                    <Border BorderBrush="Gray" BorderThickness="0,0,0,1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
 
-                                        <StackPanel>
-                                            <Button Content="E" Click="btnPropertyEdit_Click" />
-                                            <Button Content="-" Click="btnPropertyDelete_Click" />
-                                        </StackPanel>
-                                        
-                                        <Grid Grid.Column="1">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition />
-                                                <RowDefinition />
-                                            </Grid.RowDefinitions>
-                                            <TextBlock FontWeight="DemiBold" Text="{Binding NodeName}" />
-                                            <TextBlock Grid.Row="1" Text="{Binding}" />
+                                            <StackPanel>
+                                                <Button Content="E" Click="btnPropertyEdit_Click" />
+                                                <Button Content="-" Click="btnPropertyDelete_Click" />
+                                            </StackPanel>
+
+                                            <Grid Grid.Column="1">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+                                                <TextBlock FontWeight="DemiBold" Text="{Binding NodeName}" />
+                                                <TextBlock Grid.Row="1" Text="{Binding}" />
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,6 +68,33 @@ namespace WebDavTools
             cbConnection.SelectedIndex = 0;
         }
 
+        string EncodeXmlContent(string content)
+        {
+            Regex regex = new Regex(@"(<\/?[A-Za-z0-9.-]+:)([A-Za-z0-9.-]+:[A-Za-z0-9.-:]+)(.*?>)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            return regex.Replace(content, m =>
+            {
+                if (m.Groups.Count != 4) return m.Value;
+                string s =
+                    m.Groups[1].Value
+                    + m.Groups[2].Value.Replace(":", "--")
+                    + m.Groups[3].Value;
+                return s;
+            });
+        }
+        string DecodeXmlContent(string content)
+        {
+            Regex regex = new Regex(@"(<\/?[A-Za-z0-9.-]+:)([A-Za-z0-9.-]+\-\-[A-Za-z0-9.-]+)(.*?>)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            return regex.Replace(content, m =>
+            {
+                if (m.Groups.Count != 4) return m.Value;
+                string s =
+                    m.Groups[1].Value
+                    + m.Groups[2].Value.Replace("--", ":")
+                    + m.Groups[3].Value;
+                return s;
+            });
+        }
+
         async Task<string> ExtractTextContent(HttpResponseMessage response)
         {
             var buffer = new MemoryStream();
@@ -79,7 +107,16 @@ namespace WebDavTools
             using (var rdr = new StreamReader(src))
                 result = await rdr.ReadToEndAsync();
 
-            buffer.Seek(0, System.IO.SeekOrigin.Begin);
+            string mt = response.Content.Headers.ContentType.MediaType;
+            if (mt == "text/xml" || mt == "application/xml")
+            {
+                buffer = new MemoryStream(Encoding.UTF8.GetBytes(EncodeXmlContent(result)));
+            }
+            else
+            {
+                buffer.Seek(0, System.IO.SeekOrigin.Begin);
+            }
+
             var newContent = new StreamContent(buffer);
             foreach (var header in response.Content.Headers)
                 newContent.Headers.Add(header.Key, header.Value);
@@ -161,6 +198,21 @@ namespace WebDavTools
                     }
                 }
             }
+        }
+
+        private XDocument ParseXmlContent(string content)
+        {
+            //Regex regex = new Regex(@"(<\/?[A-Za-z0-9.-]+:)([A-Za-z0-9.-]+:[A-Za-z0-9.-:]+)(.*?>)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            //content = regex.Replace(content, m =>
+            //{
+            //    if (m.Groups.Count != 4) return m.Value;
+            //    string s = 
+            //        m.Groups[1].Value 
+            //        + m.Groups[2].Value.Replace(":", "--")
+            //        + m.Groups[3].Value;
+            //    return s;
+            //});
+            return XDocument.Parse(EncodeXmlContent(content));
         }
 
         async Task<RequestResult<T>> CallRequestAsync<T>(Func<WebDavClient, Task<T>> call)
@@ -245,7 +297,7 @@ namespace WebDavTools
                         {
                             try
                             {
-                                XDocument doc = XDocument.Parse(textContent);
+                                XDocument doc = ParseXmlContent(textContent);
                                 textContent = doc.ToString();
                             }
                             catch (Exception lex)
@@ -355,6 +407,7 @@ namespace WebDavTools
 
         private void RefreshBrowser(RequestResult<DavMultistatus> result)
         {
+            if (result == null) return;
             var items = result.Result.Responses.Select(r => BuildBrowseItem(result.ServerUri, r)).ToList();
             //string uri = new Uri(requestInfo.Client.ServerUri, (requestInfo.Path ?? string.Empty).Trim('/')).ToString().TrimEnd('/');
             var rootItem = items.FirstOrDefault();
