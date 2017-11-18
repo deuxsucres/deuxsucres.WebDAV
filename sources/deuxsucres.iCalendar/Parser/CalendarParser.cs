@@ -458,24 +458,24 @@ namespace deuxsucres.iCalendar.Parser
         //    return null;
         //}
 
-        /// <summary>
-        /// Parse a list of integer with range check
-        /// </summary>
-        IList<int> ParseListInt(string value, int minRange, int maxRange, bool acceptNeg)
-        {
-            if (string.IsNullOrWhiteSpace(value)) return null;
-            var parts = value.Split(',');
-            List<int> result = new List<int>();
-            foreach (string part in parts)
-            {
-                int? v = ParseInt(part);
-                if (v != null && (v >= minRange && v <= maxRange) || (acceptNeg && v >= -maxRange && v <= -minRange))
-                    result.Add(v.Value);
-                else
-                    return null;
-            }
-            return result;
-        }
+        ///// <summary>
+        ///// Parse a list of integer with range check
+        ///// </summary>
+        //IList<int> ParseListInt(string value, int minRange, int maxRange, bool acceptNeg)
+        //{
+        //    if (string.IsNullOrWhiteSpace(value)) return null;
+        //    var parts = value.Split(',');
+        //    List<int> result = new List<int>();
+        //    foreach (string part in parts)
+        //    {
+        //        int? v = ParseInt(part);
+        //        if (v != null && (v >= minRange && v <= maxRange) || (acceptNeg && v >= -maxRange && v <= -minRange))
+        //            result.Add(v.Value);
+        //        else
+        //            return null;
+        //    }
+        //    return result;
+        //}
 
         ///// <summary>
         ///// Parse a list of weekday recurrence
@@ -768,6 +768,7 @@ namespace deuxsucres.iCalendar.Parser
         /// </summary>
         public virtual string EncodeContentLine(ContentLine line)
         {
+            if (line == null) return null;
             StringBuilder builder = new StringBuilder();
             builder.Append(line.Name);
             foreach (var prm in line.GetParams())
@@ -776,7 +777,7 @@ namespace deuxsucres.iCalendar.Parser
                     .Append(";")
                     .Append(prm.Key)
                     .Append("=")
-                    .Append(prm.Value)
+                    .Append(EncodeTextParameter(prm.Value))
                     ;
             }
             builder.Append(":").Append(line.Value);
@@ -799,8 +800,9 @@ namespace deuxsucres.iCalendar.Parser
         /// </summary>
         public virtual string EncodeList<T>(IEnumerable<T> list, Func<T, string> encode)
         {
-            if (list == null || encode == null) return null;
-            return string.Join(",", list.Select(v => encode(v)));
+            if (list == null) return null;
+            encode = encode ?? (v => v?.ToString());
+            return string.Join(",", list.Select(v => EncodeText(encode(v))));
         }
 
         /// <summary>
@@ -845,6 +847,18 @@ namespace deuxsucres.iCalendar.Parser
         {
             //string format = value.Second > 0 ? @"yyyyMMdd\THHmmss" : @"yyyyMMdd\THHmm";
             string format = @"yyyyMMdd\THHmmss";
+            string result = value.ToString(format);
+            if (value.Kind == DateTimeKind.Utc)
+                result += "Z";
+            return result;
+        }
+
+        /// <summary>
+        /// Encode a time
+        /// </summary>
+        public virtual string EncodeTime(DateTime value)
+        {
+            string format = @"HHmmss";
             string result = value.ToString(format);
             if (value.Kind == DateTimeKind.Utc)
                 result += "Z";

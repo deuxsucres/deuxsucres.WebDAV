@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\StringExtensionsTest.cs" />
+    <Compile Include="Parser\CalendarParserTest.cs" />
     <Compile Include="Parser\ContentLineTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
