@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
-        Title="Propriété" Height="280" Width="540" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Property" Height="280" Width="540" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Grid Margin="8">
         <Grid.Resources>
             <Style x:Key="label" TargetType="TextBlock">
@@ -22,9 +22,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <TextBlock Style="{StaticResource label}">Nom</TextBlock>
+        <TextBlock Style="{StaticResource label}">Name</TextBlock>
         <TextBox x:Name="tbName" Grid.Row="1" />
-        <TextBlock Grid.Row="2" Style="{StaticResource label}" >Contenu</TextBlock>
+        <TextBlock Grid.Row="2" Style="{StaticResource label}" >Content</TextBlock>
         <TextBox x:Name="tbContent" Grid.Row="3" AcceptsReturn="True" Height="132" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" />
         <Grid Grid.Row="4" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="400">
             <Grid.Resources>
@@ -37,8 +37,8 @@
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button IsDefault="True" Content="Valider" Click="btnValid_Click" />
-            <Button Grid.Column="1" Content="Annuler" IsCancel="True" />
+            <Button IsDefault="True" Content="Valid" Click="btnValid_Click" />
+            <Button Grid.Column="1" Content="Cancel" IsCancel="True" />
         </Grid>
     </Grid>
 </Window>

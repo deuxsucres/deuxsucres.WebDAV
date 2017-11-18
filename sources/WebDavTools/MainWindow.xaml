@@ -100,7 +100,6 @@
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="80" MaxWidth="320" />
-                    <ColumnDefinition MinWidth="80" MaxWidth="320" />
                     <ColumnDefinition />
                     <ColumnDefinition MinWidth="80" MaxWidth="320" />
                 </Grid.ColumnDefinitions>
@@ -132,67 +131,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
 
-                <ScrollViewer Grid.Column="1">
-                    <ScrollViewer.Resources>
-                        <ResourceDictionary>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="TextWrapping" Value="Wrap"/>
-                            </Style>
-                            <Style x:Key="label" TargetType="TextBlock">
-                                <Setter Property="FontWeight" Value="Bold"/>
-                            </Style>
-                        </ResourceDictionary>
-                    </ScrollViewer.Resources>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock x:Name="tbDetailDisplayName" FontSize="14pt" FontWeight="Bold" />
-                        <TextBlock Style="{StaticResource label}">Url</TextBlock>
-                        <TextBlock x:Name="tbDetailUrl" />
-                        <TextBlock Style="{StaticResource label}">Path</TextBlock>
-                        <TextBlock x:Name="tbDetailPath" />
-                        <TextBlock Style="{StaticResource label}">Creation date</TextBlock>
-                        <TextBlock x:Name="tbDetailCreationDate" />
-                        <TextBlock Style="{StaticResource label}">Last modified</TextBlock>
-                        <TextBlock x:Name="tbDetailLastModified" />
-                        <TextBlock Style="{StaticResource label}">Content type</TextBlock>
-                        <TextBlock x:Name="tbDetailContentType" />
-                        <TextBlock Style="{StaticResource label}">Content length</TextBlock>
-                        <TextBlock x:Name="tbDetailContentLength" />
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource label}">Properties</TextBlock>
-                            <Button Click="btnAddProperty_Click">+</Button>
-                        </StackPanel>
-                        <ItemsControl x:Name="tbDetailProperties">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Border BorderBrush="Gray" BorderThickness="0,0,0,1">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-
-                                            <StackPanel>
-                                                <Button Content="E" Click="btnPropertyEdit_Click" />
-                                                <Button Content="-" Click="btnPropertyDelete_Click" />
-                                            </StackPanel>
-
-                                            <Grid Grid.Column="1">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition />
-                                                    <RowDefinition />
-                                                </Grid.RowDefinitions>
-                                                <TextBlock FontWeight="DemiBold" Text="{Binding NodeName}" />
-                                                <TextBlock Grid.Row="1" Text="{Binding}" />
-                                            </Grid>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </ScrollViewer>
-
-                <TabControl Grid.Column="2" Margin="2,0,0,0">
+                <TabControl Grid.Column="1" Margin="2,0,0,0">
                     <TabControl.Resources>
                         <Style x:Key="LogText" TargetType="TextBox">
                             <Setter Property="AcceptsReturn" Value="True" />
@@ -203,6 +142,75 @@
                             <Setter Property="IsReadOnly" Value="True"/>
                         </Style>
                     </TabControl.Resources>
+                    <TabItem Header="Details">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition MinWidth="80" MaxWidth="320" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <ScrollViewer>
+                                <ScrollViewer.Resources>
+                                    <ResourceDictionary>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="TextWrapping" Value="Wrap"/>
+                                        </Style>
+                                        <Style x:Key="label" TargetType="TextBlock">
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </Style>
+                                    </ResourceDictionary>
+                                </ScrollViewer.Resources>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock x:Name="tbDetailDisplayName" FontSize="14pt" FontWeight="Bold" />
+                                    <TextBlock Style="{StaticResource label}">Url</TextBlock>
+                                    <TextBlock x:Name="tbDetailUrl" />
+                                    <TextBlock Style="{StaticResource label}">Path</TextBlock>
+                                    <TextBlock x:Name="tbDetailPath" />
+                                    <TextBlock Style="{StaticResource label}">Creation date</TextBlock>
+                                    <TextBlock x:Name="tbDetailCreationDate" />
+                                    <TextBlock Style="{StaticResource label}">Last modified</TextBlock>
+                                    <TextBlock x:Name="tbDetailLastModified" />
+                                    <TextBlock Style="{StaticResource label}">Content type</TextBlock>
+                                    <TextBlock x:Name="tbDetailContentType" />
+                                    <TextBlock Style="{StaticResource label}">Content length</TextBlock>
+                                    <TextBlock x:Name="tbDetailContentLength" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource label}">Properties</TextBlock>
+                                        <Button Click="btnAddProperty_Click">+</Button>
+                                    </StackPanel>
+                                    <ItemsControl x:Name="tbDetailProperties">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BorderBrush="Gray" BorderThickness="0,0,0,1">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <StackPanel>
+                                                            <Button Content="E" Click="btnPropertyEdit_Click" />
+                                                            <Button Content="-" Click="btnPropertyDelete_Click" />
+                                                        </StackPanel>
+
+                                                        <Grid Grid.Column="1">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                            </Grid.RowDefinitions>
+                                                            <TextBlock FontWeight="DemiBold" Text="{Binding NodeName}" />
+                                                            <TextBlock Grid.Row="1" Text="{Binding}" />
+                                                        </Grid>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </ScrollViewer>
+
+                        </Grid>
+                    </TabItem>
                     <TabItem Header="Log">
                         <TextBox x:Name="tbLog" Style="{StaticResource LogText}">
                         </TextBox>
@@ -217,7 +225,7 @@
                     </TabItem>
                 </TabControl>
 
-                <ListBox x:Name="lbHistory" Grid.Column="3" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListBox x:Name="lbHistory" Grid.Column="2" Margin="2,0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>

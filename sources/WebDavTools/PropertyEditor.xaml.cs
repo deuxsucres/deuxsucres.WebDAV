@@ -53,7 +53,7 @@ namespace WebDavTools
             try
             {
                 if (string.IsNullOrWhiteSpace(tbName.Text))
-                    throw new InvalidOperationException("Le nom est obligatoire");
+                    throw new InvalidOperationException("The name is required.");
                 XName pname = XName.Get(tbName.Text);
                 XElement xContent = new XElement(pname);
 

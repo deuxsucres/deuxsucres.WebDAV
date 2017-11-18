@@ -394,6 +394,7 @@ namespace WebDavTools
 
         private void RefreshBrowserDetail(BrowseItem item)
         {
+            CurrentItem = item;
             tbDetailDisplayName.Text = item?.DisplayName ?? string.Empty;
             tbDetailUrl.Text = item?.Uri?.ToString() ?? "-";
             tbDetailPath.Text = item?.Path ?? "-";
@@ -402,7 +403,8 @@ namespace WebDavTools
             tbDetailContentType.Text = item?.ContentType ?? "-";
             tbDetailContentLength.Text = item?.ContentLength?.ToString() ?? "-";
             tbDetailProperties.ItemsSource = item?.Properties;
-            pathSelector.ItemsSource = item?.PathItems;
+            if (item?.IsCollection == true)
+                pathSelector.ItemsSource = item?.PathItems;
         }
 
         private void RefreshBrowser(RequestResult<DavMultistatus> result)
@@ -423,6 +425,15 @@ namespace WebDavTools
         {
             var result = await CallRequestAsync(c => c.PropFindAsync(path, true, DepthValue.One));
             RefreshBrowser(result);
+        }
+        async Task DisplayAsync(BrowseItem item)
+        {
+            var result = await CallRequestAsync(c => c.PropFindAsync(item.Path, true, DepthValue.One));
+            if (result != null)
+            {
+                var items = result.Result.Responses.Select(r => BuildBrowseItem(result.ServerUri, r)).ToList();
+                RefreshBrowserDetail(items.FirstOrDefault());
+            }
         }
 
         private async void btnGetProperties_Click(object sender, RoutedEventArgs e)
@@ -450,16 +461,20 @@ namespace WebDavTools
             var visual = VisualTreeHelper.HitTest(lbBrowser, Mouse.GetPosition(lbBrowser))?.VisualHit as FrameworkElement;
             var item = visual?.DataContext as BrowseItem;
             if (item == null) return;
-            if (item.IsCollection)
+            try
             {
-                try
+                if (item.IsCollection)
                 {
                     await BrowseAsync(item.Path);
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show(ex.Message);
+                    await DisplayAsync(item);
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -481,23 +496,25 @@ namespace WebDavTools
 
         private async void btnAddProperty_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentItem == null) return;
             var property = PropertyEditor.EditProperty(null, this);
             if (property != null)
             {
-                await CallPropPatchAsync(tbPath.Text, updates => updates.Set(property));
-                await BrowseAsync(tbPath.Text);
+                await CallPropPatchAsync(CurrentItem.Path, updates => updates.Set(property));
+                await DisplayAsync(CurrentItem);
             }
         }
 
         private async void btnPropertyEdit_Click(object sender, RoutedEventArgs e)
         {
+            if (CurrentItem == null) return;
             if ((sender as Button)?.DataContext is DavProperty property)
             {
                 property = PropertyEditor.EditProperty(property, this);
                 if (property != null)
                 {
-                    await CallPropPatchAsync(tbPath.Text, updates => updates.Set(property));
-                    await BrowseAsync(tbPath.Text);
+                    await CallPropPatchAsync(CurrentItem.Path, updates => updates.Set(property));
+                    await DisplayAsync(CurrentItem);
                 }
             }
         }
@@ -514,10 +531,21 @@ namespace WebDavTools
                     , MessageBoxResult.No
                     ) == MessageBoxResult.Yes)
                 {
-                    await CallPropPatchAsync(tbPath.Text, updates => updates.Remove(property));
-                    await BrowseAsync(tbPath.Text);
+                    await CallPropPatchAsync(CurrentItem.Path, updates => updates.Remove(property));
+                    await DisplayAsync(CurrentItem);
                 }
             }
+        }
+
+        public BrowseItem CurrentItem
+        {
+            get { return (BrowseItem)GetValue(CurrentItemProperty); }
+            set { SetValue(CurrentItemProperty, value); }
+        }
+        public static readonly DependencyProperty CurrentItemProperty =
+            DependencyProperty.Register("CurrentItem", typeof(BrowseItem), typeof(MainWindow), new PropertyMetadata(null, CurrentItemPropertyChanged));
+        private static void CurrentItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
         }
     }
 }
