@@ -566,33 +566,33 @@ DESCRIPTION:This is a lo
             Assert.Null(parser.ParseInt(null));
         }
 
-        //[Fact]
-        //public void ParsePeriod()
-        //{
-        //    var parser = new CalendarParser();
+        [Fact]
+        public void ParsePeriod()
+        {
+            var parser = new CalendarParser();
 
-        //    Period value;
+            Period value;
 
-        //    value = parser.ParsePeriod("19970101T180000Z/19970102T070000Z");
-        //    Assert.NotNull(value);
-        //    Assert.Equal(new DateTime(1997, 1, 1, 18, 0, 0), value.DateStart);
-        //    Assert.NotNull(value.DateEnd);
-        //    Assert.Equal(new DateTime(1997, 1, 2, 7, 0, 0), value.DateEnd);
-        //    Assert.Null(value.Duration);
+            value = parser.ParsePeriod("19970101T180000Z/19970102T070000Z");
+            Assert.NotNull(value);
+            Assert.Equal(new DateTime(1997, 1, 1, 18, 0, 0), value.DateStart);
+            Assert.NotNull(value.DateEnd);
+            Assert.Equal(new DateTime(1997, 1, 2, 7, 0, 0), value.DateEnd);
+            Assert.Null(value.Duration);
 
-        //    value = parser.ParsePeriod("19970101T180000Z/PT5H30M");
-        //    Assert.NotNull(value);
-        //    Assert.Equal(new DateTime(1997, 1, 1, 18, 0, 0), value.DateStart);
-        //    Assert.Null(value.DateEnd);
-        //    Assert.NotNull(value.Duration);
-        //    Assert.Equal(new TimeSpan(5, 30, 0), value.Duration);
+            value = parser.ParsePeriod("19970101T180000Z/PT5H30M");
+            Assert.NotNull(value);
+            Assert.Equal(new DateTime(1997, 1, 1, 18, 0, 0), value.DateStart);
+            Assert.Null(value.DateEnd);
+            Assert.NotNull(value.Duration);
+            Assert.Equal(new TimeSpan(5, 30, 0), value.Duration);
 
-        //    Assert.Null(parser.ParsePeriod("test"));
-        //    Assert.Null(parser.ParsePeriod("test/PT5H30M"));
-        //    Assert.Null(parser.ParsePeriod("19970101T180000Z/test"));
+            Assert.Null(parser.ParsePeriod("test"));
+            Assert.Null(parser.ParsePeriod("test/PT5H30M"));
+            Assert.Null(parser.ParsePeriod("19970101T180000Z/test"));
 
-        //    Assert.Null(parser.ParsePeriod(null));
-        //}
+            Assert.Null(parser.ParsePeriod(null));
+        }
 
         //[Fact]
         //public void ParseRecur()
@@ -1049,33 +1049,22 @@ DESCRIPTION:This is a lo
             Assert.Equal("-1234", parser.EncodeInt(-1234));
         }
 
-        ////[Fact]
-        ////public void ParsePeriod()
-        ////{
-        ////    var parser = new CalendarParser();
+        [Fact]
+        public void EncodePeriod()
+        {
+            var parser = new CalendarParser();
 
-        ////    Period value;
+            Assert.Null(parser.EncodePeriod(null));
 
-        ////    value = parser.ParsePeriod("19970101T180000Z/19970102T070000Z");
-        ////    Assert.NotNull(value);
-        ////    Assert.Equal(new DateTime(1997, 1, 1, 18, 0, 0), value.DateStart);
-        ////    Assert.NotNull(value.DateEnd);
-        ////    Assert.Equal(new DateTime(1997, 1, 2, 7, 0, 0), value.DateEnd);
-        ////    Assert.Null(value.Duration);
+            Period period = new Period(new DateTime(1997, 1, 1, 18, 0, 0, DateTimeKind.Utc), new DateTime(1997, 1, 2, 7, 0, 0, DateTimeKind.Utc));
+            Assert.Equal("19970101T180000Z/19970102T070000Z", parser.EncodePeriod(period));
 
-        ////    value = parser.ParsePeriod("19970101T180000Z/PT5H30M");
-        ////    Assert.NotNull(value);
-        ////    Assert.Equal(new DateTime(1997, 1, 1, 18, 0, 0), value.DateStart);
-        ////    Assert.Null(value.DateEnd);
-        ////    Assert.NotNull(value.Duration);
-        ////    Assert.Equal(new TimeSpan(5, 30, 0), value.Duration);
+            period = new Period(new DateTime(1997, 1, 1, 18, 0, 0, DateTimeKind.Utc), new TimeSpan(5, 30, 0));
+            Assert.Equal("19970101T180000Z/PT5H30M", parser.EncodePeriod(period));
 
-        ////    Assert.Null(parser.ParsePeriod("test"));
-        ////    Assert.Null(parser.ParsePeriod("test/PT5H30M"));
-        ////    Assert.Null(parser.ParsePeriod("19970101T180000Z/test"));
-
-        ////    Assert.Null(parser.ParsePeriod(null));
-        ////}
+            period = new Period(new DateTime(1997, 1, 1, 18, 0, 0, DateTimeKind.Utc), TimeSpan.Zero);
+            Assert.Null(parser.EncodePeriod(period));
+        }
 
         ////[Fact]
         ////public void ParseRecur()

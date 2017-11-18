@@ -436,27 +436,27 @@ namespace deuxsucres.iCalendar.Parser
             return null;
         }
 
-        ///// <summary>
-        ///// Parse a period
-        ///// </summary>
-        //public virtual Period ParsePeriod(string value)
-        //{
-        //    if (string.IsNullOrWhiteSpace(value)) return null;
-        //    var parts = value.Split(new char[] { '/' }, 2);
-        //    if (parts.Length != 2) return null;
+        /// <summary>
+        /// Parse a period
+        /// </summary>
+        public virtual Period ParsePeriod(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            var parts = value.Split(new char[] { '/' }, 2);
+            if (parts.Length != 2) return null;
 
-        //    var dStart = ParseDateTime(parts[0]);
-        //    if (!dStart.HasValue) return null;
+            var dStart = ParseDateTime(parts[0]);
+            if (!dStart.HasValue) return null;
 
-        //    var dEnd = ParseDateTime(parts[1]);
-        //    if (dEnd.HasValue)
-        //        return new Period(dStart.Value, dEnd.Value);
+            var dEnd = ParseDateTime(parts[1]);
+            if (dEnd.HasValue)
+                return new Period(dStart.Value, dEnd.Value);
 
-        //    var duration = ParseDuration(parts[1]);
-        //    if (duration.HasValue)
-        //        return new Period(dStart.Value, duration.Value);
-        //    return null;
-        //}
+            var duration = ParseDuration(parts[1]);
+            if (duration.HasValue)
+                return new Period(dStart.Value, duration.Value);
+            return null;
+        }
 
         ///// <summary>
         ///// Parse a list of integer with range check
@@ -948,22 +948,21 @@ namespace deuxsucres.iCalendar.Parser
             return value.ToString().Replace("_", "-").ToUpper();
         }
 
-        ///// <summary>
-        ///// Encode a period
-        ///// </summary>
-        //public virtual string EncodePeriod(Period value)
-        //{
-        //    if (value == null) return null;
-        //    string p1 = EncodeDateTime(value.DateStart);
-        //    if (p1 == null) return null;
-        //    string p2;
-        //    if (value.DateEnd != null)
-        //        p2 = EncodeDateTime(value.DateEnd.Value);
-        //    else
-        //        p2 = EncodeDuration(value.Duration.Value);
-        //    if (p2 == null) return null;
-        //    return $"{p1}/{p2}";
-        //}
+        /// <summary>
+        /// Encode a period
+        /// </summary>
+        public virtual string EncodePeriod(Period value)
+        {
+            if (value == null) return null;
+            string p1 = EncodeDateTime(value.DateStart);
+            string p2;
+            if (value.DateEnd != null)
+                p2 = EncodeDateTime(value.DateEnd.Value);
+            else
+                p2 = EncodeDuration(value.Duration.Value);
+            if (p2 == null) return null;
+            return $"{p1}/{p2}";
+        }
 
         /// <summary>
         /// Encode an utc-offset
