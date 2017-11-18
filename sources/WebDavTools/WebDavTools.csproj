@@ -53,8 +53,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="IViewer.cs" />
+    <Compile Include="IWebDavService.cs" />
     <Compile Include="PropertyEditor.xaml.cs">
       <DependentUpon>PropertyEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DefaultContentViewer.xaml.cs">
+      <DependentUpon>DefaultContentViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ResponseHeaders.xaml.cs">
+      <DependentUpon>ResponseHeaders.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -70,6 +78,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="PropertyEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DefaultContentViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ResponseHeaders.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -111,8 +127,6 @@
       <Name>deuxsucres.WebDAV</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -25,7 +25,7 @@ namespace WebDavTools
     /// <summary>
     /// Logique d'interaction pour MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IWebDavService
     {
         class RequestResult<T>
         {
@@ -33,6 +33,7 @@ namespace WebDavTools
             public T Result { get; set; }
         }
         Dictionary<HttpRequestMessage, RequestHistory> _requests = new Dictionary<HttpRequestMessage, RequestHistory>();
+        Dictionary<string, Type> _viewers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
 
         public MainWindow()
         {
@@ -66,6 +67,8 @@ namespace WebDavTools
                 }
             };
             cbConnection.SelectedIndex = 0;
+
+            //_viewers[]
         }
 
         string EncodeXmlContent(string content)
@@ -421,10 +424,40 @@ namespace WebDavTools
                 lbBrowser.Items.Add(item);
         }
 
+        async Task DisplayContentAsync(BrowseItem item)
+        {
+            detailContent.Children.Clear();
+            if (item != null)
+            {
+                try
+                {
+                    var head = await CallRequestAsync(c => c.HeadAsync(item.Path));
+                    string ct = head.Result.Content?.Headers?.ContentType?.MediaType;
+                    if (string.IsNullOrEmpty(ct) || !_viewers.TryGetValue(ct, out Type viewerType))
+                        viewerType = typeof(Views.DefaultContentViewer);
+                    if (viewerType == null) return;
+                    object viewer = Activator.CreateInstance(viewerType);
+                    UIElement contentViewer = viewer is UIElement ? (UIElement)viewer : new ContentControl { Content = viewer };
+                    detailContent.Children.Add(contentViewer);
+                    if (viewer is IViewer iv)
+                    {
+                        await iv.LoadViewerAsync(item, head.Result, this);
+                    }
+                    else if (contentViewer is FrameworkElement fe)
+                        fe.DataContext = viewer;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
         async Task BrowseAsync(string path)
         {
             var result = await CallRequestAsync(c => c.PropFindAsync(path, true, DepthValue.One));
             RefreshBrowser(result);
+            await DisplayContentAsync(null);
         }
         async Task DisplayAsync(BrowseItem item)
         {
@@ -433,6 +466,11 @@ namespace WebDavTools
             {
                 var items = result.Result.Responses.Select(r => BuildBrowseItem(result.ServerUri, r)).ToList();
                 RefreshBrowserDetail(items.FirstOrDefault());
+                await DisplayContentAsync(item);
+            }
+            else
+            {
+                await DisplayContentAsync(null);
             }
         }
 

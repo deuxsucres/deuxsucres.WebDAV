@@ -209,6 +209,7 @@
                                 </StackPanel>
                             </ScrollViewer>
 
+                            <Grid x:Name="detailContent" Grid.Column="1"></Grid>
                         </Grid>
                     </TabItem>
                     <TabItem Header="Log">
