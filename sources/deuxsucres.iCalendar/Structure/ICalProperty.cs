@@ -1,4 +1,6 @@
-﻿using System;
+﻿using deuxsucres.iCalendar.Parser;
+using deuxsucres.iCalendar.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,18 +11,17 @@ namespace deuxsucres.iCalendar.Structure
     /// </summary>
     public interface ICalProperty
     {
-        // TODO Uncomment when serialisation is ready
-        ///// <summary>
-        ///// Serialize the property
-        ///// </summary>
-        //void Serialize(ICalWriter writer);
+        /// <summary>
+        /// Serialize the property
+        /// </summary>
+        void Serialize(ICalWriter writer);
 
-        ///// <summary>
-        ///// Deserialize the property
-        ///// </summary>
-        ///// <param name="reader">Reader</param>
-        ///// <param name="line">Line</param>
-        //void Deserialize(ICalReader reader, ContentLine line);
+        /// <summary>
+        /// Deserialize the property
+        /// </summary>
+        /// <param name="reader">Reader</param>
+        /// <param name="line">Line</param>
+        void Deserialize(ICalReader reader, ContentLine line);
 
         /// <summary>
         /// Name of the property
