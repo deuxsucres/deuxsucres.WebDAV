@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalSyntaxErrorTest.cs" />
     <Compile Include="Extensions\StringExtensionsTest.cs" />
     <Compile Include="Parser\CalendarParserTest.cs" />
     <Compile Include="Parser\ContentLineTest.cs" />
