@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "deuxsucres.WebDAV", "deuxsucres.WebDAV\deuxsucres.WebDAV.csproj", "{1E77BFBA-7826-4B2D-B732-52F27F120E57}"
 EndProject
@@ -20,9 +20,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{F9ED6192
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDavTools", "WebDavTools\WebDavTools.csproj", "{1BBE9F7E-3207-4C4F-B097-3873019A552D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "deuxsucres.CalDAV", "deuxsucres.CalDAV\deuxsucres.CalDAV.csproj", "{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "deuxsucres.CalDAV", "deuxsucres.CalDAV\deuxsucres.CalDAV.csproj", "{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "deuxsucres.iCalendar", "deuxsucres.iCalendar\deuxsucres.iCalendar.csproj", "{36F5EEAC-A2C6-4F6E-B3AE-106D337C9517}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "deuxsucres.iCalendar", "deuxsucres.iCalendar\deuxsucres.iCalendar.csproj", "{36F5EEAC-A2C6-4F6E-B3AE-106D337C9517}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8E69AD40-5829-481C-B1DB-11226448151F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "deuxsucres.iCalendar.Tests", "deuxsucres.iCalendar.Tests\deuxsucres.iCalendar.Tests.csproj", "{C7D12589-7512-4F1A-8E04-7D2A8392FA37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +50,10 @@ Global
 		{36F5EEAC-A2C6-4F6E-B3AE-106D337C9517}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36F5EEAC-A2C6-4F6E-B3AE-106D337C9517}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36F5EEAC-A2C6-4F6E-B3AE-106D337C9517}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7D12589-7512-4F1A-8E04-7D2A8392FA37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7D12589-7512-4F1A-8E04-7D2A8392FA37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7D12589-7512-4F1A-8E04-7D2A8392FA37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7D12589-7512-4F1A-8E04-7D2A8392FA37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +63,7 @@ Global
 		{1BBE9F7E-3207-4C4F-B097-3873019A552D} = {F9ED6192-657E-4873-94BD-40472394F3C3}
 		{01ADAA57-EBD9-41AE-BDFD-C27E5E1E935E} = {15929DDE-86D8-4C46-8F1B-A13279DC37B7}
 		{36F5EEAC-A2C6-4F6E-B3AE-106D337C9517} = {15929DDE-86D8-4C46-8F1B-A13279DC37B7}
+		{C7D12589-7512-4F1A-8E04-7D2A8392FA37} = {8E69AD40-5829-481C-B1DB-11226448151F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {07144510-C1C9-40F9-8E8F-4AC02C6CF06E}
