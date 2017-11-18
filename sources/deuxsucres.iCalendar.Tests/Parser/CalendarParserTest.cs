@@ -594,102 +594,102 @@ DESCRIPTION:This is a lo
             Assert.Null(parser.ParsePeriod(null));
         }
 
-        //[Fact]
-        //public void ParseRecur()
-        //{
-        //    var parser = new CalendarParser();
+        [Fact]
+        public void ParseRecur()
+        {
+            var parser = new CalendarParser();
 
-        //    var recur = parser.ParseRecur("FREQ=MONTHLY;BYDAY=MO,2TU,+6WE,TH,-3FR;BYSETPOS=-1");
-        //    Assert.NotNull(recur);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Monthly, recur.Frequency);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.MO, recur.StartWeek);
-        //    Assert.Null(recur.Others);
-        //    Assert.Null(recur.Interval);
-        //    Assert.NotNull(recur.ByDay);
-        //    Assert.Equal(5, recur.ByDay.Count);
-        //    Assert.Equal(null, recur.ByDay[0].Order);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.MO, recur.ByDay[0].Weekday);
-        //    Assert.Equal(2, recur.ByDay[1].Order);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.TU, recur.ByDay[1].Weekday);
-        //    Assert.Equal(6, recur.ByDay[2].Order);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.WE, recur.ByDay[2].Weekday);
-        //    Assert.Equal(null, recur.ByDay[3].Order);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.TH, recur.ByDay[3].Weekday);
-        //    Assert.Equal(-3, recur.ByDay[4].Order);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.FR, recur.ByDay[4].Weekday);
-        //    Assert.Equal(new int[] { -1 }, recur.BySetPos?.ToArray());
+            var recur = parser.ParseRecur("FREQ=MONTHLY;BYDAY=MO,2TU,+6WE,TH,-3FR;BYSETPOS=-1");
+            Assert.NotNull(recur);
+            Assert.Equal(Recurrence.Frequencies.Monthly, recur.Frequency);
+            Assert.Equal(Recurrence.Weekdays.MO, recur.StartWeek);
+            Assert.Null(recur.Others);
+            Assert.Null(recur.Interval);
+            Assert.NotNull(recur.ByDay);
+            Assert.Equal(5, recur.ByDay.Count);
+            Assert.Null(recur.ByDay[0].Order);
+            Assert.Equal(Recurrence.Weekdays.MO, recur.ByDay[0].Weekday);
+            Assert.Equal(2, recur.ByDay[1].Order);
+            Assert.Equal(Recurrence.Weekdays.TU, recur.ByDay[1].Weekday);
+            Assert.Equal(6, recur.ByDay[2].Order);
+            Assert.Equal(Recurrence.Weekdays.WE, recur.ByDay[2].Weekday);
+            Assert.Null(recur.ByDay[3].Order);
+            Assert.Equal(Recurrence.Weekdays.TH, recur.ByDay[3].Weekday);
+            Assert.Equal(-3, recur.ByDay[4].Order);
+            Assert.Equal(Recurrence.Weekdays.FR, recur.ByDay[4].Weekday);
+            Assert.Equal(new int[] { -1 }, recur.BySetPos?.ToArray());
 
-        //    recur = parser.ParseRecur("FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU;BYHOUR=8,9;BYMINUTE=30");
-        //    Assert.NotNull(recur);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Yearly, recur.Frequency);
-        //    Assert.Equal(2, recur.Interval);
-        //    Assert.NotNull(recur.ByDay);
-        //    Assert.Equal(1, recur.ByDay.Count);
-        //    Assert.Equal(null, recur.ByDay[0].Order);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.SU, recur.ByDay[0].Weekday);
-        //    Assert.Equal(new int[] { 8, 9 }, recur.ByHour?.ToArray());
-        //    Assert.Equal(new int[] { 1 }, recur.ByMonth?.ToArray());
-        //    Assert.Equal(new int[] { 30 }, recur.ByMinute?.ToArray());
+            recur = parser.ParseRecur("FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU;BYHOUR=8,9;BYMINUTE=30");
+            Assert.NotNull(recur);
+            Assert.Equal(Recurrence.Frequencies.Yearly, recur.Frequency);
+            Assert.Equal(2, recur.Interval);
+            Assert.NotNull(recur.ByDay);
+            Assert.Equal(1, recur.ByDay.Count);
+            Assert.Null(recur.ByDay[0].Order);
+            Assert.Equal(Recurrence.Weekdays.SU, recur.ByDay[0].Weekday);
+            Assert.Equal(new int[] { 8, 9 }, recur.ByHour?.ToArray());
+            Assert.Equal(new int[] { 1 }, recur.ByMonth?.ToArray());
+            Assert.Equal(new int[] { 30 }, recur.ByMinute?.ToArray());
 
-        //    recur = parser.ParseRecur("freq=daily;count=10;interval=2");
-        //    Assert.NotNull(recur);
-        //    Assert.NotNull(recur);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Daily, recur.Frequency);
-        //    Assert.Equal(2, recur.Interval);
-        //    Assert.Equal(10, recur.Count);
-        //    Assert.Equal(null, recur.Until);
+            recur = parser.ParseRecur("freq=daily;count=10;interval=2");
+            Assert.NotNull(recur);
+            Assert.NotNull(recur);
+            Assert.Equal(Recurrence.Frequencies.Daily, recur.Frequency);
+            Assert.Equal(2, recur.Interval);
+            Assert.Equal(10, recur.Count);
+            Assert.Null(recur.Until);
 
-        //    recur = parser.ParseRecur("FREQ=DAILY;COUNT=10;INTERVAL=2;UNTIL=20100201");
-        //    Assert.NotNull(recur);
-        //    Assert.NotNull(recur);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Daily, recur.Frequency);
-        //    Assert.Equal(2, recur.Interval);
-        //    Assert.Equal(null, recur.Count);
-        //    Assert.Equal(new DateTime(2010, 2, 1), recur.Until);
+            recur = parser.ParseRecur("FREQ=DAILY;COUNT=10;INTERVAL=2;UNTIL=20100201");
+            Assert.NotNull(recur);
+            Assert.NotNull(recur);
+            Assert.Equal(Recurrence.Frequencies.Daily, recur.Frequency);
+            Assert.Equal(2, recur.Interval);
+            Assert.Null(recur.Count);
+            Assert.Equal(new DateTime(2010, 2, 1), recur.Until);
 
-        //    recur = parser.ParseRecur("FREQ=DAILY;;UNTIL=20100201;COUNT=10;INTERVAL=2;BYSECOND=1,2;BYMINUTE=3;BYHOUR=4,10;BYMONTH=1,6;BYMONTHDAY=1;BYYEARDAY=1;BYWEEKNO=1;WKST=SU;yanos=test;");
-        //    Assert.NotNull(recur);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.SU, recur.StartWeek);
-        //    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Daily, recur.Frequency);
-        //    Assert.Equal(2, recur.Interval);
-        //    Assert.Equal(10, recur.Count);
-        //    Assert.Equal(null, recur.Until);
-        //    Assert.Equal(new int[] { 1, 2 }, recur.BySecond?.ToArray());
-        //    Assert.Equal(new int[] { 3 }, recur.ByMinute?.ToArray());
-        //    Assert.Equal(new int[] { 4, 10 }, recur.ByHour?.ToArray());
-        //    Assert.Equal(new int[] { 1, 6 }, recur.ByMonth?.ToArray());
-        //    Assert.Equal(new int[] { 1 }, recur.ByMonthDay?.ToArray());
-        //    Assert.Equal(new int[] { 1 }, recur.ByYearDay?.ToArray());
-        //    Assert.Equal(new int[] { 1 }, recur.ByWeekNo?.ToArray());
-        //    Assert.NotNull(recur.Others);
-        //    Assert.Equal(new Dictionary<string, string>
-        //    {
-        //        { "yanos", "test" }
-        //    }, recur.Others);
+            recur = parser.ParseRecur("FREQ=DAILY;;UNTIL=20100201;COUNT=10;INTERVAL=2;BYSECOND=1,2;BYMINUTE=3;BYHOUR=4,10;BYMONTH=1,6;BYMONTHDAY=1;BYYEARDAY=1;BYWEEKNO=1;WKST=SU;yanos=test;");
+            Assert.NotNull(recur);
+            Assert.Equal(Recurrence.Weekdays.SU, recur.StartWeek);
+            Assert.Equal(Recurrence.Frequencies.Daily, recur.Frequency);
+            Assert.Equal(2, recur.Interval);
+            Assert.Equal(10, recur.Count);
+            Assert.Null(recur.Until);
+            Assert.Equal(new int[] { 1, 2 }, recur.BySecond?.ToArray());
+            Assert.Equal(new int[] { 3 }, recur.ByMinute?.ToArray());
+            Assert.Equal(new int[] { 4, 10 }, recur.ByHour?.ToArray());
+            Assert.Equal(new int[] { 1, 6 }, recur.ByMonth?.ToArray());
+            Assert.Equal(new int[] { 1 }, recur.ByMonthDay?.ToArray());
+            Assert.Equal(new int[] { 1 }, recur.ByYearDay?.ToArray());
+            Assert.Equal(new int[] { 1 }, recur.ByWeekNo?.ToArray());
+            Assert.NotNull(recur.Others);
+            Assert.Equal(new Dictionary<string, string>
+            {
+                { "yanos", "test" }
+            }, recur.Others);
 
-        //    Assert.Null(parser.ParseRecur(""));
-        //    Assert.Null(parser.ParseRecur("FREQ=DAILY;COUNT;INTERVAL=2"));
-        //    Assert.Null(parser.ParseRecur("FREQ=Test"));
-        //    Assert.Null(parser.ParseRecur("UNTIL=Test"));
-        //    Assert.Null(parser.ParseRecur("COUNT=Test"));
-        //    Assert.Null(parser.ParseRecur("INTERVAL=Test"));
-        //    Assert.Null(parser.ParseRecur("BYSECOND=Test"));
-        //    Assert.Null(parser.ParseRecur("BYMINUTE=500"));
-        //    Assert.Null(parser.ParseRecur("BYHOUR=-5"));
-        //    Assert.Null(parser.ParseRecur("BYMONTH="));
-        //    Assert.Null(parser.ParseRecur("BYMONTHDAY=0"));
-        //    Assert.Null(parser.ParseRecur("BYYEARDAY=0"));
-        //    Assert.Null(parser.ParseRecur("BYWEEKNO=0"));
-        //    Assert.Null(parser.ParseRecur("BYSETPOS=0"));
-        //    Assert.Null(parser.ParseRecur("WKST=test"));
-        //    Assert.Null(parser.ParseRecur("BYDAY="));
-        //    Assert.Null(parser.ParseRecur("BYDAY=MO, ,FR"));
-        //    Assert.Null(parser.ParseRecur("BYDAY=test"));
-        //    Assert.Null(parser.ParseRecur("BYDAY=-MO"));
-        //    Assert.Null(parser.ParseRecur("BYDAY=0MO"));
-        //    Assert.Null(parser.ParseRecur("BYDAY=+100MO"));
-        //    Assert.Null(parser.ParseRecur("BYDAY=-100MO"));
-        //}
+            Assert.Null(parser.ParseRecur(""));
+            Assert.Null(parser.ParseRecur("FREQ=DAILY;COUNT;INTERVAL=2"));
+            Assert.Null(parser.ParseRecur("FREQ=Test"));
+            Assert.Null(parser.ParseRecur("UNTIL=Test"));
+            Assert.Null(parser.ParseRecur("COUNT=Test"));
+            Assert.Null(parser.ParseRecur("INTERVAL=Test"));
+            Assert.Null(parser.ParseRecur("BYSECOND=Test"));
+            Assert.Null(parser.ParseRecur("BYMINUTE=500"));
+            Assert.Null(parser.ParseRecur("BYHOUR=-5"));
+            Assert.Null(parser.ParseRecur("BYMONTH="));
+            Assert.Null(parser.ParseRecur("BYMONTHDAY=0"));
+            Assert.Null(parser.ParseRecur("BYYEARDAY=0"));
+            Assert.Null(parser.ParseRecur("BYWEEKNO=0"));
+            Assert.Null(parser.ParseRecur("BYSETPOS=0"));
+            Assert.Null(parser.ParseRecur("WKST=test"));
+            Assert.Null(parser.ParseRecur("BYDAY="));
+            Assert.Null(parser.ParseRecur("BYDAY=MO, ,FR"));
+            Assert.Null(parser.ParseRecur("BYDAY=test"));
+            Assert.Null(parser.ParseRecur("BYDAY=-MO"));
+            Assert.Null(parser.ParseRecur("BYDAY=0MO"));
+            Assert.Null(parser.ParseRecur("BYDAY=+100MO"));
+            Assert.Null(parser.ParseRecur("BYDAY=-100MO"));
+        }
 
         [Fact]
         public void ParseText()
@@ -828,7 +828,7 @@ DESCRIPTION:This is a lo
             {
                 Assert.Equal(3, parser.WriteLine(wrt, test));
             }
-            string expected = 
+            string expected =
                   "This is a very long line of text to test multiline write behavior. For this" + Environment.NewLine
                 + "  test the line need to be larger than 75 characters. So for the test we us" + Environment.NewLine
                 + " e a large text for having 3 lines of text." + Environment.NewLine;
@@ -1066,102 +1066,38 @@ DESCRIPTION:This is a lo
             Assert.Null(parser.EncodePeriod(period));
         }
 
-        ////[Fact]
-        ////public void ParseRecur()
-        ////{
-        ////    var parser = new CalendarParser();
+        [Fact]
+        public void EncodeRecur()
+        {
+            var parser = new CalendarParser();
 
-        ////    var recur = parser.ParseRecur("FREQ=MONTHLY;BYDAY=MO,2TU,+6WE,TH,-3FR;BYSETPOS=-1");
-        ////    Assert.NotNull(recur);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Monthly, recur.Frequency);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.MO, recur.StartWeek);
-        ////    Assert.Null(recur.Others);
-        ////    Assert.Null(recur.Interval);
-        ////    Assert.NotNull(recur.ByDay);
-        ////    Assert.Equal(5, recur.ByDay.Count);
-        ////    Assert.Equal(null, recur.ByDay[0].Order);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.MO, recur.ByDay[0].Weekday);
-        ////    Assert.Equal(2, recur.ByDay[1].Order);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.TU, recur.ByDay[1].Weekday);
-        ////    Assert.Equal(6, recur.ByDay[2].Order);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.WE, recur.ByDay[2].Weekday);
-        ////    Assert.Equal(null, recur.ByDay[3].Order);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.TH, recur.ByDay[3].Weekday);
-        ////    Assert.Equal(-3, recur.ByDay[4].Order);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.FR, recur.ByDay[4].Weekday);
-        ////    Assert.Equal(new int[] { -1 }, recur.BySetPos?.ToArray());
+            Assert.Null(parser.EncodeRecur(null));
 
-        ////    recur = parser.ParseRecur("FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU;BYHOUR=8,9;BYMINUTE=30");
-        ////    Assert.NotNull(recur);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Yearly, recur.Frequency);
-        ////    Assert.Equal(2, recur.Interval);
-        ////    Assert.NotNull(recur.ByDay);
-        ////    Assert.Equal(1, recur.ByDay.Count);
-        ////    Assert.Equal(null, recur.ByDay[0].Order);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.SU, recur.ByDay[0].Weekday);
-        ////    Assert.Equal(new int[] { 8, 9 }, recur.ByHour?.ToArray());
-        ////    Assert.Equal(new int[] { 1 }, recur.ByMonth?.ToArray());
-        ////    Assert.Equal(new int[] { 30 }, recur.ByMinute?.ToArray());
-
-        ////    recur = parser.ParseRecur("freq=daily;count=10;interval=2");
-        ////    Assert.NotNull(recur);
-        ////    Assert.NotNull(recur);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Daily, recur.Frequency);
-        ////    Assert.Equal(2, recur.Interval);
-        ////    Assert.Equal(10, recur.Count);
-        ////    Assert.Equal(null, recur.Until);
-
-        ////    recur = parser.ParseRecur("FREQ=DAILY;COUNT=10;INTERVAL=2;UNTIL=20100201");
-        ////    Assert.NotNull(recur);
-        ////    Assert.NotNull(recur);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Daily, recur.Frequency);
-        ////    Assert.Equal(2, recur.Interval);
-        ////    Assert.Equal(null, recur.Count);
-        ////    Assert.Equal(new DateTime(2010, 2, 1), recur.Until);
-
-        ////    recur = parser.ParseRecur("FREQ=DAILY;;UNTIL=20100201;COUNT=10;INTERVAL=2;BYSECOND=1,2;BYMINUTE=3;BYHOUR=4,10;BYMONTH=1,6;BYMONTHDAY=1;BYYEARDAY=1;BYWEEKNO=1;WKST=SU;yanos=test;");
-        ////    Assert.NotNull(recur);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Weekdays.SU, recur.StartWeek);
-        ////    Assert.Equal(iCalendar.Structure.Recurrence.Frequencies.Daily, recur.Frequency);
-        ////    Assert.Equal(2, recur.Interval);
-        ////    Assert.Equal(10, recur.Count);
-        ////    Assert.Equal(null, recur.Until);
-        ////    Assert.Equal(new int[] { 1, 2 }, recur.BySecond?.ToArray());
-        ////    Assert.Equal(new int[] { 3 }, recur.ByMinute?.ToArray());
-        ////    Assert.Equal(new int[] { 4, 10 }, recur.ByHour?.ToArray());
-        ////    Assert.Equal(new int[] { 1, 6 }, recur.ByMonth?.ToArray());
-        ////    Assert.Equal(new int[] { 1 }, recur.ByMonthDay?.ToArray());
-        ////    Assert.Equal(new int[] { 1 }, recur.ByYearDay?.ToArray());
-        ////    Assert.Equal(new int[] { 1 }, recur.ByWeekNo?.ToArray());
-        ////    Assert.NotNull(recur.Others);
-        ////    Assert.Equal(new Dictionary<string, string>
-        ////    {
-        ////        { "yanos", "test" }
-        ////    }, recur.Others);
-
-        ////    Assert.Null(parser.ParseRecur(""));
-        ////    Assert.Null(parser.ParseRecur("FREQ=DAILY;COUNT;INTERVAL=2"));
-        ////    Assert.Null(parser.ParseRecur("FREQ=Test"));
-        ////    Assert.Null(parser.ParseRecur("UNTIL=Test"));
-        ////    Assert.Null(parser.ParseRecur("COUNT=Test"));
-        ////    Assert.Null(parser.ParseRecur("INTERVAL=Test"));
-        ////    Assert.Null(parser.ParseRecur("BYSECOND=Test"));
-        ////    Assert.Null(parser.ParseRecur("BYMINUTE=500"));
-        ////    Assert.Null(parser.ParseRecur("BYHOUR=-5"));
-        ////    Assert.Null(parser.ParseRecur("BYMONTH="));
-        ////    Assert.Null(parser.ParseRecur("BYMONTHDAY=0"));
-        ////    Assert.Null(parser.ParseRecur("BYYEARDAY=0"));
-        ////    Assert.Null(parser.ParseRecur("BYWEEKNO=0"));
-        ////    Assert.Null(parser.ParseRecur("BYSETPOS=0"));
-        ////    Assert.Null(parser.ParseRecur("WKST=test"));
-        ////    Assert.Null(parser.ParseRecur("BYDAY="));
-        ////    Assert.Null(parser.ParseRecur("BYDAY=MO, ,FR"));
-        ////    Assert.Null(parser.ParseRecur("BYDAY=test"));
-        ////    Assert.Null(parser.ParseRecur("BYDAY=-MO"));
-        ////    Assert.Null(parser.ParseRecur("BYDAY=0MO"));
-        ////    Assert.Null(parser.ParseRecur("BYDAY=+100MO"));
-        ////    Assert.Null(parser.ParseRecur("BYDAY=-100MO"));
-        ////}
+            Recurrence rec = new Recurrence();
+            Assert.Equal("FREQ=SECONDLY", parser.EncodeRecur(rec));
+            rec.Frequency = Recurrence.Frequencies.Daily;
+            rec.Until = new DateTime(2017, 11, 18, 17, 46, 0);
+            rec.Count = 23;
+            rec.Interval = 2;
+            rec.BySecond = new int[] { 3, 6, 9 };
+            rec.ByMinute = new int[] { 7, 8, 9 };
+            rec.ByHour = new int[] { 1, 2, 4 };
+            rec.ByDay = new Recurrence.WeekdayNum[] {
+                new Recurrence.WeekdayNum { Weekday = Recurrence.Weekdays.MO, Order = 1 },
+                new Recurrence.WeekdayNum { Weekday = Recurrence.Weekdays.TH, Order = 3 }
+            };
+            rec.ByMonthDay = new int[] { 3, 2, 1 };
+            rec.ByYearDay = new int[] { 9, 8, 7 };
+            rec.ByWeekNo = new int[] { 9, 7, 5 };
+            rec.ByMonth = new int[] { 5, 6 };
+            rec.BySetPos = new int[] { 1, 9 };
+            rec.StartWeek = Recurrence.Weekdays.TU;
+            rec.Others = new Dictionary<string, string> {
+                {"p1", "val1" },
+                {"p2", "val2" }
+            };
+            Assert.Equal("FREQ=DAILY;UNTIL=20171118T174600;COUNT=23;INTERVAL=2;BYSECOND=3,6,9;BYMINUTE=7,8,9;BYHOUR=1,2,4;BYDAY=1MO,3TH;BYMONTHDAY=3,2,1;BYYEARDAY=9,8,7;BYWEEKNO=9,7,5;BYMONTH=5,6;BYSETPOS=1,9;WKST=TU;p1=val1;p2=val2", parser.EncodeRecur(rec));
+        }
 
         [Fact]
         public void EncodeText()

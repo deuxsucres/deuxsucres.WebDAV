@@ -458,204 +458,202 @@ namespace deuxsucres.iCalendar.Parser
             return null;
         }
 
-        ///// <summary>
-        ///// Parse a list of integer with range check
-        ///// </summary>
-        //IList<int> ParseListInt(string value, int minRange, int maxRange, bool acceptNeg)
-        //{
-        //    if (string.IsNullOrWhiteSpace(value)) return null;
-        //    var parts = value.Split(',');
-        //    List<int> result = new List<int>();
-        //    foreach (string part in parts)
-        //    {
-        //        int? v = ParseInt(part);
-        //        if (v != null && (v >= minRange && v <= maxRange) || (acceptNeg && v >= -maxRange && v <= -minRange))
-        //            result.Add(v.Value);
-        //        else
-        //            return null;
-        //    }
-        //    return result;
-        //}
+        /// <summary>
+        /// Parse a list of integer with range check
+        /// </summary>
+        IList<int> ParseListInt(string value, int minRange, int maxRange, bool acceptNeg)
+        {
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            var parts = value.Split(',');
+            List<int> result = new List<int>();
+            foreach (string part in parts)
+            {
+                int? v = ParseInt(part);
+                if (v != null && (v >= minRange && v <= maxRange) || (acceptNeg && v >= -maxRange && v <= -minRange))
+                    result.Add(v.Value);
+                else
+                    return null;
+            }
+            return result;
+        }
 
-        ///// <summary>
-        ///// Parse a list of weekday recurrence
-        ///// </summary>
-        //IList<Structure.Recurrence.WeekdayNum> ParseListWeekdayNum(string value)
-        //{
-        //    //weekdaynum = [([plus] ordwk / minus ordwk)] weekday
-        //    //plus       = "+"
-        //    //minus      = "-"
-        //    //ordwk      = 1DIGIT / 2DIGIT       ; 1 à 53
-        //    //weekday    = "SU" / "MO" / "TU" / "WE" / "TH" / "FR" / "SA"
-        //    if (string.IsNullOrWhiteSpace(value)) return null;
-        //    var parts = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-        //    List<Structure.Recurrence.WeekdayNum> result = new List<Structure.Recurrence.WeekdayNum>();
-        //    foreach (var part in parts.Select(p => p.Trim()))
-        //    {
-        //        if (string.IsNullOrEmpty(part)) return null;
-        //        var source = part;
-        //        int? v = null;
-        //        bool? neg = null;
-        //        if (source[0] == '+')
-        //        {
-        //            source = source.Substring(1);
-        //            neg = false;
-        //        }
-        //        else if (source[0] == '-')
-        //        {
-        //            source = source.Substring(1);
-        //            neg = true;
-        //        }
-        //        while (source.Length > 0 && char.IsDigit(source[0]))
-        //        {
-        //            v = ((v ?? 0) * 10) + (source[0] - '0');
-        //            source = source.Substring(1);
-        //        }
-        //        if (neg.HasValue && !v.HasValue) return null;
-        //        if (neg == true) v = -v;
-        //        if (v.HasValue && !((v >= 1 && v <= 53) || (v >= -53 && v <= -1))) return null;
+        /// <summary>
+        /// Parse a list of weekday recurrence
+        /// </summary>
+        IList<Recurrence.WeekdayNum> ParseListWeekdayNum(string value)
+        {
+            //weekdaynum = [([plus] ordwk / minus ordwk)] weekday
+            //plus       = "+"
+            //minus      = "-"
+            //ordwk      = 1DIGIT / 2DIGIT       ; 1 à 53
+            //weekday    = "SU" / "MO" / "TU" / "WE" / "TH" / "FR" / "SA"
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            var parts = value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            List<Recurrence.WeekdayNum> result = new List<Recurrence.WeekdayNum>();
+            foreach (string part in parts.Select(p => p.Trim()))
+            {
+                if (string.IsNullOrEmpty(part)) return null;
+                var source = part;
+                int? v = null;
+                bool? neg = null;
+                if (source[0] == '+')
+                {
+                    source = source.Substring(1);
+                    neg = false;
+                }
+                else if (source[0] == '-')
+                {
+                    source = source.Substring(1);
+                    neg = true;
+                }
+                while (source.Length > 0 && char.IsDigit(source[0]))
+                {
+                    v = ((v ?? 0) * 10) + (source[0] - '0');
+                    source = source.Substring(1);
+                }
+                if (neg.HasValue && !v.HasValue) return null;
+                if (neg == true) v = -v;
+                if (v.HasValue && !((v >= 1 && v <= 53) || (v >= -53 && v <= -1))) return null;
 
-        //        Structure.Recurrence.Weekdays d;
-        //        if (!Enum.TryParse<Structure.Recurrence.Weekdays>(source, out d))
-        //            return null;
-        //        result.Add(new Structure.Recurrence.WeekdayNum
-        //        {
-        //            Weekday = d,
-        //            Order = v
-        //        });
-        //    }
-        //    return result;
-        //}
+                Recurrence.Weekdays d;
+                if (!Enum.TryParse<Recurrence.Weekdays>(source, out d))
+                    return null;
+                result.Add(new Recurrence.WeekdayNum
+                {
+                    Weekday = d,
+                    Order = v
+                });
+            }
+            return result;
+        }
 
-        ///// <summary>
-        ///// Parse a recurrence
-        ///// </summary>
-        //public virtual Structure.Recurrence ParseRecur(string value)
-        //{
-        //    if (string.IsNullOrWhiteSpace(value))
-        //        return null;
+        /// <summary>
+        /// Parse a recurrence
+        /// </summary>
+        public virtual Recurrence ParseRecur(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
 
-        //    var result = new Structure.Recurrence();
+            var result = new Recurrence();
 
-        //    var parts = value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-        //    foreach (var part in parts)
-        //    {
-        //        var vparts = part.Split(new char[] { '=' }, 2);
-        //        if (vparts.Length != 2) return null;
-        //        switch (vparts[0].ToUpper())
-        //        {
-        //            case "FREQ":
-        //                {
-        //                    Structure.Recurrence.Frequencies fq;
-        //                    if (!Enum.TryParse<Structure.Recurrence.Frequencies>(vparts[1], true, out fq))
-        //                        return null;
-        //                    result.Frequency = fq;
-        //                    break;
-        //                }
-        //            case "UNTIL":
-        //                {
-        //                    DateTime? dt = ParseDateTime(vparts[1]);
-        //                    if (dt == null)
-        //                        return null;
-        //                    result.Until = dt;
-        //                    result.Count = null;
-        //                    break;
-        //                }
-        //            case "COUNT":
-        //                {
-        //                    int? cnt = ParseInt(vparts[1]);
-        //                    if (cnt == null)
-        //                        return null;
-        //                    result.Until = null;
-        //                    result.Count = cnt;
-        //                    break;
-        //                }
-        //            case "INTERVAL":
-        //                {
-        //                    int? inter = ParseInt(vparts[1]);
-        //                    if (inter == null)
-        //                        return null;
-        //                    result.Interval = inter;
-        //                    break;
-        //                }
-        //            case "BYSECOND":
-        //                {
-        //                    result.BySecond = ParseListInt(vparts[1], 0, 59, false);
-        //                    if (result.BySecond == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYMINUTE":
-        //                {
-        //                    result.ByMinute = ParseListInt(vparts[1], 0, 59, false);
-        //                    if (result.ByMinute == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYHOUR":
-        //                {
-        //                    result.ByHour = ParseListInt(vparts[1], 0, 23, false);
-        //                    if (result.ByHour == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYDAY":
-        //                {
-        //                    result.ByDay = ParseListWeekdayNum(vparts[1]);
-        //                    if (result.ByDay == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYMONTHDAY":
-        //                {
-        //                    result.ByMonthDay = ParseListInt(vparts[1], 1, 31, true);
-        //                    if (result.ByMonthDay == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYYEARDAY":
-        //                {
-        //                    result.ByYearDay = ParseListInt(vparts[1], 1, 366, true);
-        //                    if (result.ByYearDay == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYWEEKNO":
-        //                {
-        //                    result.ByWeekNo = ParseListInt(vparts[1], 1, 53, false);
-        //                    if (result.ByWeekNo == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYMONTH":
-        //                {
-        //                    result.ByMonth = ParseListInt(vparts[1], 1, 12, false);
-        //                    if (result.ByMonth == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "BYSETPOS":
-        //                {
-        //                    result.BySetPos = ParseListInt(vparts[1], 1, 366, true);
-        //                    if (result.BySetPos == null)
-        //                        return null;
-        //                    break;
-        //                }
-        //            case "WKST":
-        //                {
-        //                    Structure.Recurrence.Weekdays wd;
-        //                    if (!Enum.TryParse<Structure.Recurrence.Weekdays>(vparts[1], out wd))
-        //                        return null;
-        //                    result.StartWeek = wd;
-        //                    break;
-        //                }
-        //            default:
-        //                result.AddOther(vparts[0], vparts[1]);
-        //                break;
-        //        }
-        //    }
-        //    return result;
-        //}
+            var parts = value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string part in parts)
+            {
+                var vparts = part.Split(new char[] { '=' }, 2);
+                if (vparts.Length != 2) return null;
+                switch (vparts[0].ToUpper())
+                {
+                    case "FREQ":
+                        {
+                            if (!Enum.TryParse<Recurrence.Frequencies>(vparts[1], true, out Recurrence.Frequencies fq))
+                                return null;
+                            result.Frequency = fq;
+                            break;
+                        }
+                    case "UNTIL":
+                        {
+                            DateTime? dt = ParseDateTime(vparts[1]);
+                            if (dt == null)
+                                return null;
+                            result.Until = dt;
+                            result.Count = null;
+                            break;
+                        }
+                    case "COUNT":
+                        {
+                            int? cnt = ParseInt(vparts[1]);
+                            if (cnt == null)
+                                return null;
+                            result.Until = null;
+                            result.Count = cnt;
+                            break;
+                        }
+                    case "INTERVAL":
+                        {
+                            int? inter = ParseInt(vparts[1]);
+                            if (inter == null)
+                                return null;
+                            result.Interval = inter;
+                            break;
+                        }
+                    case "BYSECOND":
+                        {
+                            result.BySecond = ParseListInt(vparts[1], 0, 59, false);
+                            if (result.BySecond == null)
+                                return null;
+                            break;
+                        }
+                    case "BYMINUTE":
+                        {
+                            result.ByMinute = ParseListInt(vparts[1], 0, 59, false);
+                            if (result.ByMinute == null)
+                                return null;
+                            break;
+                        }
+                    case "BYHOUR":
+                        {
+                            result.ByHour = ParseListInt(vparts[1], 0, 23, false);
+                            if (result.ByHour == null)
+                                return null;
+                            break;
+                        }
+                    case "BYDAY":
+                        {
+                            result.ByDay = ParseListWeekdayNum(vparts[1]);
+                            if (result.ByDay == null)
+                                return null;
+                            break;
+                        }
+                    case "BYMONTHDAY":
+                        {
+                            result.ByMonthDay = ParseListInt(vparts[1], 1, 31, true);
+                            if (result.ByMonthDay == null)
+                                return null;
+                            break;
+                        }
+                    case "BYYEARDAY":
+                        {
+                            result.ByYearDay = ParseListInt(vparts[1], 1, 366, true);
+                            if (result.ByYearDay == null)
+                                return null;
+                            break;
+                        }
+                    case "BYWEEKNO":
+                        {
+                            result.ByWeekNo = ParseListInt(vparts[1], 1, 53, false);
+                            if (result.ByWeekNo == null)
+                                return null;
+                            break;
+                        }
+                    case "BYMONTH":
+                        {
+                            result.ByMonth = ParseListInt(vparts[1], 1, 12, false);
+                            if (result.ByMonth == null)
+                                return null;
+                            break;
+                        }
+                    case "BYSETPOS":
+                        {
+                            result.BySetPos = ParseListInt(vparts[1], 1, 366, true);
+                            if (result.BySetPos == null)
+                                return null;
+                            break;
+                        }
+                    case "WKST":
+                        {
+                            if (!Enum.TryParse<Recurrence.Weekdays>(vparts[1], out Recurrence.Weekdays wd))
+                                return null;
+                            result.StartWeek = wd;
+                            break;
+                        }
+                    default:
+                        result.AddOther(vparts[0], vparts[1]);
+                        break;
+                }
+            }
+            return result;
+        }
 
         /// <summary>
         /// Parse a text value
@@ -1023,60 +1021,60 @@ namespace deuxsucres.iCalendar.Parser
             return Convert.ToBase64String(value);
         }
 
-        ///// <summary>
-        ///// Encode a week day
-        ///// </summary>
-        //protected virtual string EncodeWeekDaynum(Recurrence.WeekdayNum value)
-        //{
-        //    string o = string.Empty;
-        //    if (value.Order.HasValue)
-        //        o = EncodeInt(value.Order.Value);
-        //    string d = EncodeEnum(value.Weekday);
-        //    return o + d;
-        //}
+        /// <summary>
+        /// Encode a week day
+        /// </summary>
+        protected virtual string EncodeWeekDaynum(Recurrence.WeekdayNum value)
+        {
+            string o = string.Empty;
+            if (value.Order.HasValue)
+                o = EncodeInt(value.Order.Value);
+            string d = EncodeEnum(value.Weekday);
+            return o + d;
+        }
 
-        ///// <summary>
-        ///// Encode a recurrence
-        ///// </summary>
-        //public virtual string EncodeRecur(Recurrence value)
-        //{
-        //    if (value == null) return null;
+        /// <summary>
+        /// Encode a recurrence
+        /// </summary>
+        public virtual string EncodeRecur(Recurrence value)
+        {
+            if (value == null) return null;
 
-        //    List<string> result = new List<string>();
-        //    result.Add("FREQ=" + EncodeEnum(value.Frequency));
-        //    if (value.Until.HasValue)
-        //        result.Add("UNTIL=" + EncodeDateTime(value.Until.Value));
-        //    if (value.Count.HasValue)
-        //        result.Add("COUNT=" + EncodeInt(value.Count.Value));
-        //    if (value.Interval.HasValue)
-        //        result.Add("INTERVAL=" + EncodeInt(value.Interval.Value));
-        //    if (value.BySecond != null)
-        //        result.Add("BYSECOND=" + EncodeList(value.BySecond, s => EncodeInt(s)));
-        //    if (value.ByMinute != null)
-        //        result.Add("BYMINUTE=" + EncodeList(value.ByMinute, s => EncodeInt(s)));
-        //    if (value.ByHour != null)
-        //        result.Add("BYHOUR=" + EncodeList(value.ByHour, s => EncodeInt(s)));
-        //    if (value.ByDay != null)
-        //        result.Add("BYDAY=" + EncodeList(value.ByDay, s => EncodeWeekDaynum(s)));
-        //    if (value.ByMonthDay != null)
-        //        result.Add("BYMONTHDAY=" + EncodeList(value.ByMonthDay, s => EncodeInt(s)));
-        //    if (value.ByYearDay != null)
-        //        result.Add("BYYEARDAY=" + EncodeList(value.ByYearDay, s => EncodeInt(s)));
-        //    if (value.ByWeekNo != null)
-        //        result.Add("BYWEEKNO=" + EncodeList(value.ByWeekNo, s => EncodeInt(s)));
-        //    if (value.ByMonth != null)
-        //        result.Add("BYMONTH=" + EncodeList(value.ByMonth, s => EncodeInt(s)));
-        //    if (value.BySetPos != null)
-        //        result.Add("BYSETPOS=" + EncodeList(value.BySetPos, s => EncodeInt(s)));
-        //    if (value.StartWeek != Recurrence.Weekdays.MO)
-        //        result.Add("WKST=" + EncodeEnum(value.StartWeek));
-        //    if (value.Others != null)
-        //    {
-        //        foreach (var kvp in value.Others)
-        //            result.Add($"{kvp.Key}={kvp.Value}");
-        //    }
-        //    return string.Join(";", result);
-        //}
+            List<string> result = new List<string>();
+            result.Add("FREQ=" + EncodeEnum(value.Frequency));
+            if (value.Until.HasValue)
+                result.Add("UNTIL=" + EncodeDateTime(value.Until.Value));
+            if (value.Count.HasValue)
+                result.Add("COUNT=" + EncodeInt(value.Count.Value));
+            if (value.Interval.HasValue)
+                result.Add("INTERVAL=" + EncodeInt(value.Interval.Value));
+            if (value.BySecond != null)
+                result.Add("BYSECOND=" + EncodeList(value.BySecond, s => EncodeInt(s)));
+            if (value.ByMinute != null)
+                result.Add("BYMINUTE=" + EncodeList(value.ByMinute, s => EncodeInt(s)));
+            if (value.ByHour != null)
+                result.Add("BYHOUR=" + EncodeList(value.ByHour, s => EncodeInt(s)));
+            if (value.ByDay != null)
+                result.Add("BYDAY=" + EncodeList(value.ByDay, s => EncodeWeekDaynum(s)));
+            if (value.ByMonthDay != null)
+                result.Add("BYMONTHDAY=" + EncodeList(value.ByMonthDay, s => EncodeInt(s)));
+            if (value.ByYearDay != null)
+                result.Add("BYYEARDAY=" + EncodeList(value.ByYearDay, s => EncodeInt(s)));
+            if (value.ByWeekNo != null)
+                result.Add("BYWEEKNO=" + EncodeList(value.ByWeekNo, s => EncodeInt(s)));
+            if (value.ByMonth != null)
+                result.Add("BYMONTH=" + EncodeList(value.ByMonth, s => EncodeInt(s)));
+            if (value.BySetPos != null)
+                result.Add("BYSETPOS=" + EncodeList(value.BySetPos, s => EncodeInt(s)));
+            if (value.StartWeek != Recurrence.Weekdays.MO)
+                result.Add("WKST=" + EncodeEnum(value.StartWeek));
+            if (value.Others != null)
+            {
+                foreach (var kvp in value.Others)
+                    result.Add($"{kvp.Key}={kvp.Value}");
+            }
+            return string.Join(";", result);
+        }
 
         #endregion
 
