@@ -55,6 +55,7 @@
     </ApplicationDefinition>
     <Compile Include="IViewer.cs" />
     <Compile Include="IWebDavService.cs" />
+    <Compile Include="Models\RequestResult.cs" />
     <Compile Include="PropertyEditor.xaml.cs">
       <DependentUpon>PropertyEditor.xaml</DependentUpon>
     </Compile>
@@ -63,6 +64,9 @@
     </Compile>
     <Compile Include="Views\ResponseHeaders.xaml.cs">
       <DependentUpon>ResponseHeaders.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TextContentViewer.xaml.cs">
+      <DependentUpon>TextContentViewer.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -86,6 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ResponseHeaders.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TextContentViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -27,11 +27,6 @@ namespace WebDavTools
     /// </summary>
     public partial class MainWindow : Window, IWebDavService
     {
-        class RequestResult<T>
-        {
-            public Uri ServerUri { get; set; }
-            public T Result { get; set; }
-        }
         Dictionary<HttpRequestMessage, RequestHistory> _requests = new Dictionary<HttpRequestMessage, RequestHistory>();
         Dictionary<string, Type> _viewers = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
 
@@ -68,7 +63,11 @@ namespace WebDavTools
             };
             cbConnection.SelectedIndex = 0;
 
-            //_viewers[]
+            _viewers["text/plain"] = typeof(Views.TextContentViewer);
+            _viewers["text/xml"] = typeof(Views.TextContentViewer);
+            _viewers["text/html"] = typeof(Views.TextContentViewer);
+            _viewers["application/xml"] = typeof(Views.TextContentViewer);
+            _viewers["text/calendar"] = typeof(Views.TextContentViewer);
         }
 
         string EncodeXmlContent(string content)
@@ -287,16 +286,17 @@ namespace WebDavTools
                         l.AppendLine();
                     }
 
+                    string cType = response.Content?.Headers?.ContentType?.MediaType;
                     if (response.Content != null && (
-                        response.Content.Headers.ContentType.MediaType == "text/plain"
-                        || response.Content.Headers.ContentType.MediaType == "text/html"
-                        || response.Content.Headers.ContentType.MediaType == "text/xml"
-                        || response.Content.Headers.ContentType.MediaType == "application/xml"
+                        cType == "text/plain"
+                        || cType == "text/html"
+                        || cType == "text/xml"
+                        || cType == "application/xml"
                         ))
                     {
                         string textContent = await ExtractTextContent(response);
 
-                        if (response.Content.Headers.ContentType.MediaType == "text/xml" || response.Content.Headers.ContentType.MediaType == "application/xml")
+                        if (cType == "text/xml" || cType == "application/xml")
                         {
                             try
                             {
@@ -331,6 +331,7 @@ namespace WebDavTools
                 return null;
             }
         }
+        Task<RequestResult<T>> IWebDavService.CallRequestAsync<T>(Func<WebDavClient, Task<T>> call) => CallRequestAsync(call);
 
         async Task CallOptionsAsync(string path)
         {
