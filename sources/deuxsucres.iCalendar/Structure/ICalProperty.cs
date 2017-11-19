@@ -14,7 +14,7 @@ namespace deuxsucres.iCalendar.Structure
         /// <summary>
         /// Serialize the property
         /// </summary>
-        void Serialize(ICalWriter writer);
+        ContentLine Serialize(ICalWriter writer);
 
         /// <summary>
         /// Deserialize the property
