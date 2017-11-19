@@ -69,6 +69,7 @@
     <Compile Include="Parser\CalendarParserTest.cs" />
     <Compile Include="Parser\ContentLineTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\SerializationExtensionsTest.cs" />
     <Compile Include="Structure\PeriodTest.cs" />
     <Compile Include="Structure\RecurrenceTest.cs" />
   </ItemGroup>
