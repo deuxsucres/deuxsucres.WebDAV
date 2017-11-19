@@ -75,6 +75,7 @@
     <Compile Include="Structure\CalPropertyParameterTest.cs" />
     <Compile Include="Structure\CalPropertyTest.cs" />
     <Compile Include="Structure\Parameters\FloatParameterTest.cs" />
+    <Compile Include="Structure\Parameters\TextParameterTest.cs" />
     <Compile Include="Structure\Parameters\IntParameterTest.cs" />
     <Compile Include="Structure\Parameters\BooleanParameterTest.cs" />
     <Compile Include="Structure\PeriodTest.cs" />
