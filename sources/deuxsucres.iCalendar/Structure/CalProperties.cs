@@ -41,7 +41,7 @@ namespace deuxsucres.iCalendar.Structure
         }
 
         /// <summary>
-        /// Enumerate the components
+        /// Enumerate the properties
         /// </summary>
         protected IEnumerable<T> GetProperties()
         {
