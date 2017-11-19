@@ -493,7 +493,7 @@ namespace deuxsucres.iCalendar.Parser
             foreach (string part in parts.Select(p => p.Trim()))
             {
                 if (string.IsNullOrEmpty(part)) return null;
-                var source = part;
+                string source = part;
                 int? v = null;
                 bool? neg = null;
                 if (source[0] == '+')
@@ -515,8 +515,7 @@ namespace deuxsucres.iCalendar.Parser
                 if (neg == true) v = -v;
                 if (v.HasValue && !((v >= 1 && v <= 53) || (v >= -53 && v <= -1))) return null;
 
-                Recurrence.Weekdays d;
-                if (!Enum.TryParse<Recurrence.Weekdays>(source, out d))
+                if (!Enum.TryParse<Recurrence.Weekdays>(source, out Recurrence.Weekdays d))
                     return null;
                 result.Add(new Recurrence.WeekdayNum
                 {
@@ -1040,8 +1039,10 @@ namespace deuxsucres.iCalendar.Parser
         {
             if (value == null) return null;
 
-            List<string> result = new List<string>();
-            result.Add("FREQ=" + EncodeEnum(value.Frequency));
+            List<string> result = new List<string>
+            {
+                "FREQ=" + EncodeEnum(value.Frequency)
+            };
             if (value.Until.HasValue)
                 result.Add("UNTIL=" + EncodeDateTime(value.Until.Value));
             if (value.Count.HasValue)
