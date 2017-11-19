@@ -123,4 +123,10 @@
   <data name="Err_FailToParseValue" xml:space="preserve">
     <value>Fail to parse the value '{0}' at line {1}.</value>
   </data>
+  <data name="Err_SyntaxExpected" xml:space="preserve">
+    <value>'{0}' expected.</value>
+  </data>
+  <data name="Err_SyntaxExpectedAtLine" xml:space="preserve">
+    <value>'{0}' expected at line {1}.</value>
+  </data>
 </root>

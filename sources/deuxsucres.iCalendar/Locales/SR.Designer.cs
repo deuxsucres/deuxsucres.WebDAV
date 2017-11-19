@@ -78,5 +78,23 @@ namespace deuxsucres.iCalendar.Locales {
                 return ResourceManager.GetString("Err_FailToParseValue", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à &apos;{0}&apos; expected..
+        /// </summary>
+        internal static string Err_SyntaxExpected {
+            get {
+                return ResourceManager.GetString("Err_SyntaxExpected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à &apos;{0}&apos; expected at line {1}..
+        /// </summary>
+        internal static string Err_SyntaxExpectedAtLine {
+            get {
+                return ResourceManager.GetString("Err_SyntaxExpectedAtLine", resourceCulture);
+            }
+        }
     }
 }
