@@ -1,6 +1,6 @@
 ﻿using deuxsucres.iCalendar.Parser;
 using deuxsucres.iCalendar.Serialization;
-using deuxsucres.iCalendar.Structure.Parameters;
+using deuxsucres.iCalendar.Structure;
 using Moq;
 using System;
 using System.Collections.Generic;

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace deuxsucres.iCalendar.Structure.Parameters
+namespace deuxsucres.iCalendar.Structure
 {
     /// <summary>
     /// Enum parameter
