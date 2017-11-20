@@ -713,14 +713,22 @@ namespace deuxsucres.iCalendar.Parser
         }
 
         /// <summary>
-        /// Parse an enum
+        /// Default enum parser
         /// </summary>
-        public virtual T? ParseEnum<T>(string value) where T : struct
+        public static T? DefaultParseEnum<T>(string value) where T : struct
         {
             if (string.IsNullOrWhiteSpace(value)) return null;
             if (Enum.TryParse<T>(value.Replace("-", "_"), true, out T e))
                 return e;
             return null;
+        }
+
+        /// <summary>
+        /// Parse an enum
+        /// </summary>
+        public virtual T? ParseEnum<T>(string value) where T : struct
+        {
+            return DefaultParseEnum<T>(value);
         }
 
         #endregion
@@ -938,11 +946,19 @@ namespace deuxsucres.iCalendar.Parser
         }
 
         /// <summary>
+        /// Default enum encoder
+        /// </summary>
+        public static string DefaultEncodeEnum<T>(T value) where T : struct
+        {
+            return value.ToString().Replace("_", "-").ToUpper();
+        }
+
+        /// <summary>
         /// Encode an enum
         /// </summary>
         public virtual string EncodeEnum<T>(T value) where T : struct
         {
-            return value.ToString().Replace("_", "-").ToUpper();
+            return DefaultEncodeEnum<T>(value);
         }
 
         /// <summary>
