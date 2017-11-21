@@ -157,7 +157,7 @@ namespace deuxsucres.iCalendar.Parser
         /// <summary>
         /// Split a list of values
         /// </summary>
-        public virtual IEnumerable<T> SplitValue<T>(string value, Func<string, T> parse)
+        public virtual IEnumerable<T> ParseList<T>(string value, Func<string, T> parse)
         {
             if (value == null) yield break;
             int ps = 0, pe = 0;
@@ -675,7 +675,7 @@ namespace deuxsucres.iCalendar.Parser
         public virtual string[] ParseTextList(string value)
         {
             if (value == null) return null;
-            return SplitValue(value, v => ParseText(v)).ToArray();
+            return ParseList(value, v => ParseText(v)).ToArray();
         }
 
         /// <summary>
@@ -832,7 +832,7 @@ namespace deuxsucres.iCalendar.Parser
         public virtual string EncodeTextParameter(string value)
         {
             if (value == null) return null;
-            if (value.IndexOfAny(new char[] { ',', ';', '=' }) >= 0)
+            if (value.IndexOfAny(new char[] { ',', ';', '=' }) >= 0 && !(value.StartsWith("\"") && value.EndsWith("\"")))
                 return $"\"{value}\"";
             return value;
         }

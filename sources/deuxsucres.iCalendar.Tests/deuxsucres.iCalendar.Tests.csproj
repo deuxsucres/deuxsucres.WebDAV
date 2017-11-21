@@ -74,6 +74,7 @@
     <Compile Include="Structure\CalPropertiesTest.cs" />
     <Compile Include="Structure\CalPropertyParameterTest.cs" />
     <Compile Include="Structure\CalPropertyTest.cs" />
+    <Compile Include="Structure\Parameters\CalAddressesParameterTest.cs" />
     <Compile Include="Structure\Parameters\EnumParameterTest.cs" />
     <Compile Include="Structure\Parameters\FloatParameterTest.cs" />
     <Compile Include="Structure\Parameters\CalAddressParameterTest.cs" />
