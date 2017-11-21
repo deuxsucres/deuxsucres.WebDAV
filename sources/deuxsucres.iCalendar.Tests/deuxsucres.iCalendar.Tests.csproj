@@ -86,6 +86,7 @@
     <Compile Include="Structure\Properties\FloatPropertyTest.cs" />
     <Compile Include="Structure\Properties\IntegerPropertyTest.cs" />
     <Compile Include="Structure\Properties\TextPropertyTest.cs" />
+    <Compile Include="Structure\Properties\UriPropertyTest.cs" />
     <Compile Include="Structure\RecurrenceTest.cs" />
   </ItemGroup>
   <ItemGroup>
