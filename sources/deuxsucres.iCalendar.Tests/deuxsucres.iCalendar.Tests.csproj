@@ -83,6 +83,7 @@
     <Compile Include="Structure\Parameters\IntParameterTest.cs" />
     <Compile Include="Structure\Parameters\BooleanParameterTest.cs" />
     <Compile Include="Structure\PeriodTest.cs" />
+    <Compile Include="Structure\Properties\TextPropertyTest.cs" />
     <Compile Include="Structure\RecurrenceTest.cs" />
   </ItemGroup>
   <ItemGroup>
