@@ -38,11 +38,10 @@ namespace deuxsucres.iCalendar.Serialization
         /// </summary>
         CalComponent ReadComponent(ContentLine line);
 
-        // TODO Uncomment when CalComponent will be created
-        ///// <summary>
-        ///// Read a typed component
-        ///// </summary>
-        //T ReadComponent<T>(ContentLine line) where T : CalComponent;
+        /// <summary>
+        /// Read a typed component
+        /// </summary>
+        T ReadComponent<T>(ContentLine line) where T : CalComponent;
 
         /// <summary>
         /// Current line

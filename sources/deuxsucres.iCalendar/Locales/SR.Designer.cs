@@ -96,5 +96,14 @@ namespace deuxsucres.iCalendar.Locales {
                 return ResourceManager.GetString("Err_SyntaxExpectedAtLine", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Unknown &apos;{0}&apos; component..
+        /// </summary>
+        internal static string Err_UnknownComponentName {
+            get {
+                return ResourceManager.GetString("Err_UnknownComponentName", resourceCulture);
+            }
+        }
     }
 }

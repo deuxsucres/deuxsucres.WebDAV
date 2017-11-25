@@ -13,7 +13,7 @@ namespace deuxsucres.iCalendar.Serialization
     {
         
         /// <summary>
-        /// Create a ne wwriter
+        /// Create a new writer
         /// </summary>
         public CalTextWriter(CalendarParser parser, TextWriter source)
         {

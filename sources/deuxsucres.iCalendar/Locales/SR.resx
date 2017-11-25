@@ -129,4 +129,7 @@
   <data name="Err_SyntaxExpectedAtLine" xml:space="preserve">
     <value>'{0}' expected at line {1}.</value>
   </data>
+  <data name="Err_UnknownComponentName" xml:space="preserve">
+    <value>Unknown '{0}' component.</value>
+  </data>
 </root>

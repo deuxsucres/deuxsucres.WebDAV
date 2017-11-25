@@ -69,8 +69,10 @@
     <Compile Include="Parser\CalendarParserTest.cs" />
     <Compile Include="Parser\ContentLineTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Serialization\CalTextReaderTest.cs" />
     <Compile Include="Serialization\CalTextWriterTest.cs" />
     <Compile Include="Serialization\SerializationExtensionsTest.cs" />
+    <Compile Include="Serialization\SerializationHelpersTest.cs" />
     <Compile Include="Structure\CalComponentTest.cs" />
     <Compile Include="Structure\CalObjectTest.cs" />
     <Compile Include="Structure\CalComponentsTest.cs" />
