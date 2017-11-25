@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using deuxsucres.iCalendar.Serialization;
 
 namespace deuxsucres.iCalendar.Structure
 {
@@ -19,37 +20,34 @@ namespace deuxsucres.iCalendar.Structure
             ExtraComponents.Clear();
         }
 
-        ///// <summary>
-        ///// Serialize a list of components
-        ///// </summary>
-        //protected virtual void SerializeComponents(IEnumerable<CalComponent> components, ICalWriter writer)
-        //{
-        //    foreach (var comp in components)
-        //    {
-        //        comp.Calendar = Calendar;
-        //        comp.Serialize(writer);
-        //    }
-        //}
+        /// <summary>
+        /// Serialize a list of components
+        /// </summary>
+        protected virtual void SerializeComponents(IEnumerable<CalComponent> components, ICalWriter writer)
+        {
+            foreach (var comp in components)
+            {
+                comp.Calendar = Calendar;
+                comp.Serialize(writer);
+            }
+        }
 
-        ///// <summary>
-        ///// Serialize the extra components
-        ///// </summary>
-        //protected virtual void SerializeExtraComponents(ICalWriter writer)
-        //{
-        //    SerializeComponents(ExtraComponents, writer);
-        //}
+        /// <summary>
+        /// Serialize the extra components
+        /// </summary>
+        protected virtual void SerializeExtraComponents(ICalWriter writer)
+        {
+            SerializeComponents(ExtraComponents, writer);
+        }
 
-        ///// <summary>
-        ///// Serialize
-        ///// </summary>
-        ///// <param name="writer"></param>
-        //public override void Serialize(ICalWriter writer)
-        //{
-        //    writer.WriteBegin(Name);
-        //    base.Serialize(writer);
-        //    SerializeExtraComponents(writer);
-        //    writer.WriteEnd(Name);
-        //}
+        /// <summary>
+        /// Serialize
+        /// </summary>
+        protected override void InternalSerialize(ICalWriter writer)
+        {
+            base.InternalSerialize(writer);
+            SerializeExtraComponents(writer);
+        }
 
         ///// <summary>
         ///// Process a component
