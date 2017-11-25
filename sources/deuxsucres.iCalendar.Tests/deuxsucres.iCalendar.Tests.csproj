@@ -72,6 +72,7 @@
     <Compile Include="Serialization\SerializationExtensionsTest.cs" />
     <Compile Include="Structure\CalComponentTest.cs" />
     <Compile Include="Structure\CalObjectTest.cs" />
+    <Compile Include="Structure\CalComponentsTest.cs" />
     <Compile Include="Structure\CalPropertiesTest.cs" />
     <Compile Include="Structure\CalPropertyParameterTest.cs" />
     <Compile Include="Structure\CalPropertyTest.cs" />
