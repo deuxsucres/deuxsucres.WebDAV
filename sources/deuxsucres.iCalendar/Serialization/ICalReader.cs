@@ -33,12 +33,12 @@ namespace deuxsucres.iCalendar.Serialization
         /// </summary>
         T MakeProperty<T>(ContentLine line) where T : ICalProperty;
 
-        // TODO Uncomment when CalComponent will be created
-        ///// <summary>
-        ///// Read a component from a "BEGIN" line
-        ///// </summary>
-        //CalComponent ReadComponent(ContentLine line);
+        /// <summary>
+        /// Read a component from a "BEGIN" line
+        /// </summary>
+        CalComponent ReadComponent(ContentLine line);
 
+        // TODO Uncomment when CalComponent will be created
         ///// <summary>
         ///// Read a typed component
         ///// </summary>
