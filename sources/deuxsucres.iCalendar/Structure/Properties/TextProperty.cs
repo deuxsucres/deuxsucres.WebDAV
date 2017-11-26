@@ -12,6 +12,15 @@ namespace deuxsucres.iCalendar.Structure
     public class TextProperty : CalProperty
     {
 
+        /// <summary>
+        /// Reset
+        /// </summary>
+        public override void Reset()
+        {
+            base.Reset();
+            Value = null;
+        }
+
         #region Serialization
 
         /// <summary>

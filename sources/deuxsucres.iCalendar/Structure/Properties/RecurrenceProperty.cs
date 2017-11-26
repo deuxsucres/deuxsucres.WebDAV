@@ -11,6 +11,15 @@ namespace deuxsucres.iCalendar.Structure
     /// </summary>
     public class RecurrenceProperty : CalProperty
     {
+        /// <summary>
+        /// Reset
+        /// </summary>
+        public override void Reset()
+        {
+            base.Reset();
+            Value = null;
+        }
+
         #region Serialization
 
         /// <summary>

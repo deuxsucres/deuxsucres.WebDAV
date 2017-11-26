@@ -11,6 +11,15 @@ namespace deuxsucres.iCalendar.Structure
     /// </summary>
     public class DateTimeProperty : CalProperty, IFormattable
     {
+        /// <summary>
+        /// Reset
+        /// </summary>
+        public override void Reset()
+        {
+            base.Reset();
+            Value = DateTime.MinValue;
+        }
+
         #region Serialization
 
         /// <summary>
@@ -26,7 +35,6 @@ namespace deuxsucres.iCalendar.Structure
         /// </summary>
         protected override bool DeserializeValue(ICalReader reader, ContentLine line)
         {
-            Value = DateTime.MinValue;
             var dt = reader.Parser.ParseDateTime(line.Value);
             if (!dt.HasValue) return false;
             Value = dt.Value;

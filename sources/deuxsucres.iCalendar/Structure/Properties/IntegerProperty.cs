@@ -11,6 +11,15 @@ namespace deuxsucres.iCalendar.Structure
     /// </summary>
     public class IntegerProperty : CalProperty, IFormattable
     {
+        /// <summary>
+        /// Reset
+        /// </summary>
+        public override void Reset()
+        {
+            base.Reset();
+            Value = 0;
+        }
+
         #region Serialization
 
         /// <summary>
@@ -26,7 +35,6 @@ namespace deuxsucres.iCalendar.Structure
         /// </summary>
         protected override bool DeserializeValue(ICalReader reader, ContentLine line)
         {
-            Value = 0;
             var i = reader.Parser.ParseInt(line.Value);
             if (!i.HasValue) return false;
             Value = i.Value;
