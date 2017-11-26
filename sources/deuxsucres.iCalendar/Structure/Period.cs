@@ -36,6 +36,30 @@ namespace deuxsucres.iCalendar
         }
 
         /// <summary>
+        /// Equality
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if (obj is Period p)
+            {
+                return
+                    object.Equals(p.DateStart, DateStart)
+                    && object.Equals(p.DateEnd, DateEnd)
+                    && object.Equals(p.Duration, Duration)
+                    ;
+            }
+            return base.Equals(obj);
+        }
+
+        /// <summary>
+        /// Hash code
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return DateStart.GetHashCode() ^ DateEnd?.GetHashCode() ?? 0 ^ Duration?.GetHashCode() ?? 0;
+        }
+
+        /// <summary>
         /// Calculate the date end
         /// </summary>
         public DateTime GetDateEnd()

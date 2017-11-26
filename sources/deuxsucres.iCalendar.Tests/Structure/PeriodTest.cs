@@ -21,18 +21,32 @@ namespace deuxsucres.iCalendar.Tests.Structure
             Assert.Equal(dt2, period.DateEnd);
             Assert.Equal(dt2, period.GetDateEnd());
             Assert.Equal(delay, period.GetDuration());
+            Assert.Equal(746391939, period.GetHashCode());
+            Assert.True(period.Equals(new Period(dt1, dt2)));
+            Assert.False(period.Equals(new Period(dt2, delay)));
+            Assert.False(period.Equals(new Period(dt1, delay)));
 
             period = new Period(dt2, dt1);
             Assert.Equal(dt1, period.DateStart);
             Assert.Equal(dt2, period.DateEnd);
             Assert.Equal(dt2, period.GetDateEnd());
             Assert.Equal(delay, period.GetDuration());
+            Assert.Equal(746391939, period.GetHashCode());
+            Assert.True(period.Equals(new Period(dt1, dt2)));
+            Assert.False(period.Equals(new Period(dt2, delay)));
+            Assert.False(period.Equals(new Period(dt1, delay)));
 
             period = new Period(dt1, delay);
             Assert.Equal(dt1, period.DateStart);
             Assert.Null(period.DateEnd);
             Assert.Equal(dt2, period.GetDateEnd());
             Assert.Equal(delay, period.GetDuration());
+            Assert.Equal(611646077, period.GetHashCode());
+            Assert.False(period.Equals(new Period(dt1, dt2)));
+            Assert.False(period.Equals(new Period(dt2, delay)));
+            Assert.True(period.Equals(new Period(dt1, delay)));
+
+            Assert.False(period.Equals(123));
         }
     }
 }
