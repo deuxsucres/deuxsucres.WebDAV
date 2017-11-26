@@ -98,6 +98,7 @@
     <Compile Include="Structure\Properties\IntegerPropertyTest.cs" />
     <Compile Include="Structure\Properties\RecurrencePropertyTest.cs" />
     <Compile Include="Structure\Properties\TextPropertyTest.cs" />
+    <Compile Include="Structure\Properties\TypedDateTimePropertyTest.cs" />
     <Compile Include="Structure\Properties\UriPropertyTest.cs" />
     <Compile Include="Structure\RecurrenceTest.cs" />
   </ItemGroup>
