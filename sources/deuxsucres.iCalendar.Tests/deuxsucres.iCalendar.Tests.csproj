@@ -68,6 +68,7 @@
     <Compile Include="Extensions\StringExtensionsTest.cs" />
     <Compile Include="Objects\Properties\CommentPropertyTest.cs" />
     <Compile Include="Objects\Properties\RecurDatePropertyTest.cs" />
+    <Compile Include="Objects\Properties\RecurRulePropertyTest.cs" />
     <Compile Include="Parser\CalendarParserTest.cs" />
     <Compile Include="Parser\ContentLineTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
