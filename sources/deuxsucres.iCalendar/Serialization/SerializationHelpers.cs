@@ -65,6 +65,8 @@ namespace deuxsucres.iCalendar.Serialization
         {
             switch (name.ToUpper())
             {
+                case Constants.DAYLIGHT: return TimeZoneComponent.CreateDaylight();
+                case Constants.STANDARD: return TimeZoneComponent.CreateStandard();
                 case Constants.VEVENT:    throw new NotImplementedException("Component creation for Constants.VEVENT not implemented");   // TODO Implements : return new Objects.Event();
                 case Constants.VTODO:     throw new NotImplementedException("Component creation for Constants.VTODO not implemented");   // TODO Implements : return new Objects.Todo();
                 case Constants.VJOURNAL:  throw new NotImplementedException("Component creation for Constants.VJOURNAL not implemented");   // TODO Implements : return new Objects.Journal();

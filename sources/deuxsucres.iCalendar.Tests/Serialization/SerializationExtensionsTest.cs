@@ -24,28 +24,28 @@ namespace deuxsucres.iCalendar.Tests.Serialization
             bool invoked = false;
             Action action = () => invoked = true;
 
-            reader.CheckStrict(() => true, action);
+            Assert.True(reader.CheckStrict(() => true, action));
             Assert.False(invoked);
 
             invoked = false;
-            reader.CheckStrict(() => false, action);
+            Assert.False(reader.CheckStrict(() => false, action));
             Assert.False(invoked);
 
             invoked = false;
-            reader.CheckStrict(null, action);
+            Assert.True(reader.CheckStrict(null, action));
             Assert.False(invoked);
 
             strict = true;
             invoked = false;
-            reader.CheckStrict(() => true, action);
+            Assert.True(reader.CheckStrict(() => true, action));
             Assert.False(invoked);
 
             invoked = false;
-            reader.CheckStrict(() => false, action);
+            Assert.False(reader.CheckStrict(() => false, action));
             Assert.True(invoked);
 
             invoked = false;
-            reader.CheckStrict(null, action);
+            Assert.True(reader.CheckStrict(null, action));
             Assert.False(invoked);
         }
 

@@ -48,9 +48,9 @@ namespace deuxsucres.iCalendar.Tests.Serialization
                 .AppendLine("BEGIN:Test")
                 .AppendLine("Prop:Value")
                 .AppendLine("END:Test")
-                .AppendLine("BEGIN:VTODO")
+                .AppendLine("BEGIN:Test")
                 .AppendLine("P:V")
-                .AppendLine("END:VTODO")
+                .AppendLine("END:Test")
                 .ToString());
             ICalReader reader = new CalTextReader(parser, treader, false);
 
@@ -123,9 +123,9 @@ namespace deuxsucres.iCalendar.Tests.Serialization
             treader = new StringReader(new StringBuilder()
                 .AppendLine("BEGIN:Test")
                 .AppendLine("Prop:Value")
-                .AppendLine("BEGIN:VTODO")
+                .AppendLine("BEGIN:Test")
                 .AppendLine("P:V")
-                .AppendLine("END:VTODO")
+                .AppendLine("END:Test")
                 .AppendLine("END:Test")
                 .ToString());
             var mReader = new Mock<CalTextReader>(parser, treader, false) { CallBase = true };

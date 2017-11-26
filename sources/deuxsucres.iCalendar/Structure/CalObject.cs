@@ -199,23 +199,41 @@ namespace deuxsucres.iCalendar.Structure
         protected abstract void InternalDeserialize(ICalReader reader);
 
         /// <summary>
+        /// Check the begin line
+        /// </summary>
+        protected virtual bool CheckBeginLine(Parser.ContentLine line)
+        {
+            return line != null && line.Name.IsEqual(Constants.BEGIN) && line.Value.IsEqual(Name);
+        }
+
+        /// <summary>
+        /// Check the end line
+        /// </summary>
+        protected virtual bool CheckEndLine(Parser.ContentLine line)
+        {
+            return line != null && line.Name.IsEqual(Constants.END) && line.Value.IsEqual(Name);
+        }
+
+        /// <summary>
         /// Deserialize the object
         /// </summary>
         public void Deserialize(ICalReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader));
             var line = reader.CurrentLine;
-            reader.CheckSyntaxError(
-                () => line != null && line.Name.IsEqual(Constants.BEGIN) && line.Value.IsEqual(Name),
-                string.Format(SR.Err_SyntaxExpected, $"{Constants.BEGIN}:{Name}")
-            );
             Reset();
+            if (!reader.CheckSyntaxError(
+                () => CheckBeginLine(line),
+                string.Format(SR.Err_SyntaxExpected, $"{Constants.BEGIN}:{Name}")
+            )) return;
             InternalDeserialize(reader);
-            line = reader.CurrentLine;
-            reader.CheckSyntaxError(
-                () => line != null && line.Name.IsEqual(Constants.END) && line.Value.IsEqual(Name),
+            if (line == reader.CurrentLine)
+                line = reader.ReadNextLine();
+            if(!reader.CheckSyntaxError(
+                () => CheckEndLine(line),
                 string.Format(SR.Err_SyntaxExpectedAtLine, $"{Constants.END}:{Name}", reader.CurrentLineNumber)
-            );
+            )) return;
+            reader.ReadNextLine();
         }
 
         #endregion

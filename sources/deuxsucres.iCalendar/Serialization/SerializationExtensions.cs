@@ -16,26 +16,28 @@ namespace deuxsucres.iCalendar
         /// <summary>
         /// Check error in a strict mode
         /// </summary>
-        public static void CheckStrict(this ICalReader reader, Func<bool> check, Action action)
+        public static bool CheckStrict(this ICalReader reader, Func<bool> check, Action action)
         {
-            if (check?.Invoke() == false && reader?.StrictMode == true)
+            bool isCheck = check?.Invoke() ?? true;
+            if (!isCheck && reader?.StrictMode == true)
                 action?.Invoke();
+            return isCheck;
         }
 
         /// <summary>
         /// Check a syntax error
         /// </summary>
-        public static void CheckSyntaxError(this ICalReader reader, Func<bool> check, string message)
+        public static bool CheckSyntaxError(this ICalReader reader, Func<bool> check, string message)
         {
-            reader.CheckStrict(check, () => { throw new CalSyntaxError(message); });
+            return reader.CheckStrict(check, () => { throw new CalSyntaxError(message); });
         }
 
         /// <summary>
         /// Check a syntax error
         /// </summary>
-        public static void CheckSyntaxError(this ICalReader reader, Func<bool> check, Func<string> message)
+        public static bool CheckSyntaxError(this ICalReader reader, Func<bool> check, Func<string> message)
         {
-            reader.CheckStrict(check, () => { throw new CalSyntaxError(message.Invoke()); });
+            return reader.CheckStrict(check, () => { throw new CalSyntaxError(message.Invoke()); });
         }
 
         /// <summary>

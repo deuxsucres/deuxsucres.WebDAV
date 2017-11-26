@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Xunit;
 using deuxsucres.iCalendar.Parser;
 using Moq.Protected;
+using System.IO;
 
 namespace deuxsucres.iCalendar.Tests.Structure
 {
@@ -191,16 +192,43 @@ namespace deuxsucres.iCalendar.Tests.Structure
             obj.GetProperty("p6", () => new TestProperty { Value = 999 });
             obj.GetProperty("p2", () => new TestProperty { Value = 999 });
 
-            var mReader = new Mock<ICalReader>();
-            ICalReader reader = null;
             var parser = new CalendarParser();
-            mReader.SetupGet(w => w.Parser).Returns(parser);
-            reader = mReader.Object;
+            using (var source = new StringReader(new StringBuilder()
+                .AppendLine("BEGIN:MyObject")
+                .AppendLine("END:MyObject")
+                .ToString()))
+            {
+                var reader = new CalTextReader(parser, source, false);
 
-            Assert.Equal(3, obj.PropertyCount);
-            obj.Deserialize(reader);
-            Assert.Equal(0, obj.PropertyCount);
-            mObject.Protected().Verify("InternalDeserialize", Times.Once(), reader);
+                Assert.Equal(3, obj.PropertyCount);
+
+                reader.ReadNextLine();
+                obj.Deserialize(reader);
+                Assert.Equal(0, obj.PropertyCount);
+                mObject.Protected().Verify("CheckBeginLine", Times.Once(), ItExpr.IsAny<ContentLine>());
+                mObject.Protected().Verify("InternalDeserialize", Times.Once(), reader);
+                mObject.Protected().Verify("CheckEndLine", Times.Once(), ItExpr.IsAny<ContentLine>());
+
+                Assert.Null(reader.ReadNextLine());
+            }
+
+            mObject.ResetCalls();
+            using (var source = new StringReader(new StringBuilder()
+                .AppendLine("BEGIN:Other")
+                .AppendLine("END:Other")
+                .ToString()))
+            {
+                var reader = new CalTextReader(parser, source, false);
+
+                reader.ReadNextLine();
+                obj.Deserialize(reader);
+                Assert.Equal(0, obj.PropertyCount);
+                mObject.Protected().Verify("CheckBeginLine", Times.Once(), ItExpr.IsAny<ContentLine>());
+                mObject.Protected().Verify("InternalDeserialize", Times.Never(), reader);
+                mObject.Protected().Verify("CheckEndLine", Times.Never(), ItExpr.IsAny<ContentLine>());
+
+                Assert.NotNull(reader.ReadNextLine());
+            }
 
             Assert.Throws<ArgumentNullException>(() => obj.Deserialize(null));
         }
