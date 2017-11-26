@@ -14,6 +14,7 @@ namespace deuxsucres.iCalendar.Tests.Structure.Properties
         public void Test()
         {
             var prop = new ExtendedTextProperty();
+            Assert.Null(prop.Name);
             Assert.Null(prop.AltRep);
             Assert.Null(prop.Language);
 
@@ -56,6 +57,7 @@ namespace deuxsucres.iCalendar.Tests.Structure.Properties
 
             prop = (string)null;
             Assert.Null(prop);
+            Assert.Null((string)prop);
         }
     }
 }
