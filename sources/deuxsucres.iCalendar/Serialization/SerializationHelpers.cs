@@ -51,8 +51,8 @@ namespace deuxsucres.iCalendar.Serialization
         {
             switch ((name ?? string.Empty).ToUpper())
             {
-                case Constants.UID: throw new NotImplementedException("Property creation for Constants.UID not implemented"); 
-                    //TODO Implements : return new UidProperty();
+                case Constants.UID: throw new NotImplementedException("Property creation for Constants.UID not implemented");
+                //TODO Implements : return new UidProperty();
                 default:
                     return new TextProperty() { Name = name };
             }
@@ -67,11 +67,11 @@ namespace deuxsucres.iCalendar.Serialization
             {
                 case Constants.DAYLIGHT: return TimeZoneComponent.CreateDaylight();
                 case Constants.STANDARD: return TimeZoneComponent.CreateStandard();
-                case Constants.VEVENT:    throw new NotImplementedException("Component creation for Constants.VEVENT not implemented");   // TODO Implements : return new Objects.Event();
-                case Constants.VTODO:     throw new NotImplementedException("Component creation for Constants.VTODO not implemented");   // TODO Implements : return new Objects.Todo();
-                case Constants.VJOURNAL:  throw new NotImplementedException("Component creation for Constants.VJOURNAL not implemented");   // TODO Implements : return new Objects.Journal();
+                case Constants.VTIMEZONE: return new TimeZone();
+                case Constants.VEVENT: throw new NotImplementedException("Component creation for Constants.VEVENT not implemented");   // TODO Implements : return new Objects.Event();
+                case Constants.VTODO: throw new NotImplementedException("Component creation for Constants.VTODO not implemented");   // TODO Implements : return new Objects.Todo();
+                case Constants.VJOURNAL: throw new NotImplementedException("Component creation for Constants.VJOURNAL not implemented");   // TODO Implements : return new Objects.Journal();
                 case Constants.VFREEBUSY: throw new NotImplementedException("Component creation for Constants.VFREEBUSY not implemented");   // TODO Implements : return new Objects.FreeBusy();
-                case Constants.VTIMEZONE: throw new NotImplementedException("Component creation for Constants.VTIMEZONE not implemented");   // TODO Implements : return new Objects.TimeZone();
                 default:
                     throw new CalSyntaxError(string.Format(SR.Err_UnknownComponentName, name));
             }

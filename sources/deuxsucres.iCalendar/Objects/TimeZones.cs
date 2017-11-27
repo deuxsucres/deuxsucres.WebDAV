@@ -7,95 +7,104 @@ using System.Text;
 
 namespace deuxsucres.iCalendar
 {
-    ///// <summary>
-    ///// Time zone
-    ///// </summary>
-    //public class TimeZone : CalComponent
-    //{
-    //    /// <summary>
-    //    /// Process the components
-    //    /// </summary>
-    //    protected override bool ProcessComponent(CalComponent component)
-    //    {
-    //        if (component is TimeZoneComponent)
-    //        {
-    //            ZoneComponents.Add((TimeZoneComponent)component);
-    //            return true;
-    //        }
-    //        return base.ProcessComponent(component);
-    //    }
+    /// <summary>
+    /// Time zone
+    /// </summary>
+    public class TimeZone : CalComponent
+    {
+        /// <summary>
+        /// Serialize the components
+        /// </summary>
+        protected override void SerializeComponents(ICalWriter writer)
+        {
+            SerializeComponents(ZoneComponents, writer);
+            base.SerializeComponents(writer);
+        }
 
-    //    /// <summary>
-    //    /// Read a child component
-    //    /// </summary>
-    //    protected override CalComponent ReadComponent(ICalReader reader, ContentLine line)
-    //    {
-    //        if (line.Value.IsEqual(Constants.STANDARD))
-    //        {
-    //            var comp = TimeZoneComponent.CreateStandard();
-    //            comp.Deserialize(reader);
-    //            return comp;
-    //        }
-    //        else if (line.Value.IsEqual(Constants.DAYLIGHT))
-    //        {
-    //            var comp = TimeZoneComponent.CreateDaylight();
-    //            comp.Deserialize(reader);
-    //            return comp;
-    //        }
-    //        return base.ReadComponent(reader, line);
-    //    }
+        /// <summary>
+        /// Process the components
+        /// </summary>
+        protected override bool ProcessComponent(CalComponent component)
+        {
+            if (component is TimeZoneComponent)
+            {
+                ZoneComponents.Add((TimeZoneComponent)component);
+                return true;
+            }
+            return base.ProcessComponent(component);
+        }
 
-    //    /// <summary>
-    //    /// Process the properties
-    //    /// </summary>
-    //    protected override bool ProcessProperty(ICalReader reader, ContentLine line)
-    //    {
-    //        switch (line.Name.ToUpper())
-    //        {
-    //            case Constants.TZID: SetProperty(reader.MakeProperty<TextProperty>(line), Constants.TZID); return true;
-    //            case Constants.LAST_MODIFIED: SetProperty(reader.MakeProperty<DateTimeProperty>(line), Constants.LAST_MODIFIED); return true;
-    //            case Constants.TZURL: SetProperty(reader.MakeProperty<UriProperty>(line), Constants.TZURL); return true;
-    //            default: return false;
-    //        }
-    //    }
+        /// <summary>
+        /// Read a child component
+        /// </summary>
+        protected override CalComponent ReadComponent(ICalReader reader, ContentLine line)
+        {
+            if (line.Value.IsEqual(Constants.STANDARD))
+            {
+                var comp = TimeZoneComponent.CreateStandard();
+                comp.Deserialize(reader);
+                return comp;
+            }
+            else if (line.Value.IsEqual(Constants.DAYLIGHT))
+            {
+                var comp = TimeZoneComponent.CreateDaylight();
+                comp.Deserialize(reader);
+                return comp;
+            }
+            return base.ReadComponent(reader, line);
+        }
 
-    //    /// <summary>
-    //    /// Name of the object
-    //    /// </summary>
-    //    public override string Name => Constants.VTIMEZONE;
+        /// <summary>
+        /// Process the properties
+        /// </summary>
+        protected override bool ProcessProperty(ICalReader reader, ContentLine line)
+        {
+            switch (line.Name.ToUpper())
+            {
+                case Constants.TZID: SetProperty(reader.MakeProperty<TextProperty>(line), Constants.TZID); return true;
+                case Constants.LAST_MODIFIED: SetProperty(reader.MakeProperty<DateTimeProperty>(line), Constants.LAST_MODIFIED); return true;
+                case Constants.TZURL: SetProperty(reader.MakeProperty<UriProperty>(line), Constants.TZURL); return true;
+                default: return false;
+            }
+        }
 
-    //    /// <summary>
-    //    /// TZID
-    //    /// </summary>
-    //    public TextProperty TzId
-    //    {
-    //        get { return FindProperty<TextProperty>(Constants.TZID); }
-    //        set { SetProperty(value, Constants.TZID); }
-    //    }
+        /// <summary>
+        /// Name of the object
+        /// </summary>
+        public override string Name => Constants.VTIMEZONE;
 
-    //    /// <summary>
-    //    /// LAST-MODIFIED
-    //    /// </summary>
-    //    public DateTimeProperty LastModified
-    //    {
-    //        get { return FindProperty<DateTimeProperty>(Constants.LAST_MODIFIED); }
-    //        set { SetProperty(value, Constants.LAST_MODIFIED); }
-    //    }
+        /// <summary>
+        /// TZID
+        /// </summary>
+        public TextProperty TzId
+        {
+            get { return FindProperty<TextProperty>(Constants.TZID); }
+            set { SetProperty(value, Constants.TZID); }
+        }
 
-    //    /// <summary>
-    //    /// TZURL
-    //    /// </summary>
-    //    public UriProperty TzUrl
-    //    {
-    //        get { return FindProperty<UriProperty>(Constants.TZURL); }
-    //        set { SetProperty(value, Constants.TZURL); }
-    //    }
+        /// <summary>
+        /// LAST-MODIFIED
+        /// </summary>
+        public DateTimeProperty LastModified
+        {
+            get { return FindProperty<DateTimeProperty>(Constants.LAST_MODIFIED); }
+            set { SetProperty(value, Constants.LAST_MODIFIED); }
+        }
 
-    //    /// <summary>
-    //    /// List of components of the time zone
-    //    /// </summary>
-    //    public List<TimeZoneComponent> ZoneComponents { get; private set; } = new List<TimeZoneComponent>();
-    //}
+        /// <summary>
+        /// TZURL
+        /// </summary>
+        public UriProperty TzUrl
+        {
+            get { return FindProperty<UriProperty>(Constants.TZURL); }
+            set { SetProperty(value, Constants.TZURL); }
+        }
+
+        /// <summary>
+        /// List of components of the time zone
+        /// </summary>
+        public List<TimeZoneComponent> ZoneComponents { get; private set; } = new List<TimeZoneComponent>();
+    }
 
     /// <summary>
     /// TimeZone component

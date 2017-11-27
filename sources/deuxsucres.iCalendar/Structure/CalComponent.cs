@@ -34,9 +34,9 @@ namespace deuxsucres.iCalendar.Structure
         }
 
         /// <summary>
-        /// Serialize the extra components
+        /// Serialize the components
         /// </summary>
-        protected virtual void SerializeExtraComponents(ICalWriter writer)
+        protected virtual void SerializeComponents(ICalWriter writer)
         {
             SerializeComponents(ExtraComponents, writer);
         }
@@ -47,7 +47,7 @@ namespace deuxsucres.iCalendar.Structure
         protected override void InternalSerialize(ICalWriter writer)
         {
             base.InternalSerialize(writer);
-            SerializeExtraComponents(writer);
+            SerializeComponents(writer);
         }
 
         /// <summary>
