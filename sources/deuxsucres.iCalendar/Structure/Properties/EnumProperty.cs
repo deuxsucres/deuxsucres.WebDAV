@@ -7,10 +7,22 @@ using System.Text;
 namespace deuxsucres.iCalendar.Structure
 {
     /// <summary>
-    /// Enum parameter
+    /// Enum property
     /// </summary>
-    public class EnumParameter<T> : CalPropertyParameter where T : struct
+    public class EnumProperty<T> : CalProperty where T : struct
     {
+
+        /// <summary>
+        /// Reset
+        /// </summary>
+        public override void Reset()
+        {
+            base.Reset();
+            Value = null;
+            StringValue = null;
+        }
+
+        #region Serialization
 
         /// <summary>
         /// Serialize the value
@@ -21,37 +33,45 @@ namespace deuxsucres.iCalendar.Structure
         }
 
         /// <summary>
-        /// Deserialize the parameter
+        /// Deserialize the value
         /// </summary>
-        protected override bool InternalDeserialize(ICalReader reader, string name, string value)
+        protected override bool DeserializeValue(ICalReader reader, ContentLine line)
         {
-            StringValue = null;
-            Value = null;
-            if (string.IsNullOrWhiteSpace(value)) return false;
-            StringValue = value;
-            Value = reader.Parser.ParseEnum<T>(value);
+            if (string.IsNullOrWhiteSpace(line.Value)) return false;
+            StringValue = line.Value;
+            Value = reader.Parser.ParseEnum<T>(line.Value);
             return true;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// To string
+        /// </summary>
+        public override string ToString()
+        {
+            return StringValue ?? Value?.ToString();
         }
 
         /// <summary>
         /// Cast to string
         /// </summary>
-        public static implicit operator string(EnumParameter<T> prop) { return prop?.StringValue ?? prop?.Value?.ToString(); }
+        public static implicit operator string(EnumProperty<T> prop) { return prop?.StringValue ?? prop?.Value?.ToString(); }
 
         /// <summary>
         /// Cast from string
         /// </summary>
-        public static implicit operator EnumParameter<T>(string value) { return value != null ? new EnumParameter<T> { StringValue = value } : null; }
+        public static implicit operator EnumProperty<T>(string value) { return value != null ? new EnumProperty<T> { StringValue = value } : null; }
 
         /// <summary>
         /// Cast to enum
         /// </summary>
-        public static implicit operator T? (EnumParameter<T> prop) { return prop?.Value; }
+        public static implicit operator T? (EnumProperty<T> prop) { return prop?.Value; }
 
         /// <summary>
         /// Cast from enum
         /// </summary>
-        public static implicit operator EnumParameter<T>(T? value) { return value != null ? new EnumParameter<T> { Value = value.Value } : null; }
+        public static implicit operator EnumProperty<T>(T? value) { return value != null ? new EnumProperty<T> { Value = value.Value } : null; }
 
         /// <summary>
         /// String value
@@ -77,7 +97,7 @@ namespace deuxsucres.iCalendar.Structure
             set
             {
                 _value = value;
-                if (_value.HasValue)
+                if (_value != null)
                     _stringValue = CalendarParser.DefaultEncodeEnum(_value.Value);
             }
         }
