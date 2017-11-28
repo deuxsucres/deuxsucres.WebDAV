@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="CalSyntaxErrorTest.cs" />
     <Compile Include="Extensions\StringExtensionsTest.cs" />
+    <Compile Include="Objects\Properties\OrganizerPropertyTest.cs" />
     <Compile Include="Objects\Properties\TzNamePropertyTest.cs" />
     <Compile Include="Objects\Properties\CommentPropertyTest.cs" />
     <Compile Include="Objects\Properties\RecurDatePropertyTest.cs" />
