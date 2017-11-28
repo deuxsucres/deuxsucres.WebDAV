@@ -94,6 +94,7 @@
     <Compile Include="Structure\Parameters\IntParameterTest.cs" />
     <Compile Include="Structure\Parameters\BooleanParameterTest.cs" />
     <Compile Include="Structure\PeriodTest.cs" />
+    <Compile Include="Structure\Properties\CalAddressPropertyTest.cs" />
     <Compile Include="Structure\Properties\EnumPropertyTest.cs" />
     <Compile Include="Structure\Properties\UtcOffsetPropertyTest.cs" />
     <Compile Include="Structure\Properties\DateTimePropertyTest.cs" />
