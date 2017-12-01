@@ -22,6 +22,43 @@ namespace deuxsucres.iCalendar.Tests.Structure.Parameters
         }
 
         [Fact]
+        public void Cast()
+        {
+            var addresses = new string[] { "mailto:yan@deuxsucres.com", "mailto:contact@deuxsucres" };
+            var uris = addresses.Select(a => new Uri(a)).ToArray();
+
+            CalAddressesParameter param = addresses;
+            Assert.NotNull(param);
+            Assert.Equal(uris, (Uri[])param);
+            Assert.Equal(uris, (List<Uri>)param);
+            Assert.Equal(addresses, (string[])param);
+            Assert.Equal(addresses, (List<string>)param);
+
+            param = addresses.ToList();
+            Assert.NotNull(param);
+            Assert.Equal(uris, (List<Uri>)param);
+
+            param = uris;
+            Assert.NotNull(param);
+            Assert.Equal(addresses, (List<string>)param);
+
+            param = uris.ToList();
+            Assert.NotNull(param);
+            Assert.Equal(addresses, (string[])param);
+
+            addresses = null;
+            uris = null;
+            param = addresses;
+            Assert.Null(param);
+            param = uris;
+            Assert.Null(param);
+            param = (List<string>)null;
+            Assert.Null(param);
+            param = (List<Uri>)null;
+            Assert.Null(param);
+        }
+
+        [Fact]
         public void Serialization()
         {
             var parser = new CalendarParser();
