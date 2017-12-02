@@ -26,7 +26,7 @@ namespace deuxsucres.iCalendar
             Exdates = new CalProperties<TypedDateTimeListProperty>(Constants.EXDATE, this);
             Exrules = new CalProperties<RecurrenceProperty>(Constants.EXRULE, this);
             RequestStatuses = new CalProperties<RequestStatusProperty>(Constants.REQUEST_STATUS, this);
-            //RelatedTos = new CalProperties<RelatedToProperty>(Constants.RELATED_TO, this);
+            RelatedTos = new CalProperties<RelatedToProperty>(Constants.RELATED_TO, this);
             Resources = new CalProperties<ExtendedTextProperty>(Constants.RESOURCES, this);
             RecurDates = new CalProperties<RecurDateProperty>(Constants.RDATE, this);
             RecurRules = new CalProperties<RecurRuleProperty>(Constants.RRULE, this);
@@ -61,7 +61,7 @@ namespace deuxsucres.iCalendar
                 case Constants.EXDATE: AddProperty(reader.MakeProperty<TypedDateTimeListProperty>(line)); return true;
                 case Constants.EXRULE: AddProperty(reader.MakeProperty<RecurrenceProperty>(line)); return true;
                 case Constants.REQUEST_STATUS: AddProperty(reader.MakeProperty<RequestStatusProperty>(line)); return true;
-                //case Constants.RELATED_TO: AddProperty(reader.MakeProperty<RelatedToProperty>(line)); return true;
+                case Constants.RELATED_TO: AddProperty(reader.MakeProperty<RelatedToProperty>(line)); return true;
                 case Constants.RESOURCES: AddProperty(reader.MakeProperty<ExtendedTextProperty>(line)); return true;
                 case Constants.RDATE: AddProperty(reader.MakeProperty<RecurDateProperty>(line)); return true;
                 case Constants.RRULE: AddProperty(reader.MakeProperty<RecurRuleProperty>(line)); return true;
@@ -231,10 +231,10 @@ namespace deuxsucres.iCalendar
         /// </summary>
         public CalProperties<RequestStatusProperty> RequestStatuses { get; private set; }
 
-        ///// <summary>
-        ///// List of related tos
-        ///// </summary>
-        //public CalProperties<RelatedToProperty> RelatedTos { get; private set; }
+        /// <summary>
+        /// List of related tos
+        /// </summary>
+        public CalProperties<RelatedToProperty> RelatedTos { get; private set; }
 
         /// <summary>
         /// List of resources
