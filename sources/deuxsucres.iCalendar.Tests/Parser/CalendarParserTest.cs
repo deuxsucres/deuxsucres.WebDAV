@@ -794,7 +794,7 @@ DESCRIPTION:This is a lo
             Assert.Equal(new string[] { "test1", "test2" }, parser.ParseTextList("test1,test2"));
             Assert.Equal(new string[] { "test1", "test2" }, parser.ParseTextList("test1,test2,,"));
             Assert.Equal(new string[] { "test1,test2" }, parser.ParseTextList(@"test1\,test2"));
-            Assert.Equal(new string[] { "test1,test2", "test3,test4" }, parser.ParseTextList(@"test1\,test2,test3\,test4"));
+            Assert.Equal(new string[] { "test1,test2", "test3", "test4;test5" }, parser.ParseTextList(@"test1\,test2,test3,test4\;test5"));
 
             Assert.Null(parser.ParseTextList(null));
         }
@@ -1170,7 +1170,7 @@ DESCRIPTION:This is a lo
 
             Assert.Equal("test", parser.EncodeList(new string[] { "test" }, s => s));
             Assert.Equal("test1,test2", parser.EncodeList(new string[] { "test1", "test2" }, s => s));
-            Assert.Equal(@"test1\,test2,test3", parser.EncodeList(new string[] { "test1,test2", "test3" }, s => s));
+            Assert.Equal(@"test1\,test2,test3,test4\;test5", parser.EncodeList(new string[] { "test1,test2", "test3", "test4;test5" }, s => s));
             Assert.Equal("test1,test2", parser.EncodeList(new string[] { "test1", "test2" }, null));
             Assert.Equal("4,5", parser.EncodeList(new int[] { 4, 5 }, null));
             Assert.Equal("", parser.EncodeList(new string[] { }, s => s));
