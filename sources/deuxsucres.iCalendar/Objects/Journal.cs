@@ -18,16 +18,16 @@ namespace deuxsucres.iCalendar
         /// </summary>
         public Journal()
         {
-            //Attachments = new CalProperties<AttachProperty>(Constants.ATTACH, this);
-            //Attendees = new CalProperties<JournalAttendeeProperty>(Constants.ATTENDEE, this);
-            //Categories = new CalProperties<CategoriesProperty>(Constants.CATEGORIES, this);
+            Attachments = new CalProperties<AttachProperty>(Constants.ATTACH, this);
+            Attendees = new CalProperties<JournalAttendeeProperty>(Constants.ATTENDEE, this);
+            Categories = new CalProperties<CategoriesProperty>(Constants.CATEGORIES, this);
             Comments = new CalProperties<CommentProperty>(Constants.COMMENT, this);
             Contacts = new CalProperties<ExtendedTextProperty>(Constants.CONTACT, this);
-            //Exdates = new CalProperties<ExdateProperty>(Constants.EXDATE, this);
-            //Exrules = new CalProperties<ExruleProperty>(Constants.EXRULE, this);
-            //RequestStatuses = new CalProperties<RequestStatusProperty>(Constants.REQUEST_STATUS, this);
+            Exdates = new CalProperties<TypedDateTimeListProperty>(Constants.EXDATE, this);
+            Exrules = new CalProperties<RecurrenceProperty>(Constants.EXRULE, this);
+            RequestStatuses = new CalProperties<RequestStatusProperty>(Constants.REQUEST_STATUS, this);
             //RelatedTos = new CalProperties<RelatedToProperty>(Constants.RELATED_TO, this);
-            //Resources = new CalProperties<ResourcesProperty>(Constants.RESOURCES, this);
+            Resources = new CalProperties<ExtendedTextProperty>(Constants.RESOURCES, this);
             RecurDates = new CalProperties<RecurDateProperty>(Constants.RDATE, this);
             RecurRules = new CalProperties<RecurRuleProperty>(Constants.RRULE, this);
         }
@@ -53,16 +53,16 @@ namespace deuxsucres.iCalendar
                 case Constants.SUMMARY: SetProperty(reader.MakeProperty<TextProperty>(line), Constants.SUMMARY); return true;
                 case Constants.URL: SetProperty(reader.MakeProperty<UriProperty>(line), Constants.URL); return true;
 
-                //case Constants.ATTACH: AddProperty(reader.MakeProperty<AttachProperty>(line)); return true;
-                //case Constants.ATTENDEE: AddProperty(reader.MakeProperty<JournalAttendeeProperty>(line)); return true;
-                //case Constants.CATEGORIES: AddProperty(reader.MakeProperty<CategoriesProperty>(line)); return true;
+                case Constants.ATTACH: AddProperty(reader.MakeProperty<AttachProperty>(line)); return true;
+                case Constants.ATTENDEE: AddProperty(reader.MakeProperty<JournalAttendeeProperty>(line)); return true;
+                case Constants.CATEGORIES: AddProperty(reader.MakeProperty<CategoriesProperty>(line)); return true;
                 case Constants.COMMENT: AddProperty(reader.MakeProperty<CommentProperty>(line)); return true;
                 case Constants.CONTACT: AddProperty(reader.MakeProperty<ExtendedTextProperty>(line)); return true;
-                //case Constants.EXDATE: AddProperty(reader.MakeProperty<ExdateProperty>(line)); return true;
-                //case Constants.EXRULE: AddProperty(reader.MakeProperty<ExruleProperty>(line)); return true;
-                //case Constants.REQUEST_STATUS: AddProperty(reader.MakeProperty<RequestStatusProperty>(line)); return true;
+                case Constants.EXDATE: AddProperty(reader.MakeProperty<TypedDateTimeListProperty>(line)); return true;
+                case Constants.EXRULE: AddProperty(reader.MakeProperty<RecurrenceProperty>(line)); return true;
+                case Constants.REQUEST_STATUS: AddProperty(reader.MakeProperty<RequestStatusProperty>(line)); return true;
                 //case Constants.RELATED_TO: AddProperty(reader.MakeProperty<RelatedToProperty>(line)); return true;
-                //case Constants.RESOURCES: AddProperty(reader.MakeProperty<ResourcesProperty>(line)); return true;
+                case Constants.RESOURCES: AddProperty(reader.MakeProperty<ExtendedTextProperty>(line)); return true;
                 case Constants.RDATE: AddProperty(reader.MakeProperty<RecurDateProperty>(line)); return true;
                 case Constants.RRULE: AddProperty(reader.MakeProperty<RecurRuleProperty>(line)); return true;
                 default: return false;
@@ -191,20 +191,20 @@ namespace deuxsucres.iCalendar
             set { SetProperty(value, Constants.RECURRENCE_ID); }
         }
 
-        ///// <summary>
-        ///// List of attachments
-        ///// </summary>
-        //public CalProperties<AttachProperty> Attachments { get; private set; }
+        /// <summary>
+        /// List of attachments
+        /// </summary>
+        public CalProperties<AttachProperty> Attachments { get; private set; }
 
-        ///// <summary>
-        ///// List of attendees
-        ///// </summary>
-        //public CalProperties<JournalAttendeeProperty> Attendees { get; private set; }
+        /// <summary>
+        /// List of attendees
+        /// </summary>
+        public CalProperties<JournalAttendeeProperty> Attendees { get; private set; }
 
-        ///// <summary>
-        ///// List of categories
-        ///// </summary>
-        //public CalProperties<CategoriesProperty> Categories { get; private set; }
+        /// <summary>
+        /// List of categories
+        /// </summary>
+        public CalProperties<CategoriesProperty> Categories { get; private set; }
 
         /// <summary>
         /// List of comments
@@ -216,30 +216,30 @@ namespace deuxsucres.iCalendar
         /// </summary>
         public CalProperties<ExtendedTextProperty> Contacts { get; private set; }
 
-        ///// <summary>
-        ///// List of exception dates
-        ///// </summary>
-        //public CalProperties<ExdateProperty> Exdates { get; private set; }
+        /// <summary>
+        /// List of exception dates
+        /// </summary>
+        public CalProperties<TypedDateTimeListProperty> Exdates { get; private set; }
 
-        ///// <summary>
-        ///// List of rules exceptions
-        ///// </summary>
-        //public CalProperties<ExruleProperty> Exrules { get; private set; }
+        /// <summary>
+        /// List of rules exceptions
+        /// </summary>
+        public CalProperties<RecurrenceProperty> Exrules { get; private set; }
 
-        ///// <summary>
-        ///// List of rules exceptions
-        ///// </summary>
-        //public CalProperties<RequestStatusProperty> RequestStatuses { get; private set; }
+        /// <summary>
+        /// List of rules exceptions
+        /// </summary>
+        public CalProperties<RequestStatusProperty> RequestStatuses { get; private set; }
 
         ///// <summary>
         ///// List of related tos
         ///// </summary>
         //public CalProperties<RelatedToProperty> RelatedTos { get; private set; }
 
-        ///// <summary>
-        ///// List of resources
-        ///// </summary>
-        //public CalProperties<ResourcesProperty> Resources { get; private set; }
+        /// <summary>
+        /// List of resources
+        /// </summary>
+        public CalProperties<ExtendedTextProperty> Resources { get; private set; }
 
         /// <summary>
         /// List of recurrence dates
