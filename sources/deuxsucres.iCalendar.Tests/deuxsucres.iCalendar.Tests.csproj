@@ -69,7 +69,7 @@
     <Compile Include="Objects\JournalTest.cs" />
     <Compile Include="Objects\Properties\AttachPropertyTest.cs" />
     <Compile Include="Objects\Properties\CategoriesPropertyTest.cs" />
-    <Compile Include="Objects\Properties\JournalAttendeePropertyTest.cs" />
+    <Compile Include="Objects\Properties\AttendeePropertiesTest.cs" />
     <Compile Include="Objects\Properties\OrganizerPropertyTest.cs" />
     <Compile Include="Objects\Properties\RelatedToPropertyTest.cs" />
     <Compile Include="Objects\Properties\RequestStatusPropertyTest.cs" />

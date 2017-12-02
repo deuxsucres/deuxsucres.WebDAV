@@ -137,4 +137,52 @@ namespace deuxsucres.iCalendar
         public static implicit operator JournalAttendeeProperty(Uri value) { return value != null ? new JournalAttendeeProperty { Value = value } : null; }
     }
 
+    /// <summary>
+    /// ATTENDEE for event
+    /// </summary>
+    public class EventAttendeeProperty : AttendeeProperty<EventPartStatuses>
+    {
+        /// <summary>
+        /// Cast vers un string
+        /// </summary>
+        public static implicit operator Uri(EventAttendeeProperty prop) { return prop?.Value; }
+
+        /// <summary>
+        /// Cast depuis un string
+        /// </summary>
+        public static implicit operator EventAttendeeProperty(Uri value) { return value != null ? new EventAttendeeProperty { Value = value } : null; }
+    }
+
+    /// <summary>
+    /// ATTENDEE for todo
+    /// </summary>
+    public class TodoAttendeeProperty : AttendeeProperty<TodoPartStatuses>
+    {
+        /// <summary>
+        /// Cast vers un string
+        /// </summary>
+        public static implicit operator Uri(TodoAttendeeProperty prop) { return prop?.Value; }
+
+        /// <summary>
+        /// Cast depuis un string
+        /// </summary>
+        public static implicit operator TodoAttendeeProperty(Uri value) { return value != null ? new TodoAttendeeProperty { Value = value } : null; }
+    }
+
+    /// <summary>
+    /// ATTENDEE for free/busy
+    /// </summary>
+    public class FreeBusyAttendeeProperty : AttendeeProperty<EventPartStatuses>
+    {
+        /// <summary>
+        /// Cast vers un string
+        /// </summary>
+        public static implicit operator Uri(FreeBusyAttendeeProperty prop) { return prop?.Value; }
+
+        /// <summary>
+        /// Cast depuis un string
+        /// </summary>
+        public static implicit operator FreeBusyAttendeeProperty(Uri value) { return value != null ? new FreeBusyAttendeeProperty { Value = value } : null; }
+    }
+
 }

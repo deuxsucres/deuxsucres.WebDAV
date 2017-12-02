@@ -10,7 +10,7 @@ using Xunit;
 
 namespace deuxsucres.iCalendar.Tests.Objects.Properties
 {
-    public class JournalAttendeePropertyTest
+    public class AttendeePropertiesTest
     {
         [Fact]
         public void Parameters()
@@ -58,7 +58,7 @@ namespace deuxsucres.iCalendar.Tests.Objects.Properties
         }
 
         [Fact]
-        public void Cast()
+        public void CastJournalAttendee()
         {
             var prop = new JournalAttendeeProperty();
             Assert.Null(prop.Value);
@@ -75,6 +75,72 @@ namespace deuxsucres.iCalendar.Tests.Objects.Properties
             Assert.Null(uri);
 
             prop = new JournalAttendeeProperty();
+            prop = uri;
+            Assert.Null(prop);
+        }
+
+        [Fact]
+        public void CastEventAttendee()
+        {
+            var prop = new EventAttendeeProperty();
+            Assert.Null(prop.Value);
+            prop = new Uri("mailto:yan@deuxsucres.com");
+            Assert.NotNull(prop?.Value);
+            Assert.Equal("mailto:yan@deuxsucres.com", prop.Value.ToString());
+
+            Uri uri = prop;
+            Assert.NotNull(uri);
+            Assert.Equal("mailto:yan@deuxsucres.com", uri.ToString());
+
+            prop = null;
+            uri = prop;
+            Assert.Null(uri);
+
+            prop = new EventAttendeeProperty();
+            prop = uri;
+            Assert.Null(prop);
+        }
+
+        [Fact]
+        public void CastTodoAttendee()
+        {
+            var prop = new TodoAttendeeProperty();
+            Assert.Null(prop.Value);
+            prop = new Uri("mailto:yan@deuxsucres.com");
+            Assert.NotNull(prop?.Value);
+            Assert.Equal("mailto:yan@deuxsucres.com", prop.Value.ToString());
+
+            Uri uri = prop;
+            Assert.NotNull(uri);
+            Assert.Equal("mailto:yan@deuxsucres.com", uri.ToString());
+
+            prop = null;
+            uri = prop;
+            Assert.Null(uri);
+
+            prop = new TodoAttendeeProperty();
+            prop = uri;
+            Assert.Null(prop);
+        }
+
+        [Fact]
+        public void CastFreeBusy()
+        {
+            var prop = new FreeBusyAttendeeProperty();
+            Assert.Null(prop.Value);
+            prop = new Uri("mailto:yan@deuxsucres.com");
+            Assert.NotNull(prop?.Value);
+            Assert.Equal("mailto:yan@deuxsucres.com", prop.Value.ToString());
+
+            Uri uri = prop;
+            Assert.NotNull(uri);
+            Assert.Equal("mailto:yan@deuxsucres.com", uri.ToString());
+
+            prop = null;
+            uri = prop;
+            Assert.Null(uri);
+
+            prop = new FreeBusyAttendeeProperty();
             prop = uri;
             Assert.Null(prop);
         }
