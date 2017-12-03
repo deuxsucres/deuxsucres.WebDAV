@@ -72,6 +72,7 @@
     <Compile Include="Objects\Properties\AttendeePropertiesTest.cs" />
     <Compile Include="Objects\Properties\DurationPropertyTest.cs" />
     <Compile Include="Objects\Properties\OrganizerPropertyTest.cs" />
+    <Compile Include="Objects\Properties\TriggerPropertyTest.cs" />
     <Compile Include="Objects\Properties\RelatedToPropertyTest.cs" />
     <Compile Include="Objects\Properties\RequestStatusPropertyTest.cs" />
     <Compile Include="Objects\Properties\TzNamePropertyTest.cs" />
