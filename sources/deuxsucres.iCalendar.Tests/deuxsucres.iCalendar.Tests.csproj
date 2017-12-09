@@ -66,6 +66,7 @@
   <ItemGroup>
     <Compile Include="CalSyntaxErrorTest.cs" />
     <Compile Include="Extensions\StringExtensionsTest.cs" />
+    <Compile Include="Objects\AlarmsTest.cs" />
     <Compile Include="Objects\JournalTest.cs" />
     <Compile Include="Objects\Properties\AttachPropertyTest.cs" />
     <Compile Include="Objects\Properties\CategoriesPropertyTest.cs" />
