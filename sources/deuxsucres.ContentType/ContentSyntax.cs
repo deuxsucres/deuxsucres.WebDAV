@@ -12,6 +12,8 @@ namespace deuxsucres.ContentType
     /// </remarks>
     public class ContentSyntax
     {
+
+        #region Chars utilities
         /// <summary>
         /// LF: line feed
         /// </summary>
@@ -83,6 +85,14 @@ namespace deuxsucres.ContentType
         /// Check if <paramref name="c"/> is any char except NULL
         /// </summary>
         public static bool IsCHAR(char c) => c != '\x00';
+        #endregion
+
+        #region Decode
+        #endregion
+
+        #region Encode
+
+        #endregion
 
     }
 
