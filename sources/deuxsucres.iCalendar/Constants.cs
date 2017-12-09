@@ -64,6 +64,11 @@ namespace deuxsucres.iCalendar
         #endregion
 
         /// <summary>
+        /// GREGORIAN
+        /// </summary>
+        public const string GREGORIAN = "GREGORIAN";
+
+        /// <summary>
         /// STANDARD
         /// </summary>
         public const string STANDARD = "STANDARD";

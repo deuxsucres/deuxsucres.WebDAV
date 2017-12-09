@@ -98,6 +98,15 @@ namespace deuxsucres.iCalendar.Locales {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Unexpected &apos;END:{0}&apos; in a &apos;{1} object at line {2}..
+        /// </summary>
+        internal static string Err_UnexpectedEnd {
+            get {
+                return ResourceManager.GetString("Err_UnexpectedEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Unknown &apos;{0}&apos; component..
         /// </summary>
         internal static string Err_UnknownComponentName {
