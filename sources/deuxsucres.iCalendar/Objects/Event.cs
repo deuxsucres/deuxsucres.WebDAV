@@ -8,18 +8,17 @@ using System.Text;
 namespace deuxsucres.iCalendar
 {
     /// <summary>
-    /// Todo entry
+    /// Event
     /// </summary>
-    public class Todo : CalComponent
+    public class Event : CalComponent
     {
-
         /// <summary>
-        /// Create a new TODO
+        /// Create an event
         /// </summary>
-        public Todo()
+        public Event()
         {
             Attachments = new CalProperties<AttachProperty>(Constants.ATTACH, this);
-            Attendees = new CalProperties<TodoAttendeeProperty>(Constants.ATTENDEE, this);
+            Attendees = new CalProperties<EventAttendeeProperty>(Constants.ATTENDEE, this);
             Categories = new CalProperties<CategoriesProperty>(Constants.CATEGORIES, this);
             Comments = new CalProperties<CommentProperty>(Constants.COMMENT, this);
             Contacts = new CalProperties<ExtendedTextProperty>(Constants.CONTACT, this);
@@ -42,40 +41,6 @@ namespace deuxsucres.iCalendar
         }
 
         /// <summary>
-        /// Serialize components
-        /// </summary>
-        /// <param name="writer"></param>
-        protected override void SerializeComponents(ICalWriter writer)
-        {
-            base.SerializeComponents(writer);
-            foreach (var alarm in Alarms)
-                alarm.Serialize(writer);
-        }
-
-        /// <summary>
-        /// Read a component
-        /// </summary>
-        protected override CalComponent ReadComponent(ICalReader reader, ContentLine line)
-        {
-            if (line.Value.IsEqual(Constants.VALARM))
-                return reader.ReadComponent<TodoAlarm>(line);
-            return base.ReadComponent(reader, line);
-        }
-
-        /// <summary>
-        /// Process the components
-        /// </summary>
-        protected override bool ProcessComponent(CalComponent component)
-        {
-            if (component is TodoAlarm)
-            {
-                Alarms.Add((TodoAlarm)component);
-                return true;
-            }
-            return base.ProcessComponent(component);
-        }
-
-        /// <summary>
         /// Process the properties
         /// </summary>
         protected override bool ProcessProperty(ICalReader reader, ContentLine line)
@@ -84,27 +49,26 @@ namespace deuxsucres.iCalendar
             {
                 case Constants.UID: SetProperty(reader.MakeProperty<TextProperty>(line), Constants.UID); return true;
                 case Constants.DTSTAMP: SetProperty(reader.MakeProperty<DateTimeProperty>(line), Constants.DTSTAMP); return true;
-                case Constants.DTSTART: SetProperty(reader.MakeProperty<DateTimeProperty>(line), Constants.DTSTART); return true;
+                case Constants.DTSTART: SetProperty(reader.MakeProperty<TypedDateTimeProperty>(line), Constants.DTSTART); return true;
+                case Constants.DTEND: SetProperty(reader.MakeProperty<TypedDateTimeProperty>(line), Constants.DTEND); return true;
+                case Constants.DURATION: SetProperty(reader.MakeProperty<DurationProperty>(line), Constants.DURATION); return true;
+                case Constants.SUMMARY: SetProperty(reader.MakeProperty<ExtendedTextProperty>(line), Constants.SUMMARY); return true;
                 case Constants.CLASS: SetProperty(reader.MakeProperty<EnumProperty<Classes>>(line), Constants.CLASS); return true;
-                case Constants.COMPLETED: SetProperty(reader.MakeProperty<DateTimeProperty>(line), Constants.COMPLETED); return true;
                 case Constants.CREATED: SetProperty(reader.MakeProperty<DateTimeProperty>(line), Constants.CREATED); return true;
                 case Constants.DESCRIPTION: SetProperty(reader.MakeProperty<ExtendedTextProperty>(line), Constants.DESCRIPTION); return true;
+                case Constants.LOCATION: SetProperty(reader.MakeProperty<ExtendedTextProperty>(line), Constants.LOCATION); return true;
+                case Constants.PRIORITY: SetProperty(reader.MakeProperty<IntegerProperty>(line), Constants.PRIORITY); return true;
                 case Constants.GEO: SetProperty(reader.MakeProperty<GeoPositionProperty>(line), Constants.GEO); return true;
                 case Constants.LAST_MODIFIED: SetProperty(reader.MakeProperty<DateTimeProperty>(line), Constants.LAST_MODIFIED); return true;
-                case Constants.LOCATION: SetProperty(reader.MakeProperty<ExtendedTextProperty>(line), Constants.LOCATION); return true;
                 case Constants.ORGANIZER: SetProperty(reader.MakeProperty<OrganizerProperty>(line), Constants.ORGANIZER); return true;
-                case Constants.PERCENT_COMPLETE: SetProperty(reader.MakeProperty<IntegerProperty>(line), Constants.PERCENT_COMPLETE); return true;
-                case Constants.PRIORITY: SetProperty(reader.MakeProperty<IntegerProperty>(line), Constants.PRIORITY); return true;
-                case Constants.RECURRENCE_ID: SetProperty(reader.MakeProperty<TypedDateTimeProperty>(line), Constants.RECURRENCE_ID); return true;
                 case Constants.SEQUENCE: SetProperty(reader.MakeProperty<IntegerProperty>(line), Constants.SEQUENCE); return true;
-                case Constants.STATUS: SetProperty(reader.MakeProperty<EnumProperty<TodoStatuses>>(line), Constants.STATUS); return true;
-                case Constants.SUMMARY: SetProperty(reader.MakeProperty<ExtendedTextProperty>(line), Constants.SUMMARY); return true;
+                case Constants.STATUS: SetProperty(reader.MakeProperty<EnumProperty<EventStatuses>>(line), Constants.STATUS); return true;
+                case Constants.TRANSP: SetProperty(reader.MakeProperty<EnumProperty<TransparentStates>>(line), Constants.TRANSP); return true;
                 case Constants.URL: SetProperty(reader.MakeProperty<UriProperty>(line), Constants.URL); return true;
-                case Constants.DUE: SetProperty(reader.MakeProperty<TypedDateTimeProperty>(line), Constants.DUE); return true;
-                case Constants.DURATION: SetProperty(reader.MakeProperty<DurationProperty>(line), Constants.DURATION); return true;
+                case Constants.RECURRENCE_ID: SetProperty(reader.MakeProperty<TypedDateTimeProperty>(line), Constants.RECURRENCE_ID); return true;
 
                 case Constants.ATTACH: AddProperty(reader.MakeProperty<AttachProperty>(line)); return true;
-                case Constants.ATTENDEE: AddProperty(reader.MakeProperty<TodoAttendeeProperty>(line)); return true;
+                case Constants.ATTENDEE: AddProperty(reader.MakeProperty<EventAttendeeProperty>(line)); return true;
                 case Constants.CATEGORIES: AddProperty(reader.MakeProperty<CategoriesProperty>(line)); return true;
                 case Constants.COMMENT: AddProperty(reader.MakeProperty<CommentProperty>(line)); return true;
                 case Constants.CONTACT: AddProperty(reader.MakeProperty<ExtendedTextProperty>(line)); return true;
@@ -120,9 +84,42 @@ namespace deuxsucres.iCalendar
         }
 
         /// <summary>
+        /// Read a component
+        /// </summary>
+        protected override CalComponent ReadComponent(ICalReader reader, ContentLine line)
+        {
+            if (line.Value.IsEqual(Constants.VALARM))
+                return reader.ReadComponent<EventAlarm>(line);
+            return base.ReadComponent(reader, line);
+        }
+
+        /// <summary>
+        /// Process the components
+        /// </summary>
+        protected override bool ProcessComponent(CalComponent component)
+        {
+            if (component is EventAlarm)
+            {
+                Alarms.Add((EventAlarm)component);
+                return true;
+            }
+            return base.ProcessComponent(component);
+        }
+
+        /// <summary>
+        /// Serialize alarms
+        /// </summary>
+        protected override void SerializeComponents(ICalWriter writer)
+        {
+            base.SerializeComponents(writer);
+            foreach (var alarm in Alarms)
+                alarm.Serialize(writer);
+        }
+
+        /// <summary>
         /// Name of the object
         /// </summary>
-        public override string Name => Constants.VTODO;
+        public override string Name => Constants.VEVENT;
 
         /// <summary>
         /// UID
@@ -145,21 +142,39 @@ namespace deuxsucres.iCalendar
         /// <summary>
         /// DTSTART
         /// </summary>
-        public DateTimeProperty DateStart
+        public TypedDateTimeProperty DateStart
         {
-            get { return FindProperty<DateTimeProperty>(Constants.DTSTART); }
+            get { return FindProperty<TypedDateTimeProperty>(Constants.DTSTART); }
             set { SetProperty(value, Constants.DTSTART); }
         }
 
         /// <summary>
-        /// DUE
+        /// Represents a full day event
         /// </summary>
-        public TypedDateTimeProperty Due
+        /// <remarks>
+        /// DTSTART is a DATE
+        /// </remarks>
+        public bool IsAllDay
         {
-            get { return FindProperty<TypedDateTimeProperty>(Constants.DUE); }
+            get { return DateStart?.IsDate ?? false; }
             set
             {
-                SetProperty(value, Constants.DUE);
+                if (value)
+                    DateStart?.SetAsDate();
+                else
+                    DateStart?.SetAsDateTime();
+            }
+        }
+
+        /// <summary>
+        /// DTEND
+        /// </summary>
+        public TypedDateTimeProperty DateEnd
+        {
+            get { return FindProperty<TypedDateTimeProperty>(Constants.DTEND); }
+            set
+            {
+                SetProperty(value, Constants.DTEND);
                 if (value != null)
                     Duration = null;
             }
@@ -175,7 +190,7 @@ namespace deuxsucres.iCalendar
             {
                 SetProperty(value, Constants.DURATION);
                 if (value != null)
-                    Due = null;
+                    DateEnd = null;
             }
         }
 
@@ -213,24 +228,6 @@ namespace deuxsucres.iCalendar
         {
             get { return FindProperty<EnumProperty<Classes>>(Constants.CLASS); }
             set { SetProperty(value, Constants.CLASS); }
-        }
-
-        /// <summary>
-        /// COMPLETED
-        /// </summary>
-        public DateTimeProperty Completed
-        {
-            get { return FindProperty<DateTimeProperty>(Constants.COMPLETED); }
-            set { SetProperty(value, Constants.COMPLETED); }
-        }
-
-        /// <summary>
-        /// PERCENT-COMPLETE
-        /// </summary>
-        public IntegerProperty PercentCompleted
-        {
-            get { return FindProperty<IntegerProperty>(Constants.PERCENT_COMPLETE); }
-            set { SetProperty(value, Constants.PERCENT_COMPLETE); }
         }
 
         /// <summary>
@@ -290,10 +287,19 @@ namespace deuxsucres.iCalendar
         /// <summary>
         /// STATUS
         /// </summary>
-        public EnumProperty<TodoStatuses> Status
+        public EnumProperty<EventStatuses> Status
         {
-            get { return FindProperty<EnumProperty<TodoStatuses>>(Constants.STATUS); }
+            get { return FindProperty<EnumProperty<EventStatuses>>(Constants.STATUS); }
             set { SetProperty(value, Constants.STATUS); }
+        }
+
+        /// <summary>
+        /// TRANSP
+        /// </summary>
+        public EnumProperty<TransparentStates> Transp
+        {
+            get { return FindProperty<EnumProperty<TransparentStates>>(Constants.TRANSP); }
+            set { SetProperty(value, Constants.TRANSP); }
         }
 
         /// <summary>
@@ -317,7 +323,7 @@ namespace deuxsucres.iCalendar
         /// <summary>
         /// Alarms
         /// </summary>
-        public List<TodoAlarm> Alarms { get; private set; } = new List<TodoAlarm>();
+        public List<EventAlarm> Alarms { get; private set; } = new List<EventAlarm>();
 
         /// <summary>
         /// List of attachments
@@ -327,7 +333,7 @@ namespace deuxsucres.iCalendar
         /// <summary>
         /// List of attendees
         /// </summary>
-        public CalProperties<TodoAttendeeProperty> Attendees { get; private set; }
+        public CalProperties<EventAttendeeProperty> Attendees { get; private set; }
 
         /// <summary>
         /// List of categories
