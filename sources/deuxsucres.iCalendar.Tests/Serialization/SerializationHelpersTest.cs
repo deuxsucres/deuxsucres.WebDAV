@@ -73,8 +73,8 @@ namespace deuxsucres.iCalendar.Tests.Serialization
             yield return new object[] { Constants.DAYLIGHT, typeof(TimeZoneComponent), Constants.DAYLIGHT, null, null };
             yield return new object[] { "Test", null, null, typeof(CalSyntaxError), "Unknown 'Test' component." };
             yield return new object[] { Constants.VEVENT, null, null, typeof(NotImplementedException), "Component creation for Constants.VEVENT not implemented" };
-            yield return new object[] { Constants.VTODO, null, null, typeof(NotImplementedException), "Component creation for Constants.VTODO not implemented" };
-            yield return new object[] { Constants.VJOURNAL, null, null, typeof(NotImplementedException), "Component creation for Constants.VJOURNAL not implemented" };
+            yield return new object[] { Constants.VTODO, typeof(Todo), Constants.VTODO, null, null };
+            yield return new object[] { Constants.VJOURNAL, typeof(Journal), Constants.VJOURNAL, null, null };
             yield return new object[] { Constants.VFREEBUSY, null, null, typeof(NotImplementedException), "Component creation for Constants.VFREEBUSY not implemented" };
             yield return new object[] { Constants.VTIMEZONE, typeof(TimeZone), Constants.VTIMEZONE, null, null };
         }
