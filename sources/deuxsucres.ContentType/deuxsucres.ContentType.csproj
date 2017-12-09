@@ -8,4 +8,9 @@
     <Description>A MIME Content-Type for directory information library as defined by the RFC-2425 (https://tools.ietf.org/html/rfc2425).</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
 </Project>
