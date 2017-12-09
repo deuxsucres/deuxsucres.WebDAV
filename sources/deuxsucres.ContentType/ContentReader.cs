@@ -25,6 +25,15 @@ namespace deuxsucres.ContentType
         #region IDisposable Support
 
         /// <summary>
+        /// Check if the reader is disposed
+        /// </summary>
+        protected void CheckNotDisposed()
+        {
+            if (_disposedValue)
+                throw new ObjectDisposedException(GetType().Name);
+        }
+
+        /// <summary>
         /// Internal dispose
         /// </summary>
         protected virtual void Dispose(bool disposing)
@@ -55,6 +64,32 @@ namespace deuxsucres.ContentType
         }
 
         #endregion
+
+        /// <summary>
+        /// Read the next unfolded line of text
+        /// </summary>
+        public virtual string ReadLine()
+        {
+            CheckNotDisposed();
+
+            // Read the next line
+            string line = Source.ReadLine();
+            if (line == null)
+                return null;
+
+            // Unfold next lines
+            int peek;
+            while (line == string.Empty || (peek = Source.Peek()) == 9 || peek == 32)
+            {
+                string sline = Source.ReadLine();
+                if (line != string.Empty)
+                    line += sline.Substring(1);
+                else
+                    line = sline;
+            }
+
+            return line;
+        }
 
         /// <summary>
         /// Read source

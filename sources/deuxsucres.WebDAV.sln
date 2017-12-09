@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{7B95B914-2E1C-4C86-B7B3-ADA4CCE73F5E}"
 	ProjectSection(SolutionItems) = preProject
 		..\documentation\rfc.md = ..\documentation\rfc.md
+		..\documentation\rfc2425.txt = ..\documentation\rfc2425.txt
 		..\documentation\rfc4791.txt = ..\documentation\rfc4791.txt
 		..\documentation\rfc4918.txt = ..\documentation\rfc4918.txt
 		..\documentation\rfc5545.txt = ..\documentation\rfc5545.txt
