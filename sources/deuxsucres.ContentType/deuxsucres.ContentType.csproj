@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <Authors>deuxsucres</Authors>
+    <Company>deuxsucres</Company>
+    <Product>deuxsucres.WebDAV</Product>
+    <Description>A MIME Content-Type for directory information library as defined by the RFC-2425 (https://tools.ietf.org/html/rfc2425).</Description>
+  </PropertyGroup>
+
+</Project>
