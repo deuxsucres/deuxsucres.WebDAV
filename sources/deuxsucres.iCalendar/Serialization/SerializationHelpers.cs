@@ -70,7 +70,7 @@ namespace deuxsucres.iCalendar.Serialization
                 case Constants.VTIMEZONE: return new TimeZone();
                 case Constants.VJOURNAL: return new Journal();
                 case Constants.VTODO: return new Todo();
-                case Constants.VEVENT: throw new NotImplementedException("Component creation for Constants.VEVENT not implemented");   // TODO Implements : return new Objects.Event();
+                case Constants.VEVENT: return new Event();
                 case Constants.VFREEBUSY: return new FreeBusy();
                 default:
                     throw new CalSyntaxError(string.Format(SR.Err_UnknownComponentName, name));

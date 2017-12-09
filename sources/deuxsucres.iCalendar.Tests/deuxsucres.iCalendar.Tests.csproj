@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalendarTest.cs" />
     <Compile Include="CalSyntaxErrorTest.cs" />
     <Compile Include="Extensions\StringExtensionsTest.cs" />
     <Compile Include="Objects\AlarmsTest.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Structure\Properties\TypedDateTimePropertyTest.cs" />
     <Compile Include="Structure\Properties\UriPropertyTest.cs" />
     <Compile Include="Structure\RecurrenceTest.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\deuxsucres.iCalendar\deuxsucres.iCalendar.csproj">
@@ -136,6 +138,23 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\xunit.analyzers.0.7.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="samples\sample-1.ics" />
+    <EmbeddedResource Include="samples\sample-2-ser.ics" />
+    <EmbeddedResource Include="samples\sample-2.ics" />
+    <EmbeddedResource Include="samples\sample-3-ser.ics" />
+    <EmbeddedResource Include="samples\sample-3.ics" />
+    <EmbeddedResource Include="samples\sample-4-ser.ics" />
+    <EmbeddedResource Include="samples\sample-4.ics" />
+    <EmbeddedResource Include="samples\sample-5-ser.ics" />
+    <EmbeddedResource Include="samples\sample-5.ics" />
+    <EmbeddedResource Include="samples\sample-6-ser.ics" />
+    <EmbeddedResource Include="samples\sample-6.ics" />
+    <EmbeddedResource Include="samples\sample-7-ser.ics" />
+    <EmbeddedResource Include="samples\sample-7.ics" />
+    <EmbeddedResource Include="samples\sample-8-ser.ics" />
+    <EmbeddedResource Include="samples\sample-8.ics" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

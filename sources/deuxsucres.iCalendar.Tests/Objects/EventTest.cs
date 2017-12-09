@@ -371,5 +371,124 @@ namespace deuxsucres.iCalendar.Tests.Objects
                 Assert.Null(reader.ReadNextLine());
             }
         }
+
+        const string sample1 = @"
+BEGIN:VEVENT
+UID:19970901T130000Z-123401@host.com
+DTSTAMP:19970901T1300Z
+DTSTART:19970903T163000Z
+DTEND:19970903T190000Z
+SUMMARY:Annual Employee Review
+CLASS:PRIVATE
+CATEGORIES:BUSINESS,HUMAN RESOURCES
+END:VEVENT
+";
+
+        const string sample2 = @"
+BEGIN:VEVENT
+UID:19970901T130000Z-123402@host.com
+DTSTAMP:19970901T1300Z
+DTSTART:19970401T163000Z
+DTEND:19970402T010000Z
+SUMMARY:Laurel is in sensitivity awareness class.
+CLASS:PUBLIC
+CATEGORIES:BUSINESS,HUMAN RESOURCES
+TRANSP:TRANSPARENT
+END:VEVENT
+";
+
+        const string sample3 = @"
+BEGIN:VEVENT
+UID:19970901T130000Z-123403@host.com
+DTSTAMP:19970901T1300Z
+DTSTART:19971102
+SUMMARY:Our Blissful Anniversary
+CLASS:CONFIDENTIAL
+CATEGORIES:ANNIVERSARY,PERSONAL,SPECIAL OCCASION
+RRULE:FREQ=YEARLY
+END:VEVENT
+";
+
+        [Fact]
+        public void Deserialize()
+        {
+            var parser = new CalendarParser();
+            using (var source = new StringReader(sample1))
+            {
+                var reader = new CalTextReader(parser, source, false);
+                reader.ReadNextLine();
+
+                var evnt = new Event();
+                evnt.Deserialize(reader);
+
+                Assert.Equal(7, evnt.PropertyCount);
+
+                Assert.Equal("19970901T130000Z-123401@host.com", evnt.UID);
+                Assert.Equal(new DateTime(1997, 9, 1, 13, 0, 0), (DateTime)evnt.DtStamp);
+                Assert.Equal(new DateTime(1997, 9, 3, 16, 30, 0), (DateTime)evnt.DateStart);
+                Assert.False(evnt.DateStart.IsDate);
+                Assert.Null(evnt.DateStart.TimeZoneID);
+                Assert.Equal(new DateTime(1997, 9, 3, 19, 0, 0), (DateTime)evnt.DateEnd);
+                Assert.False(evnt.DateEnd.IsDate);
+                Assert.Null(evnt.DateEnd.TimeZoneID);
+                Assert.Null(evnt.Transp);
+
+                Assert.Equal("Annual Employee Review", evnt.Summary);
+                Assert.Equal(Classes.Private, (Classes)evnt.Class);
+
+                Assert.Equal(new string[] { "BUSINESS", "HUMAN RESOURCES" }, evnt.Categories.SelectMany(c => c.Value));
+            }
+
+            using (var source = new StringReader(sample2))
+            {
+                var reader = new CalTextReader(parser, source, false);
+                reader.ReadNextLine();
+
+                var evnt = new Event();
+                evnt.Deserialize(reader);
+
+                Assert.Equal(8, evnt.PropertyCount);
+
+                Assert.Equal("19970901T130000Z-123402@host.com", evnt.UID);
+                Assert.Equal(new DateTime(1997, 9, 1, 13, 0, 0), (DateTime)evnt.DtStamp);
+                Assert.Equal(new DateTime(1997, 4, 1, 16, 30, 0), (DateTime)evnt.DateStart);
+                Assert.False(evnt.DateStart.IsDate);
+                Assert.Null(evnt.DateStart.TimeZoneID);
+                Assert.Equal(new DateTime(1997, 4, 2, 1, 0, 0), (DateTime)evnt.DateEnd);
+                Assert.False(evnt.DateEnd.IsDate);
+                Assert.Null(evnt.DateEnd.TimeZoneID);
+                Assert.Equal(TransparentStates.Transparent, (TransparentStates)evnt.Transp);
+
+                Assert.Equal("Laurel is in sensitivity awareness class.", evnt.Summary);
+                Assert.Equal(Classes.Public, (Classes)evnt.Class);
+
+                Assert.Equal(new string[] { "BUSINESS", "HUMAN RESOURCES" }, evnt.Categories.SelectMany(c => c.Value));
+            }
+
+            using (var source = new StringReader(sample3))
+            {
+                var reader = new CalTextReader(parser, source, false);
+                reader.ReadNextLine();
+
+                var evnt = new Event();
+                evnt.Deserialize(reader);
+
+                Assert.Equal(7, evnt.PropertyCount);
+
+                Assert.Equal("19970901T130000Z-123403@host.com", evnt.UID);
+                Assert.Equal(new DateTime(1997, 9, 1, 13, 0, 0), (DateTime)evnt.DtStamp);
+                Assert.Equal(new DateTime(1997, 11, 2, 0, 0, 0), (DateTime)evnt.DateStart);
+                Assert.True(evnt.DateStart.IsDate);
+                Assert.Null(evnt.DateStart.TimeZoneID);
+                Assert.Null(evnt.DateEnd);
+                Assert.Null(evnt.Transp);
+
+                Assert.Equal("Our Blissful Anniversary", evnt.Summary);
+                Assert.Equal(Classes.Confidential, (Classes)evnt.Class);
+
+                Assert.Equal(new string[] { "ANNIVERSARY", "PERSONAL", "SPECIAL OCCASION" }, evnt.Categories.SelectMany(c => c.Value));
+            }
+        }
+
     }
 }
