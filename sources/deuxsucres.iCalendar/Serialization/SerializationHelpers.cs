@@ -30,7 +30,6 @@ namespace deuxsucres.iCalendar.Serialization
                 case Constants.FBTYPE: return new EnumParameter<FreeBusyTypes>() { Name = name.ToUpper() };
                 case Constants.LANGUAGE: return new TextParameter() { Name = name.ToUpper() };
                 case Constants.MEMBER: return new CalAddressesParameter() { Name = name.ToUpper() };
-                //case Constants.PARTSTAT: return new EnumParameter<PartStatuses>(){ Name = name.ToUpper() };
                 case Constants.RANGE: return new EnumParameter<Ranges>() { Name = name.ToUpper() };
                 case Constants.RELATED: return new EnumParameter<Relateds>() { Name = name.ToUpper() };
                 case Constants.RELTYPE: return new EnumParameter<RelationTypes>() { Name = name.ToUpper() };
@@ -49,13 +48,14 @@ namespace deuxsucres.iCalendar.Serialization
         /// </summary>
         public static ICalProperty DefaultCreateProperty(string name)
         {
-            switch ((name ?? string.Empty).ToUpper())
-            {
-                case Constants.UID: throw new NotImplementedException("Property creation for Constants.UID not implemented");
-                //TODO Implements : return new UidProperty();
-                default:
-                    return new TextProperty() { Name = name };
-            }
+            //switch ((name ?? string.Empty).ToUpper())
+            //{
+            //    case Constants.UID: throw new NotImplementedException("Property creation for Constants.UID not implemented");
+            //    //TODO Implements : return new UidProperty();
+            //    default:
+            //        return new TextProperty() { Name = name };
+            //}
+            return new TextProperty() { Name = name };
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace deuxsucres.iCalendar.Serialization
                 case Constants.VJOURNAL: return new Journal();
                 case Constants.VTODO: return new Todo();
                 case Constants.VEVENT: throw new NotImplementedException("Component creation for Constants.VEVENT not implemented");   // TODO Implements : return new Objects.Event();
-                case Constants.VFREEBUSY: throw new NotImplementedException("Component creation for Constants.VFREEBUSY not implemented");   // TODO Implements : return new Objects.FreeBusy();
+                case Constants.VFREEBUSY: return new FreeBusy();
                 default:
                     throw new CalSyntaxError(string.Format(SR.Err_UnknownComponentName, name));
             }

@@ -84,6 +84,7 @@
     <Compile Include="Objects\Properties\RecurRulePropertyTest.cs" />
     <Compile Include="Objects\TimeZoneComponentTest.cs" />
     <Compile Include="Objects\TimeZoneTest.cs" />
+    <Compile Include="Objects\FreeBusyTest.cs" />
     <Compile Include="Objects\TodoTest.cs" />
     <Compile Include="Parser\CalendarParserTest.cs" />
     <Compile Include="Parser\ContentLineTest.cs" />

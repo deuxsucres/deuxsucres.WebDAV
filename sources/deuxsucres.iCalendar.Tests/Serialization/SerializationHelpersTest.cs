@@ -48,7 +48,7 @@ namespace deuxsucres.iCalendar.Tests.Serialization
         public static IEnumerable<object[]> DefaultCreatePropertyData()
         {
             yield return new object[] { "Test", typeof(TextProperty), "Test", null, null };
-            yield return new object[] { Constants.UID, null, null, typeof(NotImplementedException), "Property creation for Constants.UID not implemented" };
+            //yield return new object[] { Constants.UID, null, null, typeof(NotImplementedException), "Property creation for Constants.UID not implemented" };
         }
         [Theory, MemberData(nameof(DefaultCreatePropertyData))]
         public void DefaultCreateProperty(string name, Type paramTypeExpected, string nameExpected, Type exceptionExpected, string errorExpected)
@@ -75,7 +75,7 @@ namespace deuxsucres.iCalendar.Tests.Serialization
             yield return new object[] { Constants.VEVENT, null, null, typeof(NotImplementedException), "Component creation for Constants.VEVENT not implemented" };
             yield return new object[] { Constants.VTODO, typeof(Todo), Constants.VTODO, null, null };
             yield return new object[] { Constants.VJOURNAL, typeof(Journal), Constants.VJOURNAL, null, null };
-            yield return new object[] { Constants.VFREEBUSY, null, null, typeof(NotImplementedException), "Component creation for Constants.VFREEBUSY not implemented" };
+            yield return new object[] { Constants.VFREEBUSY, typeof(FreeBusy), Constants.VFREEBUSY, null, null };
             yield return new object[] { Constants.VTIMEZONE, typeof(TimeZone), Constants.VTIMEZONE, null, null };
         }
         [Theory, MemberData(nameof(DefaultCreateComponentData))]
