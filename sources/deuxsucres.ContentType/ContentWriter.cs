@@ -79,7 +79,8 @@ namespace deuxsucres.ContentType
             // If the line size is <=1 then no folding is required
             if (LineSize <= 1)
             {
-                Source.WriteLine(line);
+                Source.Write(line);
+                Source.Write(ContentSyntax.CRLF);
                 count = 1;
             }
             else
@@ -91,14 +92,16 @@ namespace deuxsucres.ContentType
                     {
                         string tLine = line.Substring(0, lineSize);
                         line = line.Substring(lineSize);
-                        Source.WriteLine(prefix + tLine);
+                        Source.Write(prefix + tLine);
+                        Source.Write(ContentSyntax.CRLF);
                         prefix = " ";
                         lineSize = LineSize - 1;
                         count++;
                     }
                     else
                     {
-                        Source.WriteLine(prefix + line);
+                        Source.Write(prefix + line);
+                        Source.Write(ContentSyntax.CRLF);
                         count++;
                         break;
                     }
