@@ -67,8 +67,7 @@ namespace deuxsucres.ContentType.Tests
                 .AppendLine("DESCRIPTION:The last line.")
                 ;
             var source = new StringReader(content.ToString());
-            ContentReader reader;
-            using (reader = new ContentReader(source))
+            using (var reader = new ContentReader(source))
             {
                 Assert.Equal("DESCRIPTION:This is a long description text in a only one line of text.", reader.ReadLine());
                 Assert.Equal("DESCRIPTION:This is the second line.", reader.ReadLine());

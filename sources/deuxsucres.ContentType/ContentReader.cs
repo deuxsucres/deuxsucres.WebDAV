@@ -56,7 +56,7 @@ namespace deuxsucres.ContentType
         }
 
         /// <summary>
-        /// Dispose ressources
+        /// Dispose resources
         /// </summary>
         public void Dispose()
         {
