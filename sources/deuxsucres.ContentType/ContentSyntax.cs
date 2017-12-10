@@ -238,59 +238,63 @@ namespace deuxsucres.ContentType
 
         #region Encode
 
-        ///// <summary>
-        ///// Encode a content line
-        ///// </summary>
-        //public virtual string EncodeContentLine(ContentLine line)
-        //{
-        //    if (line == null) return null;
-        //    StringBuilder builder = new StringBuilder();
-        //    if (!string.IsNullOrEmpty(line.Group))
-        //    {
-        //        builder.Append(line.Group);
-        //        if (!string.IsNullOrEmpty(line.Name))
-        //            builder.Append('.');
-        //    }
-        //    builder.Append(line.Name);
-        //    foreach (var prm in line.GetParams())
-        //    {
-        //        builder
-        //            .Append(";")
-        //            .Append(prm.Name)
-        //            .Append("=")
-        //            .Append(EncodeTextParameter(prm.Value))
-        //            ;
-        //    }
-        //    builder.Append(":").Append(line.Value);
-        //    return builder.ToString();
-        //}
+        /// <summary>
+        /// Escape a parameter value
+        /// </summary>
+        protected virtual string EscapeParamValue(string value)
+        {
+            return !CircumflexEscape ? value : value
+                    .Replace(CRLF, "^n")
+                    .Replace(sLF, "^n")
+                    .Replace(sCR, "^n")
+                    .Replace("^", "^^")
+                    .Replace("\"", "^'")
+                    ;
+        }
 
-        ///// <summary>
-        ///// Encode a text value
-        ///// </summary>
-        //public virtual string EncodeText(string value)
-        //{
-        //    if (value == null) return null;
-        //    return value
-        //        .Replace(@"\", @"\\")
-        //        .Replace(";", @"\;")
-        //        .Replace(",", @"\,")
-        //        .Replace(CRLF, @"\n")
-        //        .Replace(sCR, @"\n")
-        //        .Replace(sLF, @"\n")
-        //        ;
-        //}
+        /// <summary>
+        /// Encode a parameter value
+        /// </summary>
+        protected virtual string EncodeParamValue(string value)
+        {
+            //if (value == null) return null;
+            if (value.IndexOfAny(new char[] { ',', ';', '=' }) >= 0 && !(value.StartsWith("\"") && value.EndsWith("\"")))
+                return $"\"{EscapeParamValue(value)}\"";
+            return EscapeParamValue(value);
+        }
 
-        ///// <summary>
-        ///// Encode a text parameter value
-        ///// </summary>
-        //public virtual string EncodeTextParameter(string value)
-        //{
-        //    if (value == null) return null;
-        //    if (value.IndexOfAny(new char[] { ',', ';', '=' }) >= 0 && !(value.StartsWith("\"") && value.EndsWith("\"")))
-        //        return $"\"{EncodeText(value)}\"";
-        //    return EncodeText(value);
-        //}
+        /// <summary>
+        /// Encode a content line
+        /// </summary>
+        public virtual string EncodeContentLine(ContentLine line)
+        {
+            if (line == null) return null;
+            StringBuilder builder = new StringBuilder();
+            if (!string.IsNullOrEmpty(line.Group))
+            {
+                builder.Append(line.Group);
+                if (!string.IsNullOrEmpty(line.Name))
+                    builder.Append('.');
+            }
+            builder.Append(line.Name);
+            foreach (var prm in line.GetParams())
+            {
+                builder
+                    .Append(";")
+                    .Append(prm.Name)
+                    .Append("=")
+                    ;
+                bool first = true;
+                foreach (string pVal in prm.Values)
+                {
+                    if (!first) builder.Append(",");
+                    builder.Append(EncodeParamValue(pVal));
+                    first = false;
+                }
+            }
+            builder.Append(":").Append(line.Value);
+            return builder.ToString();
+        }
 
         #endregion
 

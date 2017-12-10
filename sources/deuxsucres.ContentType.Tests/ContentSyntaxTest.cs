@@ -251,5 +251,60 @@ namespace deuxsucres.ContentType.Tests
             }
         }
 
+        public static IEnumerable<object[]> EncodeContentLineData()
+        {
+            // Decode empty line
+            yield return new object[] { null, null };
+
+            // Name
+            var content = new ContentLine
+            {
+                Name = "Test"
+            };
+            yield return new object[] { content, "Test:" };
+            content = new ContentLine
+            {
+                Group = "Group",
+                Name = "Test"
+            };
+            yield return new object[] { content, "Group.Test:" };
+            content = new ContentLine
+            {
+                Group = "Group",
+                Name = null
+            };
+            yield return new object[] { content, "Group:" };
+
+            // Value
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = "Value"
+            };
+            yield return new object[] { content, "Test:Value" };
+
+            // Parameters
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = "Value"
+            }
+            .AddParam("p1", "v1")
+            .AddParam("p2", "")
+            .AddParam("p3", "v3").AddParam("p3", "v4")
+            .AddParam("p4", "v,5").AddParam("p4", "v\"6").AddParam("p4", "v7")
+            ;
+            yield return new object[] { content, "Test;p1=v1;p2=;p3=v3,v4;p4=\"v,5\",v^'6,v7:Value" };
+        }
+
+        [Theory]
+        [MemberData(nameof(EncodeContentLineData))]
+        public void EncodeContentLine(ContentLine line, string result)
+        {
+            var syntax = new ContentSyntax();
+
+            Assert.Equal(result, syntax.EncodeContentLine(line));
+        }
+
     }
 }
