@@ -91,8 +91,57 @@ namespace deuxsucres.ContentType.Tests
             Assert.Equal(new KeyValuePair<string, string>[] {
                 new KeyValuePair<string, string>("p1", "v3"),
                 new KeyValuePair<string, string>("P2", "v2"),
-            }, content.GetParams());
+            }, content.GetParams().ToDictionary(p => p.Name, p => p.Value));
 
+            content["P2"] = null;
+            Assert.Equal(1, content.ParamCount);
+
+            Assert.True(content.HavingParam("p1"));
+            Assert.False(content.HavingParam("p2"));
+            Assert.False(content.HavingParam("p3"));
+
+            content.AddParam("p2", "a");
+            Assert.Equal("a", content["P2"]);
+            content.AddParam("p2", "b");
+            Assert.Equal("a, b", content["P2"]);
+
+            Assert.Equal(2, content.ParamCount);
+            Assert.True(content.HavingParam("p1"));
+            Assert.True(content.HavingParam("p2"));
+            Assert.False(content.HavingParam("p3"));
+
+            content.AddParam(" ", "a");
+            Assert.Equal(2, content.ParamCount);
+        }
+
+        [Fact]
+        public void ContentLineParameter()
+        {
+            var param = new ContentLineParameter("name");
+            Assert.Equal("name", param.Name);
+            Assert.Empty(param.Values);
+            Assert.Equal(string.Empty, param.Value);
+
+            param.Values.Add("v1");
+            Assert.Equal(new string[] { "v1" }, param.Values);
+            Assert.Equal(new string[] { "v1" }, param);
+            Assert.Equal("v1", param.Value);
+
+            param.Values.Add("v2");
+            Assert.Equal(new string[] { "v1", "v2" }, param.Values);
+            Assert.Equal(new string[] { "v1", "v2" }, param);
+            Assert.Equal(new string[] { "v1", "v2" }, (IEnumerable<string>)param);
+            Assert.Equal(new string[] { "v1", "v2" }, param.ToList());
+            Assert.Equal(new string[] { "v1", "v2" }, (System.Collections.IEnumerable)param);
+            Assert.Equal(new string[] { "v1", "v2" }, (string[])param);
+            Assert.Equal(new string[] { "v1", "v2" }, (List<string>)param);
+            Assert.Equal("v1, v2", param.Value);
+            Assert.Equal("v1, v2", param);
+
+            param.Value = "v3";
+            Assert.Equal(new string[] { "v3" }, param.Values);
+            Assert.Equal(new string[] { "v3" }, param);
+            Assert.Equal("v3", param.Value);
         }
     }
 }

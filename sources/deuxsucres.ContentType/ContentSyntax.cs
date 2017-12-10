@@ -18,11 +18,13 @@ namespace deuxsucres.ContentType
         /// LF: line feed
         /// </summary>
         public const char LF = '\x0A';
+        protected static readonly string sLF = LF.ToString();
 
         /// <summary>
         /// CR: carriage return
         /// </summary>
         public const char CR = '\x0D';
+        protected static readonly string sCR = CR.ToString();
 
         /// <summary>
         /// CRLF: end of line
@@ -33,16 +35,19 @@ namespace deuxsucres.ContentType
         /// SP: space char
         /// </summary>
         public const char SP = ' ';
+        //protected static readonly string sSP = SP.ToString();
 
         /// <summary>
         /// HTAB: horizontal tab
         /// </summary>
         public const char HTAB = '\x09';
+        //protected static readonly string sHTAB = HTAB.ToString();
 
         /// <summary>
         /// DQUOTE: double quote
         /// </summary>
         public const char DQUOTE = '\x22';
+        //protected static readonly string sDQUOTE = DQUOTE.ToString();
 
         /// <summary>
         /// Check if <paramref name="c"/> is a whitspace
@@ -91,6 +96,60 @@ namespace deuxsucres.ContentType
         #endregion
 
         #region Encode
+
+        ///// <summary>
+        ///// Encode a content line
+        ///// </summary>
+        //public virtual string EncodeContentLine(ContentLine line)
+        //{
+        //    if (line == null) return null;
+        //    StringBuilder builder = new StringBuilder();
+        //    if (!string.IsNullOrEmpty(line.Group))
+        //    {
+        //        builder.Append(line.Group);
+        //        if (!string.IsNullOrEmpty(line.Name))
+        //            builder.Append('.');
+        //    }
+        //    builder.Append(line.Name);
+        //    foreach (var prm in line.GetParams())
+        //    {
+        //        builder
+        //            .Append(";")
+        //            .Append(prm.Name)
+        //            .Append("=")
+        //            .Append(EncodeTextParameter(prm.Value))
+        //            ;
+        //    }
+        //    builder.Append(":").Append(line.Value);
+        //    return builder.ToString();
+        //}
+
+        ///// <summary>
+        ///// Encode a text value
+        ///// </summary>
+        //public virtual string EncodeText(string value)
+        //{
+        //    if (value == null) return null;
+        //    return value
+        //        .Replace(@"\", @"\\")
+        //        .Replace(";", @"\;")
+        //        .Replace(",", @"\,")
+        //        .Replace(CRLF, @"\n")
+        //        .Replace(sCR, @"\n")
+        //        .Replace(sLF, @"\n")
+        //        ;
+        //}
+
+        ///// <summary>
+        ///// Encode a text parameter value
+        ///// </summary>
+        //public virtual string EncodeTextParameter(string value)
+        //{
+        //    if (value == null) return null;
+        //    if (value.IndexOfAny(new char[] { ',', ';', '=' }) >= 0 && !(value.StartsWith("\"") && value.EndsWith("\"")))
+        //        return $"\"{EncodeText(value)}\"";
+        //    return EncodeText(value);
+        //}
 
         #endregion
 
