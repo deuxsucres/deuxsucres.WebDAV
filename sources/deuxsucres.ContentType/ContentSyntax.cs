@@ -93,6 +93,138 @@ namespace deuxsucres.ContentType
         #endregion
 
         #region Decode
+
+        ///// <summary>
+        ///// Read a IANA token
+        ///// </summary>
+        ///// <remarks>
+        ///// 1*(ALPHA / DIGIT / "-")
+        ///// </remarks>
+        //protected virtual string ReadIanaToken(string line, ref int pos)
+        //{
+        //    int s = pos, l=line.Length;
+        //    char c;
+        //    while (pos < l && ((c = line[pos]) == '-' || IsALPHA(c) || IsDIGIT(c)))
+        //        pos++;
+        //    return s == pos ? null : line.Substring(s, pos - s);
+        //}
+
+        ///// <summary>
+        ///// Decode a content line
+        ///// </summary>
+        //public virtual ContentLine DecodeContentLine(string line, bool throwErrors = false)
+        //{
+        //    ContentLine CheckError(string message)
+        //    {
+        //        if (throwErrors) throw new ContentSyntaxError();
+        //        return null;
+        //    };
+
+        //    // An empty line is not error
+        //    if (string.IsNullOrWhiteSpace(line)) return null;
+
+        //    var content = new ContentLine();
+        //    int pos = 0;
+
+        //    // Read the name
+        //    string name = ReadIanaToken(line, ref pos);
+        //    //if(name==null) 
+
+        //    char[] partSeparators = new char[] { ':', ';' };
+        //    int idx = line.IndexOfAny(partSeparators);
+        //    if (idx < 0)
+        //    {
+        //        content.Name = line;
+        //        return content;
+        //    }
+        //    else
+        //    {
+        //        content.Name = line.Substring(0, idx);
+        //    }
+
+        //    // Read the parameters
+        //    char[] paramSeparators = new char[] { ':', '=', ';' };
+        //    char[] paramListSeparators = new char[] { ':', ',', ';' };
+        //    int pos = idx;
+        //    while (pos < line.Length && line[pos] == ';')
+        //    {
+        //        pos++;  // Skip the separator
+        //        idx = line.IndexOfAny(paramSeparators, pos);
+        //        // End of line ?
+        //        if (idx < 0)
+        //        {
+        //            // Create an empty parameter
+        //            if (pos < line.Length)
+        //                content[line.Substring(pos)] = string.Empty;
+        //            return content;
+        //        }
+        //        // get the name
+        //        string paramName = line.Substring(pos, idx - pos);
+        //        string paramValue = string.Empty;
+        //        // Whithout value ?
+        //        if (line[idx] != '=')
+        //        {
+        //            // Create an empty parameter
+        //            content[paramName] = paramValue;
+        //            // And continue
+        //            pos = idx;
+        //            continue;
+        //        }
+        //        // Check the value
+        //        int sParam = idx + 1;
+        //        pos = sParam - 1;
+        //        do
+        //        {
+        //            pos++;
+        //            // Encoded ?
+        //            if (pos < line.Length && line[pos] == '"')
+        //            {
+        //                idx = line.IndexOf('"', pos + 1);
+        //                if (idx < 0)
+        //                {
+        //                    // Get the rest of the line as a parameter value
+        //                    pos = line.Length;
+        //                    break;
+        //                }
+        //                else
+        //                {
+        //                    // Extract the parameter value
+        //                    pos = idx + 1;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                // Search a separator
+        //                idx = line.IndexOfAny(paramListSeparators, pos);
+        //                if (idx < 0)
+        //                {
+        //                    // Get the rest of the line as a parameter value
+        //                    pos = line.Length;
+        //                    break;
+        //                }
+        //                else
+        //                {
+        //                    // Extract the parameter value
+        //                    paramValue = line.Substring(sParam, idx - pos);
+        //                    pos = idx;
+        //                }
+        //            }
+        //        } while (pos >= 0 && pos < line.Length && line[pos] == ',');
+        //        if (pos >= 0)
+        //            paramValue = line.Substring(sParam, pos - sParam);
+        //        // Create the parameter
+        //        if (!string.IsNullOrEmpty(paramName) || !string.IsNullOrEmpty(paramValue))
+        //        {
+        //            //paramValue = paramValue.Replace("=3D", "=").Replace("\\;", ";");
+        //            content[paramName] = paramValue;
+        //        }
+        //    }
+
+        //    // Read the value
+        //    content.Value = pos < line.Length ? line.Substring(pos + 1) : null;
+        //    return content;
+        //}
+
         #endregion
 
         #region Encode
