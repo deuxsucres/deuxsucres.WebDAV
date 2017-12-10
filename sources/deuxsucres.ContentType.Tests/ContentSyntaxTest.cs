@@ -37,5 +37,219 @@ namespace deuxsucres.ContentType.Tests
             Assert.False(ContentSyntax.IsCHAR('\x00'));
             Assert.True(ContentSyntax.IsCHAR('0'));
         }
+
+        public static IEnumerable<object[]> DecodeContentLineData()
+        {
+            // Decode empty line
+            yield return new object[] { null, 12, false, false, null, null };
+            yield return new object[] { null, 12, true, false, null, null };
+            yield return new object[] { null, 12, false, true, null, null };
+            yield return new object[] { null, 12, true, true, null, null };
+
+            yield return new object[] { "", 12, false, false, null, null };
+            yield return new object[] { "", 12, true, false, null, null };
+            yield return new object[] { "", 12, false, true, null, null };
+            yield return new object[] { "", 12, true, true, null, null };
+
+            yield return new object[] { " ", 12, false, false, null, null };
+            yield return new object[] { " ", 12, true, false, null, null };
+            yield return new object[] { " ", 12, false, true, null, null };
+            yield return new object[] { " ", 12, true, true, null, null };
+
+            // Name only
+            var content = new ContentLine {
+                Name = "Test"
+            };
+            yield return new object[] { "Test", 12, false, false, content, null };
+            yield return new object[] { "Test", 12, true, false, content, null };
+            yield return new object[] { "Test", 12, false, true, content, null };
+            yield return new object[] { "Test", 12, true, true, content, null };
+
+            // Invalid name
+            Exception ex = new ContentSyntaxError("Invalid character ',' for the name.", 12, 0);
+            yield return new object[] { ",", 12, false, false, null, null };
+            yield return new object[] { ",", 12, true, false, null, null };
+            yield return new object[] { ",", 12, false, true, null, ex };
+            yield return new object[] { ",", 12, true, true, null, ex };
+
+            // Group only
+            content = new ContentLine
+            {
+                Group = "Group",
+                Name = "Test"
+            };
+            yield return new object[] { "Group.Test", 12, false, false, content, null };
+            yield return new object[] { "Group.Test", 12, true, false, content, null };
+            yield return new object[] { "Group.Test", 12, false, true, content, null };
+            yield return new object[] { "Group.Test", 12, true, true, content, null };
+
+            // Invalid group / name
+            content = new ContentLine
+            {
+                Group = "Group",
+                Name = "Test"
+            };
+            ex = new ContentSyntaxError("Invalid character '.' for the name.", 12, 0);
+            yield return new object[] { ".Test", 12, false, false, null, null };
+            yield return new object[] { ".Test", 12, true, false, null, null };
+            yield return new object[] { ".Test", 12, false, true, null, ex };
+            yield return new object[] { ".Test", 12, true, true, null, ex };
+
+            content = new ContentLine
+            {
+                Group = "Group",
+                Name = null
+            };
+            ex = new ContentSyntaxError("Invalid character '\0' for the name.", 12, 6);
+            yield return new object[] { "Group.", 12, false, false, content, null };
+            yield return new object[] { "Group.", 12, true, false, null, null };
+            yield return new object[] { "Group.", 12, false, true, null, ex };
+            yield return new object[] { "Group.", 12, true, true, null, ex };
+
+            // Value
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = "Value"
+            };
+            yield return new object[] { "Test:Value", 12, false, false, content, null };
+            yield return new object[] { "Test:Value", 12, true, false, content, null };
+            yield return new object[] { "Test:Value", 12, false, true, content, null };
+            yield return new object[] { "Test:Value", 12, true, true, content, null };
+
+            // Empty value
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = string.Empty
+            };
+            yield return new object[] { "Test:", 12, false, false, content, null };
+            yield return new object[] { "Test:", 12, true, false, content, null };
+            yield return new object[] { "Test:", 12, false, true, content, null };
+            yield return new object[] { "Test:", 12, true, true, content, null };
+
+            // Invalid value
+            content = new ContentLine
+            {
+                Name = "Test"
+            };
+            ex = new ContentSyntaxError("Expected ':' instead of ','.", 12, 4);
+            yield return new object[] { "Test,", 12, false, false, content, null };
+            yield return new object[] { "Test,", 12, true, false, null, null };
+            yield return new object[] { "Test,", 12, false, true, null, ex };
+            yield return new object[] { "Test,", 12, true, true, null, ex };
+
+            // Parameters
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = "Value"
+            }.AddParam("p1", "v1");
+            yield return new object[] { "Test;p1=v1:Value", 12, false, false, content, null };
+            yield return new object[] { "Test;p1=v1:Value", 12, true, false, content, null };
+            yield return new object[] { "Test;p1=v1:Value", 12, false, true, content, null };
+            yield return new object[] { "Test;p1=v1:Value", 12, true, true, content, null };
+
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = "Value"
+            }.AddParam("p1", "");
+            yield return new object[] { "Test;p1=:Value", 12, false, false, content, null };
+            yield return new object[] { "Test;p1=:Value", 12, true, false, content, null };
+            yield return new object[] { "Test;p1=:Value", 12, false, true, content, null };
+            yield return new object[] { "Test;p1=:Value", 12, true, true, content, null };
+
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = "Value"
+            }
+            .AddParam("p1", "v1")
+            .AddParam("p2", "^v\"^2");
+            yield return new object[] { "Test;p1=v1;p2=^^v^'^2:Value", 12, false, false, content, null };
+            yield return new object[] { "Test;p1=v1;p2=^^v^'^2:Value", 12, true, false, content, null };
+            yield return new object[] { "Test;p1=v1;p2=^^v^'^2:Value", 12, false, true, content, null };
+            yield return new object[] { "Test;p1=v1;p2=^^v^'^2:Value", 12, true, true, content, null };
+
+
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = "Value"
+            }
+            .AddParam("p1", "v1;p2=v2");
+            yield return new object[] { "Test;p1=\"v1;p2=v2\":Value", 12, false, false, content, null };
+            yield return new object[] { "Test;p1=\"v1;p2=v2\":Value", 12, true, false, content, null };
+            yield return new object[] { "Test;p1=\"v1;p2=v2\":Value", 12, false, true, content, null };
+            yield return new object[] { "Test;p1=\"v1;p2=v2\":Value", 12, true, true, content, null };
+
+            // Invalid parameter name
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = null
+            };
+            ex = new ContentSyntaxError("Invalid character '=' for the name.", 12, 5);
+            yield return new object[] { "Test;=v1:Value", 12, false, false, content, null };
+            yield return new object[] { "Test;=v1:Value", 12, true, false, null, null };
+            yield return new object[] { "Test;=v1:Value", 12, false, true, null, ex };
+            yield return new object[] { "Test;=v1:Value", 12, true, true, null, ex };
+
+            // Invalid parameter value
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = null
+            };
+            ex = new ContentSyntaxError("Expected '\"' instead of '\0'.", 12, 23);
+            yield return new object[] { "Test;p1=\"v1;p2=v2:Value", 12, false, false, content, null };
+            yield return new object[] { "Test;p1=\"v1;p2=v2:Value", 12, true, false, null, null };
+            yield return new object[] { "Test;p1=\"v1;p2=v2:Value", 12, false, true, null, ex };
+            yield return new object[] { "Test;p1=\"v1;p2=v2:Value", 12, true, true, null, ex };
+
+            content = new ContentLine
+            {
+                Name = "Test",
+                Value = null
+            };
+            ex = new ContentSyntaxError("Expected '=' instead of ':'.", 12, 7);
+            yield return new object[] { "Test;p1:Value", 12, false, false, content, null };
+            yield return new object[] { "Test;p1:Value", 12, true, false, null, null };
+            yield return new object[] { "Test;p1:Value", 12, false, true, null, ex };
+            yield return new object[] { "Test;p1:Value", 12, true, true, null, ex };
+        }
+
+        [Theory]
+        [MemberData(nameof(DecodeContentLineData))]
+        public void DecodeContentLine(string line, int lineNumber, bool strict, bool throwErrors, ContentLine result, Exception error)
+        {
+            var syntax = new ContentSyntax();
+
+            if (error != null)
+            {
+                var ex = Assert.Throws(error.GetType(), () => syntax.DecodeContentLine(line, lineNumber, strict, throwErrors));
+                Assert.Equal(error.Message, ex.Message);
+            }
+            else
+            {
+                var content = syntax.DecodeContentLine(line, lineNumber, strict, throwErrors);
+                if (result == null)
+                    Assert.Null(content);
+                else
+                {
+                    Assert.NotNull(content);
+                    Assert.Equal(result.Group, content.Group);
+                    Assert.Equal(result.Name, content.Name);
+                    Assert.Equal(result.ParamCount, content.ParamCount);
+                    Assert.Equal(
+                        result.GetParams().ToDictionary(p => p.Name, p => p.Value),
+                        content.GetParams().ToDictionary(p => p.Name, p => p.Value)
+                        );
+                    Assert.Equal(result.Value, content.Value);
+                }
+            }
+        }
+
     }
 }

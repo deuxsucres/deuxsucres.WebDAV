@@ -69,5 +69,23 @@ namespace deuxsucres.ContentType.Locales {
                 return ResourceManager.GetString("ContentSyntaxErrorMessage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Expected &apos;{0}&apos; instead of &apos;{1}&apos;..
+        /// </summary>
+        internal static string DecodeContentLine_ExpectedChar {
+            get {
+                return ResourceManager.GetString("DecodeContentLine_ExpectedChar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Invalid character &apos;{0}&apos; for the name..
+        /// </summary>
+        internal static string DecodeContentLine_InvalidCharForName {
+            get {
+                return ResourceManager.GetString("DecodeContentLine_InvalidCharForName", resourceCulture);
+            }
+        }
     }
 }

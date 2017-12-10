@@ -1,5 +1,7 @@
-﻿using System;
+﻿using deuxsucres.ContentType.Locales;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace deuxsucres.ContentType
@@ -94,136 +96,143 @@ namespace deuxsucres.ContentType
 
         #region Decode
 
-        ///// <summary>
-        ///// Read a IANA token
-        ///// </summary>
-        ///// <remarks>
-        ///// 1*(ALPHA / DIGIT / "-")
-        ///// </remarks>
-        //protected virtual string ReadIanaToken(string line, ref int pos)
-        //{
-        //    int s = pos, l=line.Length;
-        //    char c;
-        //    while (pos < l && ((c = line[pos]) == '-' || IsALPHA(c) || IsDIGIT(c)))
-        //        pos++;
-        //    return s == pos ? null : line.Substring(s, pos - s);
-        //}
+        /// <summary>
+        /// Unescape a parameter value
+        /// </summary>
+        protected virtual string UnescapeParamValue(string value)
+        {
+            return !CircumflexEscape ? value : value
+                    .Replace("^n", Environment.NewLine)
+                    .Replace("^^", "^")
+                    .Replace("^'", "\"")
+                    ;
+        }
 
-        ///// <summary>
-        ///// Decode a content line
-        ///// </summary>
-        //public virtual ContentLine DecodeContentLine(string line, bool throwErrors = false)
-        //{
-        //    ContentLine CheckError(string message)
-        //    {
-        //        if (throwErrors) throw new ContentSyntaxError();
-        //        return null;
-        //    };
+        /// <summary>
+        /// Read a IANA token
+        /// </summary>
+        /// <remarks>
+        /// 1*(ALPHA / DIGIT / "-")
+        /// </remarks>
+        protected virtual string ReadIanaToken(string line, ref int pos)
+        {
+            int s = pos, l = line.Length;
+            char c;
+            while (pos < l && ((c = line[pos]) == '-' || IsALPHA(c) || IsDIGIT(c)))
+                pos++;
+            return s == pos ? null : line.Substring(s, pos - s);
+        }
 
-        //    // An empty line is not error
-        //    if (string.IsNullOrWhiteSpace(line)) return null;
+        /// <summary>
+        /// Read a QSAFE-CHAR sequence
+        /// </summary>
+        /// <remarks>
+        /// QSAFE-CHAR   = WSP / %x21 / %x23-7E / NON-ASCII ; Any character except CTLs, DQUOTE
+        /// </remarks>
+        protected virtual string ReadQSafeChar(string line, ref int pos)
+        {
+            int s = pos, l = line.Length;
+            char c;
+            while (pos < l && ((c = line[pos]) != DQUOTE && !IsCTL(c)))
+                pos++;
+            return s == pos ? string.Empty : line.Substring(s, pos - s);
+        }
 
-        //    var content = new ContentLine();
-        //    int pos = 0;
+        /// <summary>
+        /// Read a SAFE-CHAR sequence
+        /// </summary>
+        /// <remarks>
+        /// SAFE-CHAR    = WSP / %x21 / %x23-2B / %x2D-39 / %x3C-7E / NON-ASCII ; Any character except CTLs, DQUOTE, ";", ":", ","
+        /// </remarks>
+        protected virtual string ReadSafeChar(string line, ref int pos)
+        {
+            int s = pos, l = line.Length;
+            char c;
+            while (pos < l && ((c = line[pos]) != DQUOTE && c != ';' && c != ':' && c != ',' && !IsCTL(c)))
+                pos++;
+            return s == pos ? string.Empty : line.Substring(s, pos - s);
+        }
 
-        //    // Read the name
-        //    string name = ReadIanaToken(line, ref pos);
-        //    //if(name==null) 
+        /// <summary>
+        /// Skip the char if in <paramref name="chars"/>
+        /// </summary>
+        protected virtual bool SkipChar(string line, ref int pos, params char[] chars)
+        {
+            if (pos >= line.Length || chars == null || chars.Length == 0) return false;
+            bool r = chars.Contains(line[pos]);
+            if (r) pos++;
+            return r;
+        }
 
-        //    char[] partSeparators = new char[] { ':', ';' };
-        //    int idx = line.IndexOfAny(partSeparators);
-        //    if (idx < 0)
-        //    {
-        //        content.Name = line;
-        //        return content;
-        //    }
-        //    else
-        //    {
-        //        content.Name = line.Substring(0, idx);
-        //    }
+        /// <summary>
+        /// Decode a content line
+        /// </summary>
+        public virtual ContentLine DecodeContentLine(string line, int lineNumber = -1, bool strict = false, bool throwErrors = false)
+        {
+            // An empty line is not error
+            if (string.IsNullOrWhiteSpace(line)) return null;
 
-        //    // Read the parameters
-        //    char[] paramSeparators = new char[] { ':', '=', ';' };
-        //    char[] paramListSeparators = new char[] { ':', ',', ';' };
-        //    int pos = idx;
-        //    while (pos < line.Length && line[pos] == ';')
-        //    {
-        //        pos++;  // Skip the separator
-        //        idx = line.IndexOfAny(paramSeparators, pos);
-        //        // End of line ?
-        //        if (idx < 0)
-        //        {
-        //            // Create an empty parameter
-        //            if (pos < line.Length)
-        //                content[line.Substring(pos)] = string.Empty;
-        //            return content;
-        //        }
-        //        // get the name
-        //        string paramName = line.Substring(pos, idx - pos);
-        //        string paramValue = string.Empty;
-        //        // Whithout value ?
-        //        if (line[idx] != '=')
-        //        {
-        //            // Create an empty parameter
-        //            content[paramName] = paramValue;
-        //            // And continue
-        //            pos = idx;
-        //            continue;
-        //        }
-        //        // Check the value
-        //        int sParam = idx + 1;
-        //        pos = sParam - 1;
-        //        do
-        //        {
-        //            pos++;
-        //            // Encoded ?
-        //            if (pos < line.Length && line[pos] == '"')
-        //            {
-        //                idx = line.IndexOf('"', pos + 1);
-        //                if (idx < 0)
-        //                {
-        //                    // Get the rest of the line as a parameter value
-        //                    pos = line.Length;
-        //                    break;
-        //                }
-        //                else
-        //                {
-        //                    // Extract the parameter value
-        //                    pos = idx + 1;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                // Search a separator
-        //                idx = line.IndexOfAny(paramListSeparators, pos);
-        //                if (idx < 0)
-        //                {
-        //                    // Get the rest of the line as a parameter value
-        //                    pos = line.Length;
-        //                    break;
-        //                }
-        //                else
-        //                {
-        //                    // Extract the parameter value
-        //                    paramValue = line.Substring(sParam, idx - pos);
-        //                    pos = idx;
-        //                }
-        //            }
-        //        } while (pos >= 0 && pos < line.Length && line[pos] == ',');
-        //        if (pos >= 0)
-        //            paramValue = line.Substring(sParam, pos - sParam);
-        //        // Create the parameter
-        //        if (!string.IsNullOrEmpty(paramName) || !string.IsNullOrEmpty(paramValue))
-        //        {
-        //            //paramValue = paramValue.Replace("=3D", "=").Replace("\\;", ";");
-        //            content[paramName] = paramValue;
-        //        }
-        //    }
+            ContentLine content = null;
+            int pos = 0;
+            ContentLine CheckError(string message, params object[] formatArgs)
+            {
+                if (throwErrors)
+                    throw new ContentSyntaxError(formatArgs != null ? string.Format(message, formatArgs) : message, lineNumber, lineNumber >= 0 ? pos : -1);
+                return strict ? null : content;
+            };
+            char CurrentChar() => pos < line.Length ? line[pos] : '\0';
 
-        //    // Read the value
-        //    content.Value = pos < line.Length ? line.Substring(pos + 1) : null;
-        //    return content;
-        //}
+            // Read the name
+            string name = ReadIanaToken(line, ref pos);
+            if (name == null) return CheckError(SR.DecodeContentLine_InvalidCharForName, CurrentChar());
+            content = new ContentLine();
+            if (SkipChar(line, ref pos, '.'))
+            {
+                content.Group = name;
+                name = ReadIanaToken(line, ref pos);
+                if (name == null) return CheckError(SR.DecodeContentLine_InvalidCharForName, CurrentChar());
+            }
+            content.Name = name;
+
+            // Read the parameters
+            while (SkipChar(line, ref pos, ';'))
+            {
+                // Read the name
+                name = ReadIanaToken(line, ref pos);
+                if (name == null) return CheckError(SR.DecodeContentLine_InvalidCharForName, CurrentChar());
+                if (!SkipChar(line, ref pos, '=')) return CheckError(SR.DecodeContentLine_ExpectedChar, '=', CurrentChar());
+
+                // Read the values
+                char c = CurrentChar();
+                do
+                {
+                    if (c == DQUOTE)
+                    {
+                        pos++;
+                        string value = ReadQSafeChar(line, ref pos);
+                        if (!SkipChar(line, ref pos, DQUOTE)) return CheckError(SR.DecodeContentLine_ExpectedChar, DQUOTE, CurrentChar());
+                        content.AddParam(name, UnescapeParamValue(value));
+                    }
+                    else
+                    {
+                        string value = ReadSafeChar(line, ref pos);
+                        content.AddParam(name, UnescapeParamValue(value));
+                    }
+                } while (SkipChar(line, ref pos, ','));
+            }
+
+            // Read the value
+            if (SkipChar(line, ref pos, ':'))
+            {
+                content.Value = line.Substring(pos);
+            }
+            else
+            {
+                if (pos < line.Length)
+                    return CheckError(SR.DecodeContentLine_ExpectedChar, ':', CurrentChar());
+            }
+            return content;
+        }
 
         #endregion
 
@@ -284,6 +293,11 @@ namespace deuxsucres.ContentType
         //}
 
         #endregion
+
+        /// <summary>
+        /// Enable/disable the circumflex escape as defined by RFC-6868
+        /// </summary>
+        public bool CircumflexEscape { get; set; } = true;
 
     }
 

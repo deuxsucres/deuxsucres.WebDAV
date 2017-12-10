@@ -123,4 +123,13 @@
 {1}: Line Position
 {2}: Error message</comment>
   </data>
+  <data name="DecodeContentLine_ExpectedChar" xml:space="preserve">
+    <value>Expected '{0}' instead of '{1}'.</value>
+    <comment>{0}: expected char
+{1}: unexpected char</comment>
+  </data>
+  <data name="DecodeContentLine_InvalidCharForName" xml:space="preserve">
+    <value>Invalid character '{0}' for the name.</value>
+    <comment>{0}: invalid char</comment>
+  </data>
 </root>
