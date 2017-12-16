@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace deuxsucres.ContentType.Tests.Parameters
+namespace deuxsucres.ContentType.Tests.ContentParameters
 {
     public class ContentParameterTest
     {
@@ -29,14 +29,24 @@ namespace deuxsucres.ContentType.Tests.Parameters
             var cparam = new ContentLineParameter("test");
 
             Assert.Throws<ArgumentNullException>(() => param.Serialize(null));
-            param.Serialize(syntax);
+            Assert.Null(param.Serialize(syntax));
+            param.Name = "MyTest";
+            Assert.NotNull(param.Serialize(syntax));
 
             Assert.False(param.Deserialize(cparam, syntax));
+            Assert.Equal("MyTest", param.Name);
+
+            mParam.Protected().Setup<bool>("InternalDeserialize", ItExpr.IsAny<ContentLineParameter>(), ItExpr.IsAny<ContentSyntax>())
+                .Returns(() => true);
+            param = mParam.Object;
+            Assert.True(param.Deserialize(cparam, syntax));
+            Assert.Equal("test", param.Name);
+
             Assert.Throws<ArgumentNullException>(() => param.Deserialize(cparam, null));
             Assert.Throws<ArgumentNullException>(() => param.Deserialize(null, syntax));
 
-            mParam.Protected().Verify("InternalSerialize", Times.Once(), ItExpr.IsAny<ContentSyntax>());
-            mParam.Protected().Verify("InternalDeserialize", Times.Once(), ItExpr.IsAny<ContentLineParameter>(), ItExpr.IsAny<ContentSyntax>());
+            mParam.Protected().Verify("InternalSerialize", Times.Once(), ItExpr.IsAny<ContentLineParameter>(), ItExpr.IsAny<ContentSyntax>());
+            mParam.Protected().Verify("InternalDeserialize", Times.Exactly(2), ItExpr.IsAny<ContentLineParameter>(), ItExpr.IsAny<ContentSyntax>());
         }
 
     }
