@@ -67,6 +67,7 @@
     <Compile Include="ContentLineTest.cs" />
     <Compile Include="ContentParameters\TextListContentParameterTest.cs" />
     <Compile Include="ContentParameters\TextContentParameterTest.cs" />
+    <Compile Include="ContentProperties\ContentPropertyTest.cs" />
     <Compile Include="ContentSyntaxErrorTest.cs" />
     <Compile Include="ContentSyntaxTest.cs" />
     <Compile Include="ContentWriterTest.cs" />
