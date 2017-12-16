@@ -69,6 +69,7 @@
     <Compile Include="ContentSyntaxTest.cs" />
     <Compile Include="ContentWriterTest.cs" />
     <Compile Include="ContentReaderTest.cs" />
+    <Compile Include="Parameters\ContentParameterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

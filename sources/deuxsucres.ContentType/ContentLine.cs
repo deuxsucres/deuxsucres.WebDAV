@@ -68,8 +68,7 @@ namespace deuxsucres.ContentType
         {
             if (_parameters == null || string.IsNullOrWhiteSpace(name))
                 return null;
-            ContentLineParameter result;
-            if (_parameters.TryGetValue(name, out result))
+            if (_parameters.TryGetValue(name, out ContentLineParameter result))
                 return result;
             return null;
         }
