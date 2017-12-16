@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentLineTest.cs" />
+    <Compile Include="ContentParameters\TextContentParameterTest.cs" />
     <Compile Include="ContentSyntaxErrorTest.cs" />
     <Compile Include="ContentSyntaxTest.cs" />
     <Compile Include="ContentWriterTest.cs" />
