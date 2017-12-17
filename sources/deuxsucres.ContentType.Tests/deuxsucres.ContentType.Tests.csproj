@@ -69,9 +69,9 @@
     <Compile Include="ContentParameters\TextContentParameterTest.cs" />
     <Compile Include="ContentProperties\ContentPropertyTest.cs" />
     <Compile Include="ContentSyntaxErrorTest.cs" />
-    <Compile Include="ContentSyntaxTest.cs" />
-    <Compile Include="ContentWriterTest.cs" />
-    <Compile Include="ContentReaderTest.cs" />
+    <Compile Include="Serializer\ContentSyntaxTest.cs" />
+    <Compile Include="Serializer\ContentWriterTest.cs" />
+    <Compile Include="Serializer\ContentReaderTest.cs" />
     <Compile Include="ContentParameters\ContentParameterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

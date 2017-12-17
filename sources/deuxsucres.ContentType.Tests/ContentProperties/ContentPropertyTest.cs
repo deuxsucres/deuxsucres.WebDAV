@@ -19,6 +19,18 @@ namespace deuxsucres.ContentType.Tests.ContentProperties
         }
 
         [Fact]
+        public void AsComponent()
+        {
+            var prop = new Mock<ContentProperty>() { CallBase = true }.Object;
+            IContentComponent comp = prop;
+            Assert.Null(comp.Parent);
+
+            var entity = new Mock<ContentEntity>() { CallBase = true }.Object;
+            comp.Parent = entity;
+            Assert.Same(entity, comp.Parent);
+        }
+
+        [Fact]
         public void Parameters()
         {
             var prop = new Mock<ContentProperty>() { CallBase = true }.Object;

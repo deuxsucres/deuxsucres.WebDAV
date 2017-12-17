@@ -9,9 +9,13 @@ namespace deuxsucres.ContentType
     /// <summary>
     /// Content property
     /// </summary>
-    public abstract class ContentProperty
+    public abstract class ContentProperty : IContentComponent
     {
         Dictionary<string, ContentParameter> _parameters;
+
+        #region IContentComponent
+        ContentEntity IContentComponent.Parent { get; set; }
+        #endregion
 
         #region Parameters
 
@@ -100,6 +104,7 @@ namespace deuxsucres.ContentType
         /// Count of parameters
         /// </summary>
         public int ParameterCount => _parameters?.Count ?? 0;
+
     }
 
 }
