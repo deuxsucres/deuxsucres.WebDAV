@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentEntityTest.cs" />
     <Compile Include="ContentLineTest.cs" />
     <Compile Include="ContentParameters\TextListContentParameterTest.cs" />
     <Compile Include="ContentParameters\TextContentParameterTest.cs" />
